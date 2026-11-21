@@ -838,23 +838,27 @@ html[data-theme="dark"] .dock-item .lbl{color:#c4cbd6}
     <div class="modal-head">🚪 <span id="fugaModalTitulo">Registrar fuga</span> <button class="x" onclick="cerrarModal('modalFuga')">✕</button></div>
     <div class="modal-body">
       <input type="hidden" id="fuga_editId">
+      <div class="field"><label>Área de origen *</label><select id="fuga_area" onchange="fugaSetArea(this.value)">
+        <option value="">— Seleccione —</option><option>Sala</option><option>Cuerpo de Guardia</option>
+      </select></div>
       <div class="field"><label>Nombre y apellidos *</label><input id="fuga_nombre"></div>
       <div class="grid2">
-        <div class="field"><label>N° HC *</label><input id="fuga_hc"></div>
         <div class="field"><label>Edad *</label><input id="fuga_edad" placeholder="Ej: 3 años, 5 meses"></div>
+        <div class="field"><label>Sexo *</label><select id="fuga_genero"><option value="">—</option><option>Masculino</option><option>Femenino</option></select></div>
       </div>
       <div class="grid2">
-        <div class="field"><label>Género</label><select id="fuga_genero"><option value="">—</option><option>Masculino</option><option>Femenino</option></select></div>
-        <div class="field"><label>Color de piel</label><select id="fuga_piel"><option value="">—</option><option>Blanca</option><option>Mestiza</option><option>Negra</option><option>Amarilla</option><option>Otro</option></select></div>
+        <div class="field"><label>N° historia clínica</label><input id="fuga_hc" placeholder="Obligatorio si es Sala"></div>
+        <div class="field"><label>Municipio *</label><input id="fuga_municipio" placeholder="Municipio de residencia"></div>
       </div>
-      <div class="field"><label>Dirección particular *</label><input id="fuga_dir"></div>
+      <div class="field"><label>Dirección completa *</label><input id="fuga_dir"></div>
       <div class="field"><label>Diagnóstico *</label><input id="fuga_dx"></div>
       <div class="field"><label>Fecha y hora de la fuga *</label><input type="datetime-local" id="fuga_fecha"></div>
-      <div class="field"><label>Condiciones de la fuga *</label><textarea id="fuga_cond" placeholder="Breve causa o explicación"></textarea></div>
+      <div class="field"><label>Condiciones / observaciones *</label><textarea id="fuga_cond" placeholder="Circunstancias conocidas de la fuga, último lugar donde fue visto, acompañamiento u otra información útil."></textarea></div>
     </div>
     <div class="modal-foot">
       <button class="btn gris" onclick="cerrarModal('modalFuga')">Cancelar</button>
       <button class="btn rojo" onclick="guardarFuga()">💾 Guardar</button>
+      <button class="btn verde" onclick="guardarFuga(true)">💾 Guardar + WhatsApp</button>
     </div>
   </div>
 </div>
@@ -2376,46 +2380,96 @@ function renderFugas(){
       <div style="display:flex;justify-content:space-between;gap:8px">
         <div style="flex:1;min-width:0">
           <b>${esc(f.nombre)}</b>
-          <div style="font-size:.8em;color:var(--g500)">HC ${esc(f.hc)} · ${esc(f.edad)} · ${esc(f.genero||'—')} · ${esc(f.piel||'—')}</div>
+          <div style="font-size:.8em;color:var(--g500)">${esc(f.area||'—')} · ${esc(f.hc||'CG')} · ${esc(f.edad)} · ${esc(f.genero||'—')}</div>
           <div style="font-size:.8em;color:var(--g500)">Dx: ${esc(f.dx)}</div>
-          <div style="font-size:.8em;color:var(--g500)">📅 ${fmtDT(f.fecha)} · 📍 ${esc(f.dir||'—')}</div>
+          <div style="font-size:.8em;color:var(--g500)">📍 ${esc(f.dir||'—')} · ${esc(f.municipio||'—')}</div>
+          <div style="font-size:.8em;color:var(--g500)">📅 ${fmtDT(f.fecha)}</div>
           ${f.cond?`<div style="font-size:.8em;margin-top:4px"><b>Condiciones:</b> ${esc(f.cond)}</div>`:''}
         </div>
         <div class="btn-group" style="flex-shrink:0">
-          <button class="btn sm cyan" onclick="editarFuga('${f.id}')">✏️</button>
-          <button class="btn sm rojo" onclick="eliminarFuga('${f.id}')">🗑️</button>
+          <button class="btn sm verde" title="Preparar WhatsApp" aria-label="Preparar WhatsApp" onclick="abrirWhatsAppFuga('${f.id}')">📲</button>
+          <button class="btn sm cyan" title="Editar fuga" aria-label="Editar fuga" onclick="editarFuga('${f.id}')">✏️</button>
+          <button class="btn sm rojo" title="Eliminar fuga" aria-label="Eliminar fuga" onclick="eliminarFuga('${f.id}')">🗑️</button>
         </div>
       </div>
     </div>`).join('') : '<div class="alert">No hay fugas registradas en el período.</div>';
 }
 function abrirModalFuga(){
   $('fugaModalTitulo').textContent='Registrar fuga';
-  ['fuga_editId','fuga_nombre','fuga_hc','fuga_edad','fuga_dir','fuga_dx','fuga_fecha','fuga_cond'].forEach(id=>$(id).value='');
-  $('fuga_genero').value=''; $('fuga_piel').value='';
+  ['fuga_editId','fuga_nombre','fuga_hc','fuga_edad','fuga_dir','fuga_municipio','fuga_dx','fuga_fecha','fuga_cond'].forEach(id=>$(id).value='');
+  $('fuga_area').value=''; $('fuga_genero').value='';
   abrirModal('modalFuga');
+}
+function fugaSetArea(area){
+  if(!$('fuga_hc')) return;
+  if(area==='Cuerpo de Guardia'){
+    $('fuga_hc').value='CG';
+    $('fuga_hc').readOnly=true;
+    $('fuga_hc').placeholder='CG';
+  }else{
+    if($('fuga_hc').value==='CG') $('fuga_hc').value='';
+    $('fuga_hc').readOnly=false;
+    $('fuga_hc').placeholder='Obligatorio si es Sala';
+  }
 }
 function editarFuga(id){
   const f=state.fugas.find(x=>x.id===id); if(!f) return;
   abrirModalFuga(); $('fugaModalTitulo').textContent='Editar fuga';
   $('fuga_editId').value=id; $('fuga_nombre').value=f.nombre||''; $('fuga_hc').value=f.hc||'';
-  $('fuga_edad').value=f.edad||''; $('fuga_genero').value=f.genero||''; $('fuga_piel').value=f.piel||'';
-  $('fuga_dir').value=f.dir||''; $('fuga_dx').value=f.dx||''; $('fuga_fecha').value=f.fecha||''; $('fuga_cond').value=f.cond||'';
+  $('fuga_area').value=f.area||''; fugaSetArea(f.area||'');
+  $('fuga_edad').value=f.edad||''; $('fuga_genero').value=f.genero||'';
+  $('fuga_municipio').value=f.municipio||''; $('fuga_dir').value=f.dir||'';
+  $('fuga_dx').value=f.dx||''; $('fuga_fecha').value=f.fecha||''; $('fuga_cond').value=f.cond||'';
 }
-function guardarFuga(){
-  const id=$('fuga_editId').value; const nombre=$('fuga_nombre').value.trim();
-  const hc=$('fuga_hc').value.trim(), edad=$('fuga_edad').value.trim(), dir=$('fuga_dir').value.trim();
+function guardarFuga(enviarWhatsApp=false){
+  const id=$('fuga_editId').value; const area=$('fuga_area').value;
+  const nombre=$('fuga_nombre').value.trim(), edad=$('fuga_edad').value.trim();
+  const genero=$('fuga_genero').value, hc=area==='Cuerpo de Guardia'?'CG':$('fuga_hc').value.trim();
+  const municipio=$('fuga_municipio').value.trim(), dir=$('fuga_dir').value.trim();
   const dx=$('fuga_dx').value.trim(), fecha=$('fuga_fecha').value, cond=$('fuga_cond').value.trim();
-  if(!nombre||!hc||!edad||!dir||!dx||!fecha||!cond){ toast('Complete los campos obligatorios','err'); return; }
-  const data={nombre,hc,edad,genero:$('fuga_genero').value,piel:$('fuga_piel').value,dir,dx,fecha,cond};
-  if(id) Object.assign(state.fugas.find(x=>x.id===id),data);
-  else state.fugas.push({id:uuid(),...data, creado:nowISO()});
+  if(!area||!nombre||!edad||!genero||!municipio||!dir||!dx||!fecha||!cond||(area==='Sala'&&!hc)){
+    toast('Complete los campos obligatorios; en Sala debe registrar la historia clínica','err'); return;
+  }
+  const data={area,nombre,hc,edad,genero,municipio,dir,dx,fecha,cond};
+  let fuga;
+  if(id){
+    fuga=state.fugas.find(x=>x.id===id); if(!fuga) return;
+    Object.assign(fuga,data);
+  }else{
+    fuga={id:uuid(),...data,creado:nowISO()};
+    state.fugas.push(fuga);
+  }
   guardarClave(KEYS.fugas,state.fugas);
   cerrarModal('modalFuga'); renderFugas(); toast('Fuga guardada','ok');
+  if(enviarWhatsApp) abrirWhatsAppFuga(fuga.id);
+}
+function construirMensajeFuga(f){
+  const hc=f.area==='Cuerpo de Guardia'?'CG':(f.hc||'—');
+  return [
+    '🚨 FUGA DE PACIENTE · HPJRM',
+    '',
+    'Área: '+(f.area||'—'),
+    'Nombre y apellidos: '+(f.nombre||'—'),
+    'Edad: '+(f.edad||'—'),
+    'Sexo: '+(f.genero||'—'),
+    'Dirección: '+(f.dir||'—'),
+    'Municipio: '+(f.municipio||'—'),
+    'Historia clínica: '+hc,
+    'Diagnóstico: '+(f.dx||'—'),
+    'Fecha y hora: '+(fmtDT(f.fecha)||'—'),
+    'Condiciones / observaciones: '+(f.cond||'—')
+  ].join('\n');
+}
+function abrirWhatsAppFuga(id){
+  const f=state.fugas.find(x=>x.id===id); if(!f){ toast('No se encontró el registro','err'); return; }
+  const numero='5363299308';
+  const url='https://wa.me/'+numero+'?text='+encodeURIComponent(construirMensajeFuga(f));
+  window.open(url,'_blank','noopener,noreferrer');
 }
 function eliminarFuga(id){ confirmar('¿Eliminar este registro de fuga?', ()=>{ state.fugas=state.fugas.filter(x=>x.id!==id); guardarClave(KEYS.fugas,state.fugas); renderFugas(); toast('Eliminado','ok'); }); }
 function exportarFugasCSV(){
-  const rows=[['Nombre','HC','Edad','Género','Color piel','Dirección','Diagnóstico','Fecha','Condiciones']];
-  state.fugas.forEach(f=>rows.push([f.nombre,f.hc,f.edad,f.genero,f.piel,f.dir,f.dx,f.fecha,f.cond]));
+  const rows=[['Área','Nombre','HC/CG','Edad','Sexo','Municipio','Dirección','Diagnóstico','Fecha','Condiciones']];
+  state.fugas.forEach(f=>rows.push([f.area,f.nombre,f.area==='Cuerpo de Guardia'?'CG':f.hc,f.edad,f.genero,f.municipio,f.dir,f.dx,f.fecha,f.cond]));
   descargarCSV(rows,'fugas.csv');
 }
 function generarReporteFugas(){
@@ -2423,7 +2477,7 @@ function generarReporteFugas(){
   let list=[...state.fugas];
   if(d1) list=list.filter(f=>(f.fecha||'').slice(0,10)>=d1);
   if(d2) list=list.filter(f=>(f.fecha||'').slice(0,10)<=d2);
-  const dxCount={}; list.forEach(f=>{ const k=(f.dx||'').toLowerCase(); dxCount[k]=(dxCount[k]||0)+1; });
+  const dxCount={}; list.forEach(f=>{ const k=(f.dx||'').trim().toLowerCase(); if(k) dxCount[k]=(dxCount[k]||0)+1; });
   const top=Object.entries(dxCount).sort((a,b)=>b[1]-a[1]).slice(0,5);
   const html=`<div class="print-doc">
     <div class="print-header"><div class="h1">${esc(state.config.hospital||'Hospital Pediátrico Docente José Ramón Martínez')}</div>
@@ -2431,12 +2485,13 @@ function generarReporteFugas(){
     <div class="code">Emitido: ${fmtDT(nowISO())}${d1?` · Período: ${fmtD(d1)} al ${fmtD(d2)}`:''}</div></div>
     <div class="print-section"><h4>ANÁLISIS ESTADÍSTICO</h4>
       <div class="print-mini"><b>Total de fugas:</b> ${list.length}</div>
-      <div class="print-mini"><b>Por género:</b> Masculino: ${list.filter(f=>f.genero==='Masculino').length} · Femenino: ${list.filter(f=>f.genero==='Femenino').length}</div>
+      <div class="print-mini"><b>Por área:</b> Sala: ${list.filter(f=>f.area==='Sala').length} · Cuerpo de Guardia: ${list.filter(f=>f.area==='Cuerpo de Guardia').length}</div>
+      <div class="print-mini"><b>Por sexo:</b> Masculino: ${list.filter(f=>f.genero==='Masculino').length} · Femenino: ${list.filter(f=>f.genero==='Femenino').length}</div>
       <div class="print-mini"><b>Diagnósticos más frecuentes:</b> ${top.map(([k,v])=>`${esc(k)} (${v})`).join(' · ')||'—'}</div>
     </div>
     <div class="print-section"><h4>LISTADO COMPLETO</h4>
-      <table class="print-table"><tr><th>Nombre</th><th>HC</th><th>Edad</th><th>Género</th><th>Piel</th><th>Dirección</th><th>Dx</th><th>Fecha</th><th>Condiciones</th></tr>
-      ${list.map(f=>`<tr><td>${esc(f.nombre)}</td><td>${esc(f.hc)}</td><td>${esc(f.edad)}</td><td>${esc(f.genero||'—')}</td><td>${esc(f.piel||'—')}</td><td>${esc(f.dir)}</td><td>${esc(f.dx)}</td><td>${fmtDT(f.fecha)}</td><td>${esc(f.cond)}</td></tr>`).join('')||'<tr><td colspan="9">Sin registros</td></tr>'}
+      <table class="print-table"><tr><th>Área</th><th>Nombre</th><th>HC/CG</th><th>Edad</th><th>Sexo</th><th>Municipio</th><th>Dirección</th><th>Dx</th><th>Fecha</th><th>Condiciones</th></tr>
+      ${list.map(f=>`<tr><td>${esc(f.area||'—')}</td><td>${esc(f.nombre)}</td><td>${esc(f.area==='Cuerpo de Guardia'?'CG':(f.hc||'—'))}</td><td>${esc(f.edad)}</td><td>${esc(f.genero||'—')}</td><td>${esc(f.municipio||'—')}</td><td>${esc(f.dir)}</td><td>${esc(f.dx)}</td><td>${fmtDT(f.fecha)}</td><td>${esc(f.cond)}</td></tr>`).join('')||'<tr><td colspan="10">Sin registros</td></tr>'}
       </table>
     </div>
     <div class="print-footer">
