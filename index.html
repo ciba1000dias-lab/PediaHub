@@ -4302,7 +4302,12 @@ let map=load();
 function all(){let a=[];map.rooms.forEach(r=>r.cubs.forEach(c=>c.spaces.forEach(s=>a.push(s))));return a}
 function stats(){let a=all(),closed=a.filter(s=>['cerrada','mantenimiento'].includes(s.status)).length;return{physical:a.length,closed,operational:a.length-closed,available:a.filter(s=>s.status==='disponible').length,occupied:a.filter(s=>s.status==='ocupada').length}}
 function sync(){let p=state.serviceProfile||{};p.structure=p.structure||{};let x=stats();p.structure.physicalCapacity=x.physical;p.structure.operationalCapacity=x.operational;p.structure.unavailable=x.closed;state.serviceProfile=p;localStorage.setItem('hpjrm_service_profile_v1',JSON.stringify(p));return x}
-function bed(r,c,s){return '<button type="button" class="hp-bed '+E(s.status)+'" data-bed-room="'+E(r.id)+'" data-bed-cub="'+E(c.id)+'" data-bed-id="'+E(s.id)+'"><span class="dot"></span><b>'+E(s.type)+' '+E(s.id)+'</b><small>'+E((ST.find(x=>x[0]===s.status)||['',''])[1])+'</small></button>'}
+function bed(r,c,s){
+  let liveStatus=s.status;
+  const last=window.__hpBedMapLastStatus;
+  if(last&&String(last.rid)===String(r.id)&&String(last.cid)===String(c.id)&&String(last.sid)===String(s.id))liveStatus=last.status;
+  return '<button type="button" class="hp-bed '+E(liveStatus)+'" data-bed-room="'+E(r.id)+'" data-bed-cub="'+E(c.id)+'" data-bed-id="'+E(s.id)+'"><span class="dot"></span><b>'+E(s.type)+' '+E(s.id)+'</b><small>'+E((ST.find(x=>x[0]===liveStatus)||['',''])[1])+'</small></button>'
+}
 
 window.hpBedEdit=function(rid,cid,id){let r=map.rooms.find(x=>x.id===rid),c=r&&r.cubs.find(x=>x.id===cid),s=c&&c.spaces.find(x=>x.id===id);if(!s)return;let body='<div class="hp-bed-edit"><div class="field"><label>Espacio</label><input value="'+E(s.type+' '+s.id)+'" disabled></div><div class="field"><label>Estado</label><select id="hpBS">'+ST.map(x=>'<option value="'+x[0]+'" '+(x[0]===s.status?'selected':'')+'>'+x[1]+'</option>').join('')+'</select></div><div class="field full"><label>Observación</label><textarea id="hpBR">'+E(s.reason||'')+'</textarea></div></div>';if(typeof openModal==='function')openModal('🛏️ Estado del espacio',body,[{text:'Cancelar',cls:'btn gris',action:'closeModal()'},{text:'Guardar',cls:'btn verde',action:"hpBedSave('"+E(rid)+"','"+E(cid)+"','"+E(id)+"')"}])}
 window.hpBedSave=function(rid,cid,id){let r=map.rooms.find(x=>x.id===rid),c=r&&r.cubs.find(x=>x.id===cid),s=c&&c.spaces.find(x=>x.id===id);if(!s)return;s.status=document.getElementById('hpBS').value;s.reason=document.getElementById('hpBR').value.trim();localStorage.setItem(K,JSON.stringify(map));sync();closeModal();renderBedMap();if(typeof toast==='function')toast('Estado actualizado','ok')}
@@ -4414,6 +4419,8 @@ document.addEventListener('DOMContentLoaded',function(){setTimeout(render,200)})
     if(!data)return;
     data.space.status=item[0];
     localStorage.setItem(K,JSON.stringify(data.map));
+    // Keep the in-memory map synchronized with localStorage before redrawing.
+    window.__hpBedMapLastStatus={rid:current.rid,cid:current.cid,sid:current.sid,status:item[0]};
     closeFan();
     if(typeof window.renderBedMap==='function')window.renderBedMap();
     if(typeof window.sync==='function')window.sync();
