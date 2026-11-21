@@ -1632,6 +1632,13 @@ const ROLES_EQUIPO = [
   {k:'res_neo',ico:'👶',lbl:'Residentes de Neonatología'}
 ];
 const EMOJI_EQUIPO = {1:'🔴',2:'🟡',3:'🔵',4:'🟣'};
+const GUARDIA_ESPECIAL_HASTA_11_ENERO = {"2026-12-28":["Rodney Jáuregui Alonso","Janet Rodríguez Hernández","MGI (pendiente de identificar)"],"2026-12-29":["Meivel Caridad Pérez González","Azzeb Águila Alemu","Noel Duarte Izquierdo"],"2026-12-30":["Yelaine Boucourt","Katileydi Chamizo Perdomo","Beatriz","MGI (pendiente de identificar)"],"2026-12-31":["Dalia Acosta Figueroa","Daylen Gómez González","Yania (pendiente de identificar)"],"2027-01-01":["Duvania Alcántara Castaño","Ruberkys Garcia Vargas","Zaydenis"],"2027-01-02":["Rodney Jáuregui Alonso","Janet Rodríguez Hernández","Yelaine Zambrana"],"2027-01-03":["Meivel Caridad Pérez González","Azzeb Águila Alemu","Noel Duarte Izquierdo"],"2027-01-04":["Yelaine Boucourt","Katileydi Chamizo Perdomo","Beatriz","MGI (pendiente de identificar)"],"2027-01-05":["Duvania Alcántara Castaño","Ruberkys Garcia Vargas","Zaydenis","MGI (pendiente de identificar)"],"2027-01-06":["Janet Rodríguez Hernández","Dalia Acosta Figueroa","Daylen Gómez González","Yelaine Zambrana"],"2027-01-07":["Meivel Caridad Pérez González","Azzeb Águila Alemu","Noel Duarte Izquierdo"],"2027-01-08":["Yelaine Boucourt","Katileydi Chamizo Perdomo","Beatriz"],"2027-01-09":["Duvania Alcántara Castaño","Zaydenis","Ruberkys Garcia Vargas"],"2027-01-10":["Janet Rodríguez Hernández","Dalia Acosta Figueroa","Daylen Gómez González"],"2027-01-11":["Meivel Caridad Pérez González","Azzeb Águila Alemu","Noel Duarte Izquierdo"]};
+const GUARDIA_EQUIPOS = {
+  1:['Dalia Acosta Figueroa','Daylen Gómez González','Janet Rodríguez Hernández','Yadira Días','Yelaine Zambrana'],
+  2:['Azzeb Águila Alemu','Meivel Caridad Pérez González','Sisy Ruiz Ortega','Noel Duarte Izquierdo'],
+  3:['Yelaine Boucourt','Katileydi Chamizo Perdomo','Beatriz'],
+  4:['Duvania Alcántara Castaño','Zaydenis','Ruberkys Garcia Vargas']
+};
 
 const state = {
   revisiones:[], guardiasConfig:null, personal:[], pami:[], notas:[],
@@ -1830,7 +1837,23 @@ function confirmar(msg, onOk){
 /* ============================================================
    INICIO
    ============================================================ */
-function obtenerGuardiaHoy(){const cfg=state.guardiasConfig||{},ini=cfg.aperturaFecha;if(!ini)return null;const fecha=hoyISO(),equipo=calcularEquipoPorFecha(fecha,ini);if(!equipo)return null;return{fecha,equipo,roles:obtenerRolesGuardia(fecha,equipo),cambios:(cfg.cambios||[]).filter(x=>x.fecha===fecha&&String(x.equipo)===String(equipo))};}
+function obtenerGuardiaProgramada(fecha){
+  if(GUARDIA_ESPECIAL_HASTA_11_ENERO[fecha]) return {fecha,especial:true,equipo:null,nombres:GUARDIA_ESPECIAL_HASTA_11_ENERO[fecha]};
+  const ini=(state.guardiasConfig||{}).aperturaFecha||'2026-11-09', equipo=calcularEquipoPorFecha(fecha,ini);
+  if(!equipo) return null;
+  return {fecha,especial:false,equipo,nombres:GUARDIA_EQUIPOS[equipo]||[]};
+}
+function telefonoDeNombre(nombre){
+  const exact=state.telefonos?.[nombre]; if(exact) return exact;
+  const k=Object.keys(state.telefonos||{}).find(n=>normTelefonoNombre(n)===normTelefonoNombre(nombre)); return k?state.telefonos[k]:'';
+}
+function botonesTelefonosGuardia(nombres){
+  return nombres.map(n=>{const t=telefonoDeNombre(n); const pendiente=!t||/pendiente/i.test(n); return `<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:5px"><span>👤 ${esc(n)}</span>${t&&!pendiente?`<a class="btn sm verde" href="tel:${esc(t)}" title="Llamar a ${esc(n)}">📞</a>`:'<span class="badge">Sin número</span>'}</div>`;}).join('');
+}
+function obtenerGuardiaHoy(){
+  const fecha=hoyISO(), g=obtenerGuardiaProgramada(fecha); if(!g)return null;
+  return {...g,cambios:(state.guardiasConfig?.cambios||[]).filter(x=>x.fecha===fecha)};
+}
 function renderInicio(){
   const h = new Date().getHours();
   const saludo = h<12?'Buenos días':h<18?'Buenas tardes':'Buenas noches';
@@ -1841,7 +1864,7 @@ function renderInicio(){
   const totalLac = state.pami.length;
   const totalFugas = state.fugas.length;
   const medCriticos = state.medicamentos.filter(m=>m.estado==='critica'||m.estado==='cero').length;
-  const guardiaHoy=obtenerGuardiaHoy(),gh=$('inicioGuardiaHoy');if(gh){if(guardiaHoy){gh.innerHTML=`<div class="card morado"><h3>🩺 Guardia de hoy</h3><div style="font-size:1.05em"><b>${EMOJI_EQUIPO[guardiaHoy.equipo]} Equipo ${guardiaHoy.equipo}</b> · 24 h</div><div style="margin-top:6px">${ROLES_EQUIPO.map(r=>{const v=guardiaHoy.roles[r.k]||[];return v.length?`<div style="font-size:.82em;margin-top:2px">${r.ico} <b>${r.lbl}:</b> ${esc(v.join(', '))}</div>`:'';}).join('')}</div>${guardiaHoy.cambios.length?`<div class="alert amarillo" style="margin-top:8px;padding:6px">🔄 ${guardiaHoy.cambios.length} cambio(s) eventual(es) aplicado(s)</div>`:''}<button class="btn sm morado" style="margin-top:8px" onclick="navigateTo('guardias')">Ver esquema de guardias →</button></div>`;}else gh.innerHTML='<div class="alert amarillo">🩺 No hay un esquema de guardia configurado para hoy.</div>';}  $('inicioStats').innerHTML = `
+  const guardiaHoy=obtenerGuardiaHoy(),gh=$('inicioGuardiaHoy');if(gh){if(guardiaHoy){gh.innerHTML=`<div class="card morado"><h3>🩺 Guardia de hoy</h3><div style="font-size:1.05em"><b>${guardiaHoy.especial?'📅 Guardia programada especial':`${EMOJI_EQUIPO[guardiaHoy.equipo]} Equipo ${guardiaHoy.equipo}`}</b> · 24 h</div><div style="margin-top:8px">${botonesTelefonosGuardia(guardiaHoy.nombres)}</div>${guardiaHoy.cambios.length?`<div class="alert amarillo" style="margin-top:8px;padding:6px">🔄 ${guardiaHoy.cambios.length} cambio(s) eventual(es) aplicado(s)</div>`:''}<button class="btn sm morado" style="margin-top:8px" onclick="navigateTo('guardias')">Ver esquema de guardias →</button></div>`;}else gh.innerHTML='<div class="alert amarillo">🩺 No hay un esquema de guardia configurado para hoy.</div>';}  $('inicioStats').innerHTML = `
     <div class="stat-box"><div class="n">${totalAud}</div><div class="l">Auditorías</div></div>
     <div class="stat-box"><div class="n">${totalLac}</div><div class="l">Lactantes PAMI</div></div>
     <div class="stat-box"><div class="n">${totalFugas}</div><div class="l">Fugas</div></div>
@@ -2486,7 +2509,7 @@ function borrarHistorial(){
 function renderGuardias(){
   const cfg=state.guardiasConfig||{};
   if(!$('g_inicio').value){ $('g_inicio').value=cfg.aperturaFecha||hoyISO(); }
-  if(!$('g_fin').value){ const d=new Date($('g_inicio').value+'T00:00:00'); d.setDate(d.getDate()+7); $('g_fin').value=d.toISOString().slice(0,10); }
+  if(!$('g_fin').value){ const fin=cfg.calendarioFin||'2027-01-11'; $('g_fin').value=fin; }
   if(cfg.apertura) $('g_apertura').value=String(cfg.apertura);
   renderEquiposForm();
   renderCambiosGuardia();
@@ -2565,7 +2588,7 @@ function renderCalendarioGuardias(){
   const cfg=state.guardiasConfig||{};cfg.apertura=parseInt($('g_apertura').value||'1');cfg.aperturaFecha=ini;guardarDatos();
   const d1=new Date(ini+'T00:00:00'),d2=new Date(fin+'T00:00:00');if(d2<d1){wrap.innerHTML='<div class="alert rojo">Fecha fin anterior a inicio.</div>';return;}
   const dias=[];for(let d=new Date(d1);d<=d2;d.setDate(d.getDate()+1)){const fecha=d.toISOString().slice(0,10);dias.push({fecha:new Date(d),iso:fecha,eq:calcularEquipoPorFecha(fecha,ini)});}
-  wrap.innerHTML=`<div class="card cyan"><h3>📅 Calendario de guardias</h3><table><tr><th>Día</th><th>Fecha</th><th>Equipo</th><th>Roles / adecuaciones</th></tr>${dias.map(d=>{const roles=obtenerRolesGuardia(d.iso,d.eq),rs=ROLES_EQUIPO.map(r=>(roles[r.k]||[]).length?`${r.ico} ${roles[r.k].join(', ')}`:'').filter(Boolean).join('<br>'),ch=(cfg.cambios||[]).filter(x=>x.fecha===d.iso&&String(x.equipo)===String(d.eq));return`<tr><td>${d.fecha.toLocaleDateString('es-ES',{weekday:'short'})}</td><td>${fmtD(d.iso)}</td><td style="font-size:1.3em">${EMOJI_EQUIPO[d.eq]} Eq ${d.eq}</td><td style="font-size:.82em">${rs||'—'}${ch.length?`<div class="alert amarillo" style="margin-top:4px;padding:5px">🔄 ${ch.length} adecuación(es)</div>`:''}</td></tr>`;}).join('')}</table><div class="btn-group" style="margin-top:10px"><button class="btn amarillo" onclick="abrirCambioGuardia()">🔄 Cambio eventual</button><button class="btn verde" onclick="generarMensajeWhatsApp()">📱 Mensaje WhatsApp</button><button class="btn cyan" onclick="imprimirGuardias()">🖨️ PDF</button></div><div id="g_msgWrap"></div></div>`;
+  wrap.innerHTML=`<div class="card cyan"><h3>📅 Calendario de guardias</h3><table><tr><th>Día</th><th>Fecha</th><th>Equipo</th><th>Roles / adecuaciones</th></tr>${dias.map(d=>{const g=obtenerGuardiaProgramada(d.iso),ch=(cfg.cambios||[]).filter(x=>x.fecha===d.iso&&(!g?.equipo||String(x.equipo)===String(g.equipo)));return`<tr><td>${d.fecha.toLocaleDateString('es-ES',{weekday:'short'})}</td><td>${fmtD(d.iso)}</td><td style="font-size:1.15em">${g?.especial?'📅 Especial':`${EMOJI_EQUIPO[d.eq]} Eq ${d.eq}`}</td><td style="font-size:.82em">${g?botonesTelefonosGuardia(g.nombres):'—'}${ch.length?`<div class="alert amarillo" style="margin-top:4px;padding:5px">🔄 ${ch.length} adecuación(es)</div>`:''}</td></tr>`;}).join('')}</table><div class="btn-group" style="margin-top:10px"><button class="btn amarillo" onclick="abrirCambioGuardia()">🔄 Cambio eventual</button><button class="btn verde" onclick="generarMensajeWhatsApp()">📱 Mensaje WhatsApp</button><button class="btn cyan" onclick="imprimirGuardias()">🖨️ PDF</button></div><div id="g_msgWrap"></div></div>`;
 }
 function abrirCambioGuardia(id){
   const cfg=state.guardiasConfig||{},x=id?(cfg.cambios||[]).find(v=>v.id===id):null;$('cambioGuardiaTitulo').textContent=x?'Editar cambio eventual':'Cambio eventual de guardia';$('cg_editId').value=x?.id||'';$('cg_fecha').value=x?.fecha||$('g_inicio').value||hoyISO();$('cg_equipo').value=String(x?.equipo||$('g_apertura').value||1);$('cg_rol').value=x?.rol||'jefe';$('cg_tipo').value=x?.tipo||'sustitucion';$('cg_original').value=x?.original||'';$('cg_nuevo').value=x?.nuevo||'';$('cg_motivo').value=x?.motivo||'';abrirModal('modalCambioGuardia');
