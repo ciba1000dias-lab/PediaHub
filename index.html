@@ -861,6 +861,14 @@ body.hp-menu-active .hp-menu-trigger .menu-bars i:nth-child(3){top:6px;transform
 }
 
 .hp-logo{width:42px;height:42px;display:flex;align-items:center;justify-content:center;border-radius:13px;background:rgba(255,255,255,.96);padding:4px;box-shadow:0 5px 16px rgba(0,0,0,.18);overflow:hidden;flex-shrink:0}.hp-logo img{width:100%;height:100%;object-fit:contain;border-radius:9px;display:block}.hp-logo-fallback{font-size:24px;line-height:1;color:var(--azul)}
+
+/* Agenda telefónica corporativa */
+.phone-card{display:flex;align-items:center;gap:10px;padding:12px;border:1px solid var(--border);border-radius:14px;background:var(--card);box-shadow:0 5px 16px rgba(15,23,42,.06);margin-bottom:8px}
+.phone-card .avatar{width:40px;height:40px;border-radius:12px;background:linear-gradient(145deg,#e8f7f5,#dbeafe);display:flex;align-items:center;justify-content:center;font-size:20px;flex:0 0 40px}
+.phone-card .body{min-width:0;flex:1}.phone-card .name{font-weight:800}.phone-card .meta{font-size:.74em;color:var(--g500);margin-top:2px}
+.phone-actions{display:flex;gap:5px;flex-shrink:0}.phone-actions a,.phone-actions button{min-width:38px;text-decoration:none}
+.phone-note{font-size:.76em;color:var(--txt2);padding:9px 10px;border-radius:10px;background:var(--g50);border:1px dashed var(--border);margin-top:8px}
+@media(max-width:520px){.phone-actions .phone-label{display:none}}
 </style>
 </head>
 <body>
@@ -1018,6 +1026,19 @@ body.hp-menu-active .hp-menu-trigger .menu-bars i:nth-child(3){top:6px;transform
     </div>
   </div>
   <div id="persLista"></div>
+</section>
+
+<section class="view" id="view-agenda-telefonica">
+  <div class="card cyan">
+    <h3>📞 Agenda telefónica del servicio</h3>
+    <div class="field"><input id="telBuscar" placeholder="🔍 Buscar por nombre" oninput="renderAgendaTelefonica()"></div>
+    <div class="btn-group">
+      <button class="btn verde" onclick="exportarAgendaTelefonica()">📤 Exportar CSV</button>
+      <button class="btn cyan" onclick="abrirModalTelefonoNuevo()">➕ Añadir número</button>
+    </div>
+    <div class="phone-note">Números corporativos asignados al personal del Servicio de Pediatría HPJRM. Los datos se almacenan localmente en este dispositivo.</div>
+  </div>
+  <div id="agendaTelefonicaLista"></div>
 </section>
 
 <section class="view" id="view-pami">
@@ -1265,7 +1286,7 @@ body.hp-menu-active .hp-menu-trigger .menu-bars i:nth-child(3){top:6px;transform
 <section class="view" id="view-impresion"></section>
 
 </main>
-<div class="hp-menu-backdrop" id="hpMenuBackdrop" onclick="toggleHpMore(false)"></div><div class="more-sheet" id="hpMoreSheet" aria-hidden="true"><div style="display:flex;align-items:center;gap:10px;padding:4px 2px 12px;margin-bottom:8px;border-bottom:1px solid var(--border)"><img src="https://i.ibb.co/mF2GJjbd/IMG-20260930-WA0034.jpg" alt="Logo institucional HPJRM" style="width:42px;height:42px;object-fit:contain;border-radius:10px;background:#fff;padding:3px"><div><b>PEDIATRÍA HPJRM</b><div style="font-size:.72em;color:var(--g500)">Identidad institucional</div></div></div><div class="more-grid"><button onclick="hpNav('personal')">👥<br>Personal</button><button onclick="hpNav('pami')">🍼<br>Lactantes</button><button onclick="hpNav('fugas')">🚪<br>Fugas</button><button onclick="hpNav('farmacologia')">💊<br>Farmacología</button><button onclick="hpNav('morbilidad')">📈<br>Morbilidad</button><button onclick="hpNav('config')">⚙️<br>Configuración</button></div></div><nav class="bottom-nav" id="hpBottomNav" aria-label="Navegación principal"><button data-hp="inicio" class="active" onclick="hpNav('inicio')"><span>⌂</span><span>Inicio</span></button><button data-hp="guardias" onclick="hpNav('guardias')"><span>🩺</span><span>Guardia</span></button><button data-hp="auditor" onclick="hpNav('auditor')"><span>📋</span><span>Auditoría</span></button><button data-hp="medicamentos" onclick="hpNav('medicamentos')"><span>💊</span><span>Recursos</span></button><button data-hp="more" onclick="toggleHpMore()"><span>☰</span><span>Más</span></button></nav>
+<div class="hp-menu-backdrop" id="hpMenuBackdrop" onclick="toggleHpMore(false)"></div><div class="more-sheet" id="hpMoreSheet" aria-hidden="true"><div style="display:flex;align-items:center;gap:10px;padding:4px 2px 12px;margin-bottom:8px;border-bottom:1px solid var(--border)"><img src="https://i.ibb.co/mF2GJjbd/IMG-20260930-WA0034.jpg" alt="Logo institucional HPJRM" style="width:42px;height:42px;object-fit:contain;border-radius:10px;background:#fff;padding:3px"><div><b>PEDIATRÍA HPJRM</b><div style="font-size:.72em;color:var(--g500)">Identidad institucional</div></div></div><div class="more-grid"><button onclick="hpNav('personal')">👥<br>Personal</button><button onclick="hpNav('agenda-telefonica')">📞<br>Agenda</button><button onclick="hpNav('pami')">🍼<br>Lactantes</button><button onclick="hpNav('fugas')">🚪<br>Fugas</button><button onclick="hpNav('farmacologia')">💊<br>Farmacología</button><button onclick="hpNav('morbilidad')">📈<br>Morbilidad</button><button onclick="hpNav('config')">⚙️<br>Configuración</button></div></div><nav class="bottom-nav" id="hpBottomNav" aria-label="Navegación principal"><button data-hp="inicio" class="active" onclick="hpNav('inicio')"><span>⌂</span><span>Inicio</span></button><button data-hp="guardias" onclick="hpNav('guardias')"><span>🩺</span><span>Guardia</span></button><button data-hp="auditor" onclick="hpNav('auditor')"><span>📋</span><span>Auditoría</span></button><button data-hp="medicamentos" onclick="hpNav('medicamentos')"><span>💊</span><span>Recursos</span></button><button data-hp="more" onclick="toggleHpMore()"><span>☰</span><span>Más</span></button></nav>
 
 <div id="printArea"></div>
 <div id="toastWrap"></div>
@@ -1475,6 +1496,7 @@ body.hp-menu-active .hp-menu-trigger .menu-bars i:nth-child(3){top:6px;transform
       <input type="hidden" id="pers_editId">
       <div class="field"><label>Nombre y apellidos *</label><input id="pers_nombre"></div>
       <div class="field"><label>RP</label><input id="pers_rp"></div>
+      <div class="field"><label>Teléfono corporativo</label><input id="pers_telefono" type="tel" inputmode="tel" placeholder="+53..."></div>
       <div class="field"><label>Nivel</label>
         <select id="pers_nivel">
           <option>Especialista en Pediatría</option><option>Especialista en MGI</option><option>Especialista en Neonatología</option>
@@ -1624,12 +1646,35 @@ const state = {
   tipoCompartir:null, calendarioFecha:new Date(), config:{},
   personalModalDestino:null, personalModalSeleccion:new Set(),
   medConfig:{familiasVigiladas:[],correo:'docenciahpjrm@gmail.com',autoCorreo:false,ultimaAlerta:''},
+  telefonos:{
+  "Azzeb Águila Alemu": "+5356403292",
+  "Beatriz": "+5354438605",
+  "Dalia Acosta Figueroa": "+5353066265",
+  "Daniela Armas Santos": "+5355051951",
+  "Daylen Gómez González": "+5352088717",
+  "Duvania Alcántara Castaño": "+5354545605",
+  "Janet Rodríguez Hernández": "+5353994677",
+  "Julio César León Campos": "+5354215041",
+  "Katileydi Chamizo Perdomo": "+5354548634",
+  "Lázaro Sergio Álvarez Mesa": "+5353744233",
+  "Meivel Caridad Pérez González": "+5354104372",
+  "Nadia Yanela Matos Sandoval": "+5356685596",
+  "Noel Duarte Izquierdo": "+5354783030",
+  "Rodney Jáuregui Alonso": "+5350861330",
+  "Ruberkys Garcia Vargas": "+5353566522",
+  "Sisy Ruiz Ortega": "+5358365458",
+  "Yadira Días": "+5354098969",
+  "Yailenis de la Caridad Fernández Abrahantes": "+5354110550",
+  "Yelaine Boucourt": "+5358200327",
+  "Yelaine Zambrana": "+5354099343",
+  "Zaydenis": "+5355256340"
+},
   version:'6.2'
 };
 
 const KEYS = {
   main:'hpjrm_hub_v6_2', borrador:'hpjrm_borrador_v6_2', config:'hpjrm_config_v6_2',
-  plantillas:'hpjrm_plantillas_v6_2', personal:'hpjrm_personal_v6_2', pami:'hpjrm_pami_v6_2',
+  plantillas:'hpjrm_plantillas_v6_2', personal:'hpjrm_personal_v6_2', telefonos:'hpjrm_telefonos_v1', pami:'hpjrm_pami_v6_2',
   notas:'hpjrm_notas_v6_2', cronograma:'hpjrm_cronograma_v6_2', fugas:'hpjrm_fugas_v6_2',
   medicamentos:'hpjrm_medicamentos_v6_2'
 };
@@ -1651,6 +1696,9 @@ function cargarDatos(){
     state.guardiasConfig = state.guardiasConfig || {};
     state.guardiasConfig.cambios = state.guardiasConfig.cambios || [];
     state.personal = JSON.parse(localStorage.getItem(KEYS.personal)||'[]');
+    const telGuardados = JSON.parse(localStorage.getItem(KEYS.telefonos)||'{}');
+    state.telefonos = Object.assign({}, state.telefonos||{}, telGuardados);
+    guardarClave(KEYS.telefonos, state.telefonos);
     state.pami = JSON.parse(localStorage.getItem(KEYS.pami)||'[]');
     state.notas = JSON.parse(localStorage.getItem(KEYS.notas)||'[]');
     state.cronograma = JSON.parse(localStorage.getItem(KEYS.cronograma)||'[]');
@@ -1691,6 +1739,7 @@ function navigateTo(v){
   if(v==='historial') renderHistorial();
   if(v==='guardias') renderGuardias();
   if(v==='personal') renderPersonal();
+  if(v==='agenda-telefonica') renderAgendaTelefonica();
   if(v==='pami') renderPAMI();
   if(v==='pami-acta') initPamiActa();
   if(v==='medicamentos') renderMedicamentos();
@@ -2541,6 +2590,33 @@ function imprimirGuardias(){
   const ini=$('g_inicio').value,fin=$('g_fin').value,d1=new Date(ini+'T00:00:00'),d2=new Date(fin+'T00:00:00'),dias=[];for(let d=new Date(d1);d<=d2;d.setDate(d.getDate()+1)){const fecha=d.toISOString().slice(0,10);dias.push({fecha,eq:calcularEquipoPorFecha(fecha,ini)});}
   const html=`<div class="print-doc"><div class="print-header"><div class="h1">${esc(state.config.hospital||'Hospital Pediátrico Docente José Ramón Martínez')}</div><div class="h2">Servicio de Pediatría · Distribución de guardias</div><div class="code">Periodo: ${fmtD(ini)} al ${fmtD(fin)}</div></div><div class="print-section"><h4>CALENDARIO EFECTIVO</h4><table class="print-table"><tr><th>Día</th><th>Fecha</th><th>Equipo</th><th>Guardia</th></tr>${dias.map(d=>{const roles=obtenerRolesGuardia(d.fecha,d.eq),rs=ROLES_EQUIPO.map(r=>(roles[r.k]||[]).length?`${r.ico} ${r.lbl}: ${roles[r.k].join(', ')}`:'').filter(Boolean).join('<br>');return`<tr><td>${new Date(d.fecha+'T00:00:00').toLocaleDateString('es-ES',{weekday:'long'})}</td><td>${fmtD(d.fecha)}</td><td>${EMOJI_EQUIPO[d.eq]} Eq ${d.eq}</td><td>${rs||'—'}</td></tr>`;}).join('')}</table></div><div class="print-footer">Dado en ${esc(state.config.ciudad||'Guanajay')}, a ${fmtD(ini)}</div><div class="print-colophon">HPJRM 👶🏥 🇨🇺 · Guardianes de la salud de los niños artemiseños</div></div>`;$('printArea').innerHTML=html;navigateTo('impresion');setTimeout(()=>window.print(),350);
 }
+function normTelefonoNombre(s){return (s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();}
+function renderAgendaTelefonica(){
+  const q=normTelefonoNombre($('telBuscar')?.value||'');
+  const entries=Object.entries(state.telefonos||{}).filter(([n,t])=>!q||normTelefonoNombre(n).includes(q)).sort((a,b)=>a[0].localeCompare(b[0],'es'));
+  $('agendaTelefonicaLista').innerHTML=entries.length?entries.map(([nombre,tel])=>{
+    const p=state.personal.find(x=>normTelefonoNombre(x.nombre)===normTelefonoNombre(nombre));
+    return `<div class="phone-card"><div class="avatar">${p?.equipo?EMOJI_EQUIPO[p.equipo]:'📞'}</div><div class="body"><div class="name">${esc(nombre)}</div><div class="meta">${p?.nivel?esc(p.nivel)+' · ':''}${esc(tel)}</div></div><div class="phone-actions"><a class="btn sm verde" href="tel:${esc(tel)}" title="Llamar">📞<span class="phone-label"> Llamar</span></a><button class="btn sm cyan" onclick="editarTelefono('${esc(nombre).replace(/'/g,"\\'")}')">✏️</button></div></div>`;
+  }).join(''):'<div class="alert">No hay números corporativos registrados.</div>';
+}
+function abrirModalTelefonoNuevo(){
+  const nombres=Object.keys(state.telefonos||{}).sort((a,b)=>a.localeCompare(b,'es'));
+  const nombre=prompt('Nombre exacto del miembro del personal:', nombres.find(n=>!state.telefonos[n])||'');
+  if(!nombre) return;
+  const tel=prompt('Número corporativo asignado:', state.telefonos[nombre]||'');
+  if(tel!==null){state.telefonos[nombre]=tel.trim();guardarClave(KEYS.telefonos,state.telefonos);renderAgendaTelefonica();toast('Número guardado','ok');}
+}
+function editarTelefono(nombre){
+  const tel=prompt('Número corporativo de '+nombre+':',state.telefonos[nombre]||'');
+  if(tel===null)return;
+  state.telefonos[nombre]=tel.trim();guardarClave(KEYS.telefonos,state.telefonos);renderAgendaTelefonica();toast('Número actualizado','ok');
+}
+function exportarAgendaTelefonica(){
+  const rows=[['Nombre','Teléfono corporativo'],...Object.entries(state.telefonos||{}).sort((a,b)=>a[0].localeCompare(b[0],'es'))];
+  const csv=rows.map(r=>r.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(';')).join('\n');
+  const blob=new Blob([csv],{type:'text/csv;charset=utf-8'}),url=URL.createObjectURL(blob),a=document.createElement('a');
+  a.href=url;a.download='agenda_telefonica_hpjrm.csv';a.click();URL.revokeObjectURL(url);toast('CSV generado','ok');
+}
 function renderPersonal(){
   const q=($('persBuscar').value||'').toLowerCase();
   let list=[...state.personal];
@@ -2558,16 +2634,17 @@ function abrirModalPersonal(){ $('persModalTitulo').textContent='Añadir persona
 function editarPersonal(id){
   const p=state.personal.find(x=>x.id===id); if(!p) return;
   $('persModalTitulo').textContent='Editar personal'; $('pers_editId').value=id;
-  $('pers_nombre').value=p.nombre||''; $('pers_rp').value=p.rp||''; $('pers_nivel').value=p.nivel||'Especialista en Pediatría'; $('pers_equipo').value=p.equipo||'';
+  $('pers_nombre').value=p.nombre||''; $('pers_rp').value=p.rp||''; $('pers_telefono').value=state.telefonos?.[p.nombre]||''; $('pers_nivel').value=p.nivel||'Especialista en Pediatría'; $('pers_equipo').value=p.equipo||'';
   abrirModal('modalPersonalInd');
 }
 function guardarPersonal(){
   const id=$('pers_editId').value; const nombre=$('pers_nombre').value.trim();
   if(!nombre){ toast('Nombre requerido','err'); return; }
   const data={nombre, rp:$('pers_rp').value.trim(), nivel:$('pers_nivel').value, equipo:$('pers_equipo').value};
+  if($('pers_telefono')?.value.trim()) state.telefonos[nombre]=$('pers_telefono').value.trim();
   if(id){ Object.assign(state.personal.find(x=>x.id===id), data); }
   else state.personal.push({id:uuid(),...data});
-  guardarClave(KEYS.personal, state.personal);
+  guardarClave(KEYS.personal, state.personal); guardarClave(KEYS.telefonos,state.telefonos);
   cerrarModal('modalPersonalInd'); renderPersonal(); toast('Personal guardado','ok');
 }
 function eliminarPersonal(id){ confirmar('¿Eliminar este miembro del personal?', ()=>{ state.personal=state.personal.filter(x=>x.id!==id); guardarClave(KEYS.personal,state.personal); renderPersonal(); toast('Eliminado','ok'); }); }
