@@ -4108,5 +4108,185 @@ document.addEventListener('click',function(e){
 });
 document.addEventListener('keydown',function(e){if(e.key==='Escape')toggleHpMore(false)});
 </script>
+
+<style id="hp-service-map-style">
+.hp-service-hero{background:radial-gradient(circle at 100% 0,rgba(8,145,178,.28),transparent 40%),linear-gradient(135deg,#0b3d91,#082a66);color:#fff;border-radius:22px;padding:18px;margin-bottom:12px;position:relative;overflow:hidden;box-shadow:0 12px 30px rgba(8,42,102,.2)}
+.hp-service-hero:after{content:"";position:absolute;width:170px;height:170px;border:1px solid rgba(255,255,255,.16);border-radius:38px;right:-70px;bottom:-80px;transform:rotate(25deg)}
+.hp-service-kicker{font-size:.68em;letter-spacing:1.2px;font-weight:800;opacity:.75}.hp-service-title{font-size:1.55em;font-weight:850;margin-top:5px}.hp-service-sub{font-size:.8em;opacity:.86;margin-top:6px}
+.hp-service-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-top:14px}.hp-service-stat{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.13);border-radius:13px;padding:9px;text-align:center}.hp-service-stat b{display:block;font-size:1.35em}.hp-service-stat span{font-size:.65em;opacity:.78}
+.hp-service-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.hp-service-card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:13px;box-shadow:var(--shadow);margin-bottom:10px}.hp-service-card.full{grid-column:1/-1}.hp-service-card h3{font-size:1em;margin-bottom:9px}.hp-service-card h3 span{margin-right:5px}
+.hp-service-area{border:1px solid var(--border);border-radius:12px;padding:9px;margin:6px 0;background:linear-gradient(135deg,var(--card),var(--g50))}.hp-service-area .top{display:flex;align-items:center;justify-content:space-between;gap:8px}.hp-service-area .name{font-weight:750;font-size:.9em}.hp-service-area .cap{font-size:.7em;color:var(--g500);white-space:nowrap}.hp-service-area .desc{font-size:.74em;color:var(--txt2);margin-top:4px;line-height:1.35}
+.hp-service-person{display:flex;gap:8px;align-items:flex-start;padding:8px 0;border-bottom:1px solid var(--border)}.hp-service-person:last-child{border-bottom:0}.hp-service-person .avatar{width:30px;height:30px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:var(--g100);flex-shrink:0}.hp-service-person .pbody{min-width:0;flex:1}.hp-service-person .pn{font-weight:700;font-size:.82em}.hp-service-person .ps{font-size:.7em;color:var(--g500);line-height:1.35}
+.hp-team{border-left:4px solid var(--azul);padding:8px 10px;margin:6px 0;border-radius:9px;background:var(--g50)}.hp-team.t1{border-left-color:var(--rojo)}.hp-team.t2{border-left-color:var(--amarillo)}.hp-team.t3{border-left-color:var(--azul)}.hp-team.t4{border-left-color:var(--morado)}.hp-team .teamhead{font-weight:800;font-size:.8em}.hp-team .members{font-size:.72em;color:var(--txt2);line-height:1.5;margin-top:3px}
+.hp-service-note{font-size:.72em;color:var(--g500);line-height:1.4}.hp-service-badge{display:inline-flex;align-items:center;padding:4px 8px;border-radius:20px;font-size:.68em;font-weight:700;background:rgba(11,61,145,.09);color:var(--azul);margin:2px 3px 2px 0}.hp-service-badge.warn{background:rgba(245,158,11,.15);color:#b45309}.hp-service-badge.ok{background:rgba(31,138,76,.13);color:var(--verde)}.hp-service-badge.off{background:rgba(200,16,46,.1);color:var(--rojo)}
+.hp-service-action{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}
+@media(max-width:520px){.hp-service-grid{grid-template-columns:1fr}.hp-service-card.full{grid-column:auto}.hp-service-stats{grid-template-columns:repeat(2,1fr)}}
+</style>
+
+<script id="hp-service-map-block">
+(function(){
+  const HP_SERVICE_KEY='hpjrm_service_profile_v1';
+  const profile={
+    version:1,
+    hospital:'Hospital Pediátrico José Ramón Martínez',
+    service:'Servicio de Pediatría HPJRM',
+    chief:'Dr. Rodney Jáuregui Alonso',
+    structure:{
+      physicalCapacity:108,
+      operationalCapacity:94,
+      unavailable:14,
+      areas:[
+        {name:'Miscelánea 51',capacity:'46 camas + 5 cunas',detail:'Cubículo 1: camas 1–5 cerradas por baño roto. Cubículo 2: camas 6–11 febriles intensivos. Cubículo 3: camas 12–17 dengue con signos de alarma. Cubículo 4: cunas 18–23 lactantes febriles. Cubículo 5: camas 24–30 febriles. Cubículo 6: camas 31–33 + cunas 34–35 semi-aislados. Cubículo 7: camas 36–41 febriles. Cubículo 8: camas 42–51, flexible; puede recibir EDA.'},
+        {name:'EDA',capacity:'8 cunas habituales',detail:'Área destinada habitualmente a enfermedad diarreica aguda.'},
+        {name:'Respiratorio 1',capacity:'27 espacios · 23 camas + 4 cunas',detail:'2 camas semi-aisladas. Espacio/cubículo 1–8. Cama 27 cerrada por baño obstruido; 9 espacios no disponibles.'},
+        {name:'Respiratorio 2',capacity:'20 espacios · 18 camas + 2 cunas',detail:'Antigua sala quirúrgica actualmente destinada a atención respiratoria.'},
+        {name:'Cuerpo de Guardia / Emergencia',capacity:'2 camas',detail:'Atención de emergencia.'}
+      ]
+    },
+    staffing:{
+      specialists:[
+        {name:'Dr. Julio César León Campos',role:'Especialista en Pediatría',rp:'',location:'Artemisa',status:'Activo · sin guardias ordinarias',note:'Pasa visita en Miscelánea, camas 6–30, lunes y jueves.'},
+        {name:'Dr. Lázaro Sergio Álvarez Mesa',role:'Especialista en Pediatría · Docencia',rp:'194946',location:'Guanajay',status:'Activo · docencia exclusivamente'},
+        {name:'Dr. Rodney Jáuregui Alonso',role:'Jefe del Servicio · Especialista en Pediatría',rp:'181907',location:'Mariel/Cabañas',status:'Jefe · participa en guardias especiales de fin de año'}
+      ],
+      teams:[
+        {id:1,color:'🔴',name:'Equipo ❤️',leader:'Dalia Acosta Figueroa',members:['Dalia Acosta Figueroa · RP 21000542 · Artemisa','Daylen Gómez González · RP 22001601 · San Antonio','Janet Rodríguez Hernández · RP 112259 · Artemisa','Yadira Días · Guanajay · solo 08:00–16:00','Yelaine Zambrana · residente 2.º año · Mariel/Cabañas'],note:'Yadira mantiene restricción horaria; Yelaine Zambrana es residente.'},
+        {id:2,color:'🟡',name:'Equipo 💛',leader:'Meivel Caridad Pérez González',members:['Azzeb Águila Alemu · Bauta','Meivel Caridad Pérez González · RP 19000253 · Candelaria','Sisy Ruiz Ortega · RP 21000799 · Artemisa · 3 meses de licencia','Noel Duarte Izquierdo · RP 24000367 · residente · Mariel/Cabañas'],note:'Sisy está de licencia y no participa en guardias actuales.'},
+        {id:3,color:'🔵',name:'Equipo 💙',leader:'Yelaine Boucourt',members:['Yelaine Boucourt · Candelaria','Katileydi Chamizo Perdomo · RP M180040 · Candelaria','Beatriz · Pediatría · Guanajay'],note:'Equipo activo.'},
+        {id:4,color:'🟣',name:'Equipo 💜',leader:'Duvania Alcántara Castaño',members:['Duvania Alcántara Castaño · RP 177564 · Candelaria','Zaydenis · Artemisa','Ruberkys Garcia Vargas · RP 105971 · Guanajay · licencia'],note:'Ruberkys está de licencia y no participa actualmente.'}
+      ],
+      residents:[
+        {name:'Nadia Yanela Matos Sandoval',rp:'M26000357',year:'1.º año',location:'Bahía Honda',status:'Embarazada · APS · no participa en guardias actuales'},
+        {name:'Daniela Armas Santos',rp:'24000332',year:'2.º año',location:'Caimito',status:'Licencia sin sueldo · no participa actualmente'},
+        {name:'Noel Duarte Izquierdo',rp:'24000367',year:'Residente',location:'Mariel/Cabañas',status:'Activo · integrado al Equipo 💛'},
+        {name:'Yelaine Zambrana',rp:'',year:'2.º año',location:'Mariel/Cabañas',status:'Activa · integrada al Equipo ❤️'},
+        {name:'Yailenis de la Caridad Fernández Abrahantes',rp:'M22001587',year:'3.º año',location:'Güira de Melena',status:'Rotación por Terapia · no se cuenta para guardias actuales'}
+      ],
+      temporary:'Residentes temporales de MGI/Neonatología pueden incorporarse a guardias 24×72 cuando corresponda. No se registran nombres no confirmados.'
+    },
+    guardRules:{
+      cycle:'💜 → ❤️ → 💛 → 💙 → 💜',
+      pattern:'24×72',
+      fixedTeams:true,
+      automaticSubstitution:false,
+      yadira:'08:00–16:00',
+      note:'PediaHub recomienda; el Jefe decide. No se realizan sustituciones automáticas.'
+    }
+  };
+
+  function hpLoadService(){
+    try{
+      const saved=JSON.parse(localStorage.getItem(HP_SERVICE_KEY)||'null');
+      return saved && saved.version===1 ? Object.assign({},profile,saved) : profile;
+    }catch(e){return profile}
+  }
+  const service=hpLoadService();
+  try{ state.serviceProfile=service; }catch(e){}
+  localStorage.setItem(HP_SERVICE_KEY,JSON.stringify(service));
+
+  function escS(v){return typeof esc==='function'?esc(v==null?'':String(v)):String(v==null?'':v).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
+  function serviceStats(){return {areas:service.structure.areas.length,physical:service.structure.physicalCapacity,operational:service.structure.operationalCapacity,staff:service.staffing.specialists.length+service.staffing.residents.length+service.staffing.teams.reduce((n,t)=>n+t.members.length,0)}}
+  function renderServicio(){
+    const v=document.getElementById('view-servicio'); if(!v)return;
+    const st=serviceStats();
+    v.innerHTML=`
+      <div class="hp-service-hero">
+        <div class="hp-service-kicker">BLOQUE 1 · MAPA OPERATIVO</div>
+        <div class="hp-service-title">Conocer el servicio</div>
+        <div class="hp-service-sub">${escS(service.hospital)} · ${escS(service.service)}</div>
+        <div class="hp-service-stats">
+          <div class="hp-service-stat"><b>${st.areas}</b><span>ÁREAS</span></div>
+          <div class="hp-service-stat"><b>${st.physical}</b><span>ESPACIOS FÍSICOS</span></div>
+          <div class="hp-service-stat"><b>${st.operational}</b><span>OPERACIONALES</span></div>
+          <div class="hp-service-stat"><b>${st.physical-st.operational}</b><span>NO DISPONIBLES</span></div>
+        </div>
+      </div>
+
+      <div class="hp-service-grid">
+        <div class="hp-service-card full">
+          <h3><span>🏥</span>Estructura física y capacidad</h3>
+          ${service.structure.areas.map(a=>`<div class="hp-service-area"><div class="top"><div class="name">${escS(a.name)}</div><div class="cap">${escS(a.capacity)}</div></div><div class="desc">${escS(a.detail)}</div></div>`).join('')}
+          <div style="margin-top:9px"><span class="hp-service-badge ok">✓ Capacidad operacional: ${st.operational}</span><span class="hp-service-badge off">⚠ No disponibles: ${st.physical-st.operational}</span><span class="hp-service-badge">Capacidad física: ${st.physical}</span></div>
+        </div>
+
+        <div class="hp-service-card">
+          <h3><span>👑</span>Especialistas y dirección</h3>
+          ${service.staffing.specialists.map(p=>`<div class="hp-service-person"><div class="avatar">👨‍⚕️</div><div class="pbody"><div class="pn">${escS(p.name)}</div><div class="ps">${escS(p.role)}${p.rp?' · RP '+escS(p.rp):''}<br>${escS(p.location)} · ${escS(p.status)}${p.note?'<br>'+escS(p.note):''}</div></div></div>`).join('')}
+        </div>
+
+        <div class="hp-service-card">
+          <h3><span>🎓</span>Residentes</h3>
+          ${service.staffing.residents.map(p=>`<div class="hp-service-person"><div class="avatar">🎓</div><div class="pbody"><div class="pn">${escS(p.name)}</div><div class="ps">${escS(p.year)}${p.rp?' · RP '+escS(p.rp):''}${p.location?' · '+escS(p.location):''}<br>${escS(p.status)}</div></div></div>`).join('')}
+        </div>
+
+        <div class="hp-service-card full">
+          <h3><span>👥</span>Equipos de guardia</h3>
+          ${service.staffing.teams.map(t=>`<div class="hp-team t${t.id}"><div class="teamhead">${t.color} ${escS(t.name)} · Jefe: ${escS(t.leader)}</div><div class="members">${t.members.map(escS).join(' · ')}</div><div class="hp-service-note" style="margin-top:4px">${escS(t.note)}</div></div>`).join('')}
+          <div class="hp-service-note" style="margin-top:8px"><b>Personal temporal:</b> ${escS(service.staffing.temporary)}</div>
+        </div>
+
+        <div class="hp-service-card full">
+          <h3><span>🩺</span>Reglas operativas de guardia</h3>
+          <div><span class="hp-service-badge">24×72</span><span class="hp-service-badge">Ciclo ${escS(service.guardRules.cycle)}</span><span class="hp-service-badge">Equipos fijos</span><span class="hp-service-badge warn">Sin sustitución automática</span><span class="hp-service-badge warn">Yadira 08:00–16:00</span></div>
+          <p class="hp-service-note" style="margin:8px 0 0">${escS(service.guardRules.note)}</p>
+        </div>
+      </div>
+
+      <div class="hp-service-card">
+        <h3><span>🧠</span>¿Para qué sirve este mapa?</h3>
+        <div class="hp-service-note">Este bloque no pretende mostrar la actividad del día todavía. Define el contexto estructural que los demás módulos utilizarán para interpretar los datos reales: capacidad, áreas, personal, equipos y restricciones.</div>
+        <div class="hp-service-action">
+          <button class="btn azul" onclick="navigateTo('guardias')">🩺 Ver guardias</button>
+          <button class="btn cyan" onclick="navigateTo('personal')">👥 Ver personal</button>
+        </div>
+      </div>`;
+  }
+
+  function addServiceView(){
+    if(!document.getElementById('view-servicio')){
+      const v=document.createElement('section'); v.className='view'; v.id='view-servicio'; document.getElementById('app').appendChild(v);
+    }
+    const sheet=document.getElementById('hpMoreSheet');
+    if(sheet && !sheet.querySelector('[data-service-nav]')){
+      const grid=sheet.querySelector('.more-grid');
+      if(grid){ const b=document.createElement('button'); b.setAttribute('data-service-nav','1'); b.setAttribute('onclick',"hpNav('servicio')"); b.innerHTML='🏥<br>Servicio'; grid.insertBefore(b,grid.firstChild); }
+    }
+    const modules=document.querySelector('.hp-module-grid');
+    if(modules && !modules.querySelector('[data-service-module]')){
+      const b=document.createElement('button'); b.setAttribute('data-service-module','1'); b.setAttribute('onclick',"navigateTo('servicio')"); b.innerHTML='🏥<span>Servicio</span>'; modules.insertBefore(b,modules.firstChild);
+    }
+  }
+
+  const oldHpNav=window.hpNav;
+  window.hpNav=function(view){ if(view==='servicio'){ toggleHpMore(false); navigateTo('servicio'); return; } return oldHpNav?oldHpNav(view):navigateTo(view); };
+  const oldNavigate=window.navigateTo;
+  window.navigateTo=function(v){ if(v==='servicio'){ document.querySelectorAll('.view').forEach(x=>x.classList.remove('active')); const el=document.getElementById('view-servicio'); if(el)el.classList.add('active'); document.querySelectorAll('.dock-item').forEach(b=>b.classList.toggle('active',false)); window.scrollTo({top:0,behavior:'smooth'}); renderServicio(); return; } return oldNavigate(v); };
+
+  document.addEventListener('DOMContentLoaded',function(){
+    addServiceView();
+    try{
+      const existing=JSON.parse(localStorage.getItem(KEYS.personal)||'[]');
+      const roster=[
+        ['Dr. Julio César León Campos','','Especialista en Pediatría',''],
+        ['Dr. Lázaro Sergio Álvarez Mesa','194946','Especialista en Pediatría · Docencia',''],
+        ['Dr. Rodney Jáuregui Alonso','181907','Jefe del Servicio · Especialista en Pediatría',''],
+        ['Azzeb Águila Alemu','','Pediatría','2'],['Meivel Caridad Pérez González','19000253','Pediatría · Líder de equipo','2'],['Sisy Ruiz Ortega','21000799','Pediatría · Licencia','2'],['Noel Duarte Izquierdo','24000367','Residente · 2.º año','2'],
+        ['Yelaine Boucourt','','Pediatría · Líder de equipo','3'],['Katileydi Chamizo Perdomo','M180040','Pediatría','3'],['Beatriz','','Pediatría','3'],
+        ['Dalia Acosta Figueroa','21000542','Pediatría · Líder de equipo','1'],['Daylen Gómez González','22001601','Pediatría','1'],['Janet Rodríguez Hernández','112259','Pediatría','1'],['Yadira Días','','Pediatría · Restricción 08:00–16:00','1'],['Yelaine Zambrana','','Residente · 2.º año','1'],
+        ['Duvania Alcántara Castaño','177564','Pediatría · Líder de equipo','4'],['Zaydenis','','Pediatría','4'],['Ruberkys Garcia Vargas','105971','Pediatría · Licencia','4'],
+        ['Nadia Yanela Matos Sandoval','M26000357','Residente · 1.º año · APS',''],['Daniela Armas Santos','24000332','Residente · 2.º año · Licencia sin sueldo',''],['Yailenis de la Caridad Fernández Abrahantes','M22001587','Residente · 3.º año · Terapia','']
+      ];
+      const norm=x=>(x||'').trim().toLowerCase();
+      roster.forEach(([nombre,rp,nivel,equipo])=>{
+        if(!existing.some(p=>norm(p.nombre)===norm(nombre))){
+          existing.push({id:(typeof uuid==='function'?uuid():Date.now()+Math.random()),nombre,rp,nivel,equipo});
+        }
+      });
+      localStorage.setItem(KEYS.personal,JSON.stringify(existing));
+      try{state.personal=existing}catch(e){}
+    }catch(e){}
+  });
+})();
+</script>
 </body>
 </html>
