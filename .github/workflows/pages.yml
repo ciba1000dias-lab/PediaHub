@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - "dev/optimizacion-apk"
+      - "main"
   workflow_dispatch:
 
 permissions:
@@ -32,6 +33,7 @@ jobs:
         uses: actions/upload-pages-artifact@v3
         with:
           path: .
+
 
       - name: Deploy
         id: deployment
