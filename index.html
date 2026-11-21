@@ -224,6 +224,38 @@ html[data-theme="dark"] .dock-item .lbl{color:#c4cbd6}
 .print-firma .f{text-align:center;flex:1}
 .print-firma .line{border-top:1px solid #333;margin-bottom:3px;padding-top:2px}
 
+/* PAMI · mejoras visuales */
+#view-pami .pami-toolbar{display:flex;flex-wrap:wrap;gap:7px;align-items:center}
+#view-pami .pami-list-card{border-top-width:4px;box-shadow:0 5px 18px rgba(15,23,42,.07)}
+#view-pami .linea-head{min-height:58px}
+#view-pami .lac-main{display:flex;align-items:center;gap:9px;min-width:0}
+#view-pami .lac-avatar{width:38px;height:38px;flex:0 0 38px;border-radius:12px;background:linear-gradient(145deg,#fce7f3,#dbeafe);display:flex;align-items:center;justify-content:center;font-size:21px}
+#view-pami .lac-meta{min-width:0;flex:1}
+#view-pami .lac-meta .name{font-weight:750;font-size:.92em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#view-pami .lac-meta .sub{font-size:.74em;color:var(--g500);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#view-pami .lac-badges{display:flex;flex-wrap:wrap;gap:4px;margin-top:4px}
+#view-pami .lac-actions{display:flex;gap:4px;flex-shrink:0}
+#view-pami .lac-actions .btn{min-width:34px}
+#view-pami .lac-form-note{padding:9px 10px;border-radius:10px;background:var(--g50);border:1px dashed var(--border);font-size:.78em;color:var(--txt2);margin-bottom:10px}
+.pami-print-canvas{width:7.55in;min-height:5.05in;margin:0;padding:.25in .30in;background:#fff;color:#111827;border:1px solid #d8dee8;font-family:Arial,Helvetica,sans-serif;font-size:8pt;line-height:1.2;overflow:hidden}
+.pami-print-head{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;border-bottom:2px solid #c8102e;padding-bottom:6px;margin-bottom:7px}
+.pami-print-brand{font-size:8pt;font-weight:800;color:#0b3d91;letter-spacing:.2px}
+.pami-print-title{font-size:11pt;font-weight:800;color:#111827}
+.pami-print-sub{font-size:7.2pt;color:#5b6472;margin-top:2px}
+.pami-print-code{font-size:6.8pt;color:#475569;font-family:monospace;text-align:right}
+.pami-print-grid{display:grid;grid-template-columns:1.45fr 1fr 1fr;gap:5px;margin-bottom:6px}
+.pami-print-box{border:1px solid #d8dee8;border-radius:5px;padding:5px 6px;background:#f8fafc}
+.pami-print-box .k{display:block;font-size:6.7pt;color:#64748b;text-transform:uppercase;font-weight:700;letter-spacing:.3px}
+.pami-print-box .v{display:block;font-size:8.2pt;font-weight:700;margin-top:2px}
+.pami-print-section{margin-top:6px}
+.pami-print-section h4{margin:0 0 3px;padding:3px 6px;background:#eef2f7;color:#0b3d91;border-left:3px solid #c8102e;font-size:7.6pt}
+.pami-print-table{width:100%;border-collapse:collapse;font-size:7.2pt}
+.pami-print-table th,.pami-print-table td{border:1px solid #cbd5e1;padding:3px 4px;vertical-align:top;text-align:left}
+.pami-print-table th{background:#f1f5f9;font-weight:700}
+.pami-print-footer{margin-top:8px;padding-top:5px;border-top:1px solid #cbd5e1;display:flex;justify-content:space-between;gap:10px;font-size:7pt;color:#475569}
+.pami-print-firma{text-align:center;min-width:180px}
+@media print{.pami-print-canvas{box-shadow:none;border:none;width:7.55in;min-height:5.05in}}
+
 /* Auditor de HC · interfaz */
 #view-auditor .progress-sticky{background:rgba(255,255,255,.94);backdrop-filter:blur(12px);border-radius:0 0 16px 16px;padding:10px 12px;box-shadow:0 4px 18px rgba(0,0,0,.08)}
 #view-auditor .pasos{gap:5px}
@@ -386,7 +418,7 @@ html[data-theme="dark"] .dock-item .lbl{color:#c4cbd6}
       <div class="field"><label>Desde</label><input type="date" id="pamiDesde" onchange="renderPAMI()"></div>
       <div class="field"><label>Hasta</label><input type="date" id="pamiHasta" onchange="renderPAMI()"></div>
     </div>
-    <div class="btn-group">
+    <div class="btn-group pami-toolbar">
       <button class="btn rosa" onclick="abrirModalLactante()">➕ Nuevo lactante</button>
       <button class="btn sm gris" onclick="pamiFiltro('hoy')">Hoy</button>
       <button class="btn sm gris" onclick="pamiFiltro('7d')">7 días</button>
@@ -750,6 +782,7 @@ html[data-theme="dark"] .dock-item .lbl{color:#c4cbd6}
   <div class="modal wide">
     <div class="modal-head">🍼 <span id="lacModalTitulo">Nuevo lactante</span> <button class="x" onclick="cerrarModal('modalLactante')">✕</button></div>
     <div class="modal-body">
+      <div class="lac-form-note">Registro asistencial de PAMI. Los datos se guardan localmente en el dispositivo. Los campos automáticos se calculan a partir de la fecha de nacimiento.</div>
       <input type="hidden" id="lac_editId">
       <div class="field"><label>Nombre y apellidos *</label><input id="lac_nombre"></div>
       <div class="grid2">
@@ -2061,8 +2094,11 @@ function renderLineaLactante(l){
         <div style="font-weight:600;font-size:.9em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(l.nombre)}</div>
         <div style="font-size:.75em;color:var(--g500)">HC ${esc(l.hc||'—')} · ${esc(edad)} · ${ub}</div>
       </div>
-      <button class="btn sm cyan" onclick="event.stopPropagation();editarLactante('${l.id}')">✏️</button>
-      <button class="btn sm rojo" onclick="event.stopPropagation();eliminarLactante('${l.id}')">🗑️</button>
+      <div class="lac-actions">
+        <button class="btn sm morado" title="Emitir documento" onclick="event.stopPropagation();generarDocumentoLactante('${l.id}')">📄</button>
+        <button class="btn sm cyan" title="Editar" onclick="event.stopPropagation();editarLactante('${l.id}')">✏️</button>
+      <button class="btn sm rojo" title="Eliminar" onclick="event.stopPropagation();eliminarLactante('${l.id}')">🗑️</button>
+      </div>
     </div>
     <div class="linea-body">
       <div class="r"><div class="k">Nacimiento:</div><div>${fmtD(l.fNac)}</div></div>
@@ -2153,6 +2189,26 @@ function editarLactante(id){
   }
 }
 function eliminarLactante(id){ confirmar('¿Eliminar este lactante?', ()=>{ state.pami=state.pami.filter(x=>x.id!==id); guardarClave(KEYS.pami,state.pami); renderPAMI(); toast('Eliminado','ok'); }); }
+function generarDocumentoLactante(id){
+  const l=state.pami.find(x=>x.id===id); if(!l) return;
+  const edad=calcularEdadTexto(l.fNac);
+  const codigo='PAMI-'+(l.hc||'SIN-HC')+'-'+(l.fIngreso||hoyISO()).replace(/-/g,'');
+  const box=(k,v)=>'<div class="pami-print-box"><span class="k">'+k+'</span><span class="v">'+esc(v||'—')+'</span></div>';
+  const html='<div class="pami-print-canvas">'+
+    '<div class="pami-print-head"><div><div class="pami-print-brand">'+esc(state.config.hospital||'Hospital Pediátrico Docente José Ramón Martínez')+'</div>'+
+    '<div class="pami-print-title">Registro de Lactante · PAMI</div><div class="pami-print-sub">Servicio de Pediatría · Documento individual</div></div>'+
+    '<div class="pami-print-code">'+esc(codigo)+'<br>'+fmtD(hoyISO())+'</div></div>'+
+    '<div class="pami-print-grid">'+box('Nombre y apellidos',l.nombre)+box('N.º HC',l.hc)+box('Edad',edad)+'</div>'+
+    '<div class="pami-print-section"><h4>DATOS DE INGRESO</h4><table class="pami-print-table"><tr><th>Nacimiento</th><th>Ingreso</th><th>Municipio</th><th>Ubicación</th></tr>'+
+    '<tr><td>'+fmtD(l.fNac)+'</td><td>'+fmtD(l.fIngreso)+'</td><td>'+esc(l.municipio||'—')+'</td><td>'+esc(l.sala||'—')+' / '+esc(l.cama||'—')+'</td></tr></table></div>'+
+    '<div class="pami-print-section"><h4>SITUACIÓN CLÍNICA REGISTRADA</h4><table class="pami-print-table"><tr><th>Diagnóstico de ingreso</th><th>Variación diagnóstica</th></tr>'+
+    '<tr><td>'+esc(l.dx||'—')+'</td><td>'+(l.varDx==='si'?esc(l.nuevoDx||'Sí, sin especificar'):'No')+'</td></tr></table></div>'+
+    '<div class="pami-print-section"><h4>DATOS COMPLEMENTARIOS</h4><table class="pami-print-table"><tr><th>Dirección</th><th>Observaciones</th></tr>'+
+    '<tr><td>'+esc(l.dir||'—')+'</td><td>'+esc(l.obs||'—')+'</td></tr></table></div>'+
+    '<div class="pami-print-footer"><div>Documento generado desde PediaHub · Datos almacenados localmente.</div>'+
+    '<div class="pami-print-firma"><div style="border-top:1px solid #475569;padding-top:2px">'+esc(state.config.jefe||'Dr. Rodney Jáuregui Alonso')+'<br>'+esc(state.config.cargo||'Jefe del Servicio de Pediatría')+'</div></div></div></div>';
+  $('printArea').innerHTML=html; navigateTo('impresion'); setTimeout(()=>window.print(),350);
+}
 function exportarPamiCSV(){
   const rows=[['Nombre','HC','Nacimiento','Edad','Ingreso','Municipio','Dirección','Sala','Cama','Dx ingreso','Var Dx','Nuevo Dx','Observaciones']];
   state.pami.forEach(l=>rows.push([l.nombre,l.hc,l.fNac,calcularEdadTexto(l.fNac),l.fIngreso,l.municipio,l.dir,l.sala,l.cama,l.dx,l.varDx,l.nuevoDx,l.obs]));
@@ -2174,29 +2230,25 @@ function initPamiActa(){
 function generarActaPAMI(){
   const d1=$('pa_desde').value, d2=$('pa_hasta').value;
   const list=state.pami.filter(l=>(l.fIngreso||'')>=d1 && (l.fIngreso||'')<=d2);
-  const porMun={};
-  list.forEach(l=>{ const m=l.municipio||'Sin municipio'; porMun[m]=(porMun[m]||0)+1; });
-  const html=`<div class="print-doc">
-    <div class="print-header"><div class="h1">${esc(state.config.hospital||'Hospital Pediátrico Docente José Ramón Martínez')}</div>
-    <div class="h2">Servicio de Pediatría · PAMI · 👶🏥 🇨🇺</div>
-    <div class="h2" style="font-weight:700">ACTA SEMANAL DE PAMI</div>
-    <div class="code">${generarNumeroActa($('pa_fecha').value)} · Período: ${fmtD(d1)} al ${fmtD(d2)} · Corte: ${esc($('pa_hora').value)}</div></div>
-    <div class="print-section"><h4>ANÁLISIS ESTADÍSTICO</h4>
-      <div class="print-mini"><b>Total de lactantes:</b> ${list.length}</div>
-      <div class="print-mini"><b>Menores de 1 mes:</b> ${list.filter(l=>calcularEdadMeses(l.fNac)<1).length} · <b>&lt;3 meses:</b> ${list.filter(l=>calcularEdadMeses(l.fNac)<3).length} · <b>&lt;6 meses:</b> ${list.filter(l=>calcularEdadMeses(l.fNac)<6).length}</div>
-      <div class="print-mini"><b>Distribución por municipio:</b> ${Object.entries(porMun).map(([k,v])=>`${esc(k)}: ${v}`).join(' · ')||'—'}</div>
-    </div>
-    <div class="print-section"><h4>LISTADO DE LACTANTES</h4>
-      <table class="print-table"><tr><th>Nombre</th><th>HC</th><th>Edad</th><th>Ingreso</th><th>Municipio</th><th>Dx</th><th>Ubicación</th></tr>
-      ${list.map(l=>`<tr><td>${esc(l.nombre)}</td><td>${esc(l.hc)}</td><td>${esc(calcularEdadTexto(l.fNac))}</td><td>${fmtD(l.fIngreso)}</td><td>${esc(l.municipio||'—')}</td><td>${esc(l.dx)}</td><td>${esc(l.sala||'—')}/${esc(l.cama||'—')}</td></tr>`).join('')||'<tr><td colspan="7">Sin lactantes en el período</td></tr>'}
-      </table>
-    </div>
-    <div class="print-footer">
-      <div class="print-firma"><div class="f"><div class="line"></div>${esc(state.config.jefe||'Dr. Rodney Jáuregui Alonso')}<br><span style="font-size:7.5pt">${esc(state.config.cargo||'Jefe del Servicio de Pediatría')}</span></div></div>
-      <div style="margin-top:10px">Dado en ${esc($('pa_lugar').value)}, a ${fmtD($('pa_fecha').value)}</div>
-    </div>
-    <div class="print-colophon">HPJRM 👶🏥 🇨🇺 · Guardianes de la salud de los niños artemiseños</div>
-  </div>`;
+  const porMun={}; list.forEach(l=>{ const m=l.municipio||'Sin municipio'; porMun[m]=(porMun[m]||0)+1; });
+  const menores1=list.filter(l=>calcularEdadMeses(l.fNac)<1).length;
+  const menores3=list.filter(l=>calcularEdadMeses(l.fNac)<3).length;
+  const menores6=list.filter(l=>calcularEdadMeses(l.fNac)<6).length;
+  const filas=list.map(l=>'<tr><td>'+esc(l.nombre)+'</td><td>'+esc(l.hc||'—')+'</td><td>'+esc(calcularEdadTexto(l.fNac))+'</td><td>'+fmtD(l.fIngreso)+'</td><td>'+esc(l.municipio||'—')+'</td><td>'+esc(l.dx||'—')+'</td><td>'+esc(l.sala||'—')+'/'+esc(l.cama||'—')+'</td></tr>').join('');
+  const html='<div class="pami-print-canvas">'+
+    '<div class="pami-print-head"><div><div class="pami-print-brand">'+esc(state.config.hospital||'Hospital Pediátrico Docente José Ramón Martínez')+'</div>'+
+    '<div class="pami-print-title">ACTA DE PAMI · LACTANTES</div><div class="pami-print-sub">Servicio de Pediatría · Resumen del período seleccionado</div></div>'+
+    '<div class="pami-print-code">'+esc(generarNumeroActa($('pa_fecha').value))+'<br>'+fmtD($('pa_fecha').value)+'</div></div>'+
+    '<div class="pami-print-grid"><div class="pami-print-box"><span class="k">Período</span><span class="v">'+fmtD(d1)+' — '+fmtD(d2)+'</span></div>'+
+    '<div class="pami-print-box"><span class="k">Total lactantes</span><span class="v">'+list.length+'</span></div>'+
+    '<div class="pami-print-box"><span class="k">Corte</span><span class="v">'+esc($('pa_hora').value||'—')+'</span></div></div>'+
+    '<div class="pami-print-section"><h4>RESUMEN</h4><table class="pami-print-table"><tr><th>&lt;1 mes</th><th>&lt;3 meses</th><th>&lt;6 meses</th><th>Municipios representados</th></tr>'+
+    '<tr><td>'+menores1+'</td><td>'+menores3+'</td><td>'+menores6+'</td><td>'+Object.keys(porMun).length+'</td></tr></table>'+
+    '<div style="font-size:7pt;margin-top:3px"><b>Distribución por municipio:</b> '+(Object.entries(porMun).map(([k,v])=>esc(k)+': '+v).join(' · ')||'—')+'</div></div>'+
+    '<div class="pami-print-section"><h4>LISTADO DE LACTANTES</h4><table class="pami-print-table"><tr><th>Nombre</th><th>HC</th><th>Edad</th><th>Ingreso</th><th>Municipio</th><th>Dx</th><th>Ubicación</th></tr>'+
+    (filas||'<tr><td colspan="7">Sin lactantes en el período</td></tr>')+'</table></div>'+
+    '<div class="pami-print-footer"><div>Dado en '+esc($('pa_lugar').value||'—')+', a '+fmtD($('pa_fecha').value)+'</div>'+
+    '<div class="pami-print-firma"><div style="border-top:1px solid #475569;padding-top:2px">'+esc(state.config.jefe||'Dr. Rodney Jáuregui Alonso')+'<br>'+esc(state.config.cargo||'Jefe del Servicio de Pediatría')+'</div></div></div></div>';
   $('printArea').innerHTML=html; navigateTo('impresion'); setTimeout(()=>window.print(),350);
 }
 
@@ -3243,7 +3295,7 @@ Object.assign(window, {
   renderGuardias, eqSet, agregarFlotante, eliminarFlotante, flSet, generarMensajeWhatsApp, copiarTexto, imprimirGuardias,
   renderPersonal, abrirModalPersonal, editarPersonal, guardarPersonal, eliminarPersonal, importarPersonalDesdeEquipos, borrarPersonalTodo,
   abrirSelectorPersonal, renderMPLista, mpToggleIdx, mpTodos, mpNinguno, mpAceptar,
-  renderPAMI, pamiFiltro, abrirModalLactante, lacCalcHC, lacCalcEdad, lacVarDx, lacCargarCamas, guardarLactante, editarLactante, eliminarLactante, exportarPamiCSV,
+  renderPAMI, pamiFiltro, abrirModalLactante, generarDocumentoLactante, lacCalcHC, lacCalcEdad, lacVarDx, lacCargarCamas, guardarLactante, editarLactante, eliminarLactante, exportarPamiCSV,
   initPamiActa, generarActaPAMI,
   tabMedicamento, renderMedicamentos, abrirModalMedicamento, editarMedicamento, guardarMedicamento, eliminarMedicamento, exportarMedicamentosCSV,
   renderFugas, abrirModalFuga, editarFuga, guardarFuga, eliminarFuga, exportarFugasCSV, generarReporteFugas,
