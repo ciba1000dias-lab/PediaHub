@@ -1014,7 +1014,7 @@ const EMOJI_EQUIPO = {1:'🔴',2:'🟡',3:'🔵',4:'🟣'};
 
 const state = {
   revisiones:[], guardiasConfig:null, personal:[], pami:[], notas:[],
-  cronograma:[], fugas:[], medicamentos:[], actasFarmacologia:[],
+  cronograma:[], fugas:[], medicamentos:[], actasFarmacologia:[], registrosFarmacologiaDiarios:[],
   actasCasos:[], actasMortalidad:[], actasMorbilidad:[], actasCalidad:[],
   actasReunion:[], actasPAMI:[], plantillas:[], borrador:null,
   revisionActualId:null, revisionActual:null,
@@ -1056,6 +1056,7 @@ function cargarDatos(){
     state.fugas = JSON.parse(localStorage.getItem(KEYS.fugas)||'[]');
     state.medicamentos = JSON.parse(localStorage.getItem(KEYS.medicamentos)||'[]');
     state.medConfig = JSON.parse(localStorage.getItem('hpjrm_med_config_v6_2')||'null') || {familiasVigiladas:[],correo:'docenciahpjrm@gmail.com',autoCorreo:false,ultimaAlerta:''};
+    state.registrosFarmacologiaDiarios = JSON.parse(localStorage.getItem('hpjrm_farmacologia_diaria_v1')||'[]');
     state.plantillas = JSON.parse(localStorage.getItem(KEYS.plantillas)||'[]');
     state.borrador = JSON.parse(localStorage.getItem(KEYS.borrador)||'null');
     state.config = JSON.parse(localStorage.getItem(KEYS.config)||'{}');
@@ -1071,6 +1072,7 @@ function guardarDatos(){
       actasPAMI:state.actasPAMI
     }));
   }catch(e){ toast('Error al guardar','err'); }
+  try{ localStorage.setItem('hpjrm_farmacologia_diaria_v1', JSON.stringify(state.registrosFarmacologiaDiarios||[])); }catch(e){ console.warn('Error guardando farmacología diaria',e); }
 }
 function guardarClave(k, v){
   try{ localStorage.setItem(k, JSON.stringify(v)); }
@@ -2450,45 +2452,86 @@ function renderFarmacologia(){
   const prox=proximaFecha(getSegundoMartes);
   $('fmProx').textContent = prox? fmtD(prox.toISOString().slice(0,10)) : '—';
   const html=`<div class="card verde">
-    <h3>📝 Nueva acta / acta en curso</h3>
+    <h3>📋 Registro diario · Farmacología</h3>
+    <div class="alert" style="margin-bottom:8px">Registro operativo del día. La fecha identifica cada actividad. No sustituye los datos reales del servicio ni genera hallazgos automáticamente.</div>
+    <div class="row">
+      <div class="field"><label>📅 Fecha del registro</label><input type="date" id="fm_diario_fecha" value="${hoyISO()}"></div>
+      <div class="field"><label>Responsable</label><input id="fm_diario_resp" value="${esc(state.config.jefe||'Dr. Rodney Jáuregui Alonso')}"></div>
+    </div>
+    <div class="section-title" style="font-size:.92em">💊 Comité de Farmacología · actividad del día</div>
+    <div class="field"><label>Situación de los medicamentos / cuadro básico</label><textarea id="fm_d_med" placeholder="Disponibilidad, faltantes relevantes, presentaciones no disponibles, alternativas..."></textarea></div>
+    <div class="field"><label>Problemas farmacoterapéuticos identificados</label><textarea id="fm_d_problemas" placeholder="Problemas reales detectados durante la actividad asistencial..."></textarea></div>
+    <div class="field"><label>Intervenciones o decisiones realizadas</label><textarea id="fm_d_intervenciones" placeholder="Cambios, recomendaciones o decisiones tomadas por el servicio..."></textarea></div>
+    <div class="section-title" style="font-size:.92em">🦠 Subcomité de Antimicrobianos · revisión diaria</div>
+    <div class="grid2">
+      <div class="field"><label>Casos antimicrobianos revisados</label><input type="number" min="0" id="fm_d_casos" value="0"></div>
+      <div class="field"><label>Casos con intervención</label><input type="number" min="0" id="fm_d_interv" value="0"></div>
+    </div>
+    <div class="field"><label>Uso adecuado / oportunidad de tratamiento</label><textarea id="fm_d_uso" placeholder="Indicación, selección, dosis, intervalo, vía, duración, ajuste, desescalada..."></textarea></div>
+    <div class="field"><label>Cultivos / resultados que modificaron conducta</label><textarea id="fm_d_cultivos" placeholder="Solo datos efectivamente disponibles ese día."></textarea></div>
+    <div class="field"><label>RAM o eventos relacionados con antimicrobianos</label><textarea id="fm_d_ram" placeholder="Registrar solo si fueron identificados o reportados."></textarea></div>
+    <div class="field"><label>Acuerdos / pendientes para seguimiento</label><textarea id="fm_d_acuerdos"></textarea></div>
+    <div class="btn-group">
+      <button class="btn verde" onclick="guardarRegistroFarmacologiaDiario()">💾 Guardar registro del día</button>
+      <button class="btn sm cyan" onclick="generarReporteFarmacologiaDiario()">📄 Emitir documento</button>
+    </div>
+  </div>
+  <div class="card">
+    <h3>📚 Registros diarios anteriores</h3>
+    <div id="fm_diario_hist"></div>
+  </div>
+  <div class="card verde">
+    <h3>📝 Acta formal del Comité de Farmacología</h3>
+    <div style="font-size:.82em;color:var(--txt2);margin-bottom:8px">Se conserva para la sesión formal mensual; no reemplaza el registro diario.</div>
     <div class="row">
       <div class="field"><label>Fecha</label><input type="date" id="fm_fecha" value="${hoyISO()}"></div>
       <div class="field"><label>Hora</label><input type="time" id="fm_hora" value="08:00"></div>
     </div>
     <div class="field"><label>Lugar</label><input id="fm_lugar" value="Sala de reuniones del Servicio de Pediatría"></div>
-    <div class="field"><label>Participantes</label>
-      <textarea id="fm_participantes" placeholder="Separar por coma o seleccionar del personal"></textarea>
-      <button class="btn sm cyan" style="margin-top:4px" onclick="abrirSelectorPersonal('fm_participantes')">👥 Seleccionar</button>
-    </div>
+    <div class="field"><label>Participantes</label><textarea id="fm_participantes" placeholder="Separar por coma o seleccionar del personal"></textarea><button class="btn sm cyan" style="margin-top:4px" onclick="abrirSelectorPersonal('fm_participantes')">👥 Seleccionar</button></div>
     <div class="field"><label>Orden del día</label><textarea id="fm_orden"></textarea></div>
     <div class="field"><label>Cumplimiento de política antimicrobiana</label><textarea id="fm_politica"></textarea></div>
     <div class="field"><label>Cambios terapéuticos oportunos o no desarrollados</label><textarea id="fm_cambios"></textarea></div>
     <div class="field"><label>Disponibilidad de medicamentos del cuadro básico</label><textarea id="fm_disponibilidad"></textarea></div>
-    <div class="section-title" style="font-size:.95em">🩺 Casos discutidos (mínimo 10)</div>
-    <div id="fm_casosWrap"></div>
-    <button class="btn cyan block" onclick="fmAgregarCaso()">➕ Añadir caso</button>
-    <div class="section-title" style="font-size:.95em">⚠️ Tarjetas RAM</div>
-    <div id="fm_ramWrap"></div>
-    <button class="btn amarillo block" onclick="fmAgregarRAM()">➕ Añadir RAM</button>
-    <div class="section-title" style="font-size:.95em">📅 Subcomité de Antimicrobianos</div>
-    <div id="fm_subWrap"></div>
-    <button class="btn morado block" onclick="fmAgregarSub()">➕ Añadir sesión</button>
-    <div class="section-title" style="font-size:.95em">📝 Acuerdos y recomendaciones</div>
-    <textarea id="fm_acuerdos" style="min-height:100px"></textarea>
-    <div class="grid2" style="margin-top:8px">
-      <div class="field"><label>Dado en</label><input id="fm_dado" value="Guanajay"></div>
-      <div class="field"><label>Fecha acta</label><input type="date" id="fm_fechaActa" value="${hoyISO()}"></div>
-    </div>
-    <div class="field"><label>Firmantes adicionales</label><input id="fm_firmantes">
-      <button class="btn sm cyan" style="margin-top:4px" onclick="abrirSelectorPersonal('fm_firmantes')">👥 Seleccionar</button>
-    </div>
-    <button class="btn verde block" onclick="generarActaFarmacologia()">📄 Generar acta PDF</button>
+    <div class="section-title" style="font-size:.95em">🩺 Casos discutidos (mínimo 10)</div><div id="fm_casosWrap"></div><button class="btn cyan block" onclick="fmAgregarCaso()">➕ Añadir caso</button>
+    <div class="section-title" style="font-size:.95em">⚠️ Tarjetas RAM</div><div id="fm_ramWrap"></div><button class="btn amarillo block" onclick="fmAgregarRAM()">➕ Añadir RAM</button>
+    <div class="section-title" style="font-size:.95em">📅 Subcomité de Antimicrobianos</div><div id="fm_subWrap"></div><button class="btn morado block" onclick="fmAgregarSub()">➕ Añadir sesión</button>
+    <div class="section-title" style="font-size:.95em">📝 Acuerdos y recomendaciones</div><textarea id="fm_acuerdos" style="min-height:100px"></textarea>
+    <div class="grid2" style="margin-top:8px"><div class="field"><label>Dado en</label><input id="fm_dado" value="Guanajay"></div><div class="field"><label>Fecha acta</label><input type="date" id="fm_fechaActa" value="${hoyISO()}"></div></div>
+    <div class="field"><label>Firmantes adicionales</label><input id="fm_firmantes"><button class="btn sm cyan" style="margin-top:4px" onclick="abrirSelectorPersonal('fm_firmantes')">👥 Seleccionar</button></div>
+    <button class="btn verde block" onclick="generarActaFarmacologia()">📄 Generar acta formal</button>
   </div>
-  <div class="section-title">📚 Actas anteriores</div>
-  <div id="fm_hist"></div>`;
+  <div class="section-title">📚 Actas formales anteriores</div><div id="fm_hist"></div>`;
   $('fmContenido').innerHTML=html;
   state.fmCasoCount=0; state.fmRAMCount=0; state.fmSubcomiteCount=0;
-  renderFmHist();
+  renderFarmacologiaDiarioHist(); renderFmHist();
+}
+function recogerRegistroFarmacologiaDiario(){
+  return {id:uuid(),fecha:$('fm_diario_fecha')?.value||hoyISO(),responsable:$('fm_diario_resp')?.value||'',medicamentos:$('fm_d_med')?.value||'',problemas:$('fm_d_problemas')?.value||'',intervenciones:$('fm_d_intervenciones')?.value||'',casos:Number($('fm_d_casos')?.value||0),interv:Number($('fm_d_interv')?.value||0),uso:$('fm_d_uso')?.value||'',cultivos:$('fm_d_cultivos')?.value||'',ram:$('fm_d_ram')?.value||'',acuerdos:$('fm_d_acuerdos')?.value||'',actualizado:new Date().toISOString()};
+}
+function guardarRegistroFarmacologiaDiario(){
+  const r=recogerRegistroFarmacologiaDiario(), idx=state.registrosFarmacologiaDiarios.findIndex(x=>x.fecha===r.fecha);
+  if(idx>=0){r.id=state.registrosFarmacologiaDiarios[idx].id;state.registrosFarmacologiaDiarios[idx]=r;} else state.registrosFarmacologiaDiarios.push(r);
+  state.registrosFarmacologiaDiarios.sort((a,b)=>String(b.fecha).localeCompare(String(a.fecha)));
+  guardarDatos(); renderFarmacologiaDiarioHist(); toast(idx>=0?'Registro del día actualizado':'Registro diario guardado','ok');
+}
+function cargarRegistroFarmacologiaDiario(r){
+  $('fm_diario_fecha').value=r.fecha||hoyISO(); $('fm_diario_resp').value=r.responsable||''; $('fm_d_med').value=r.medicamentos||''; $('fm_d_problemas').value=r.problemas||''; $('fm_d_intervenciones').value=r.intervenciones||'';
+  $('fm_d_casos').value=r.casos??0; $('fm_d_interv').value=r.interv??0; $('fm_d_uso').value=r.uso||''; $('fm_d_cultivos').value=r.cultivos||''; $('fm_d_ram').value=r.ram||''; $('fm_d_acuerdos').value=r.acuerdos||'';
+}
+function renderFarmacologiaDiarioHist(){
+  const list=(state.registrosFarmacologiaDiarios||[]).slice().sort((a,b)=>String(b.fecha).localeCompare(String(a.fecha)));
+  $('fm_diario_hist').innerHTML=list.length?list.map(r=>`<div class="mini-item" onclick='cargarRegistroFarmacologiaDiario(${JSON.stringify(r).replace(/'/g,"&#39;")})' style="cursor:pointer"><div class="ico">💊</div><div class="body"><div class="t">${fmtD(r.fecha)} · ${r.casos||0} casos antimicrobianos</div><div class="s">${r.interv||0} intervenciones · ${esc(r.responsable||'')}</div></div></div>`).join(''):'<div class="alert">Sin registros diarios todavía.</div>';
+}
+function generarReporteFarmacologiaDiario(){
+  const r=recogerRegistroFarmacologiaDiario();
+  const html=`<div class="print-doc"><div class="print-header"><div class="h1">${esc(state.config.hospital||'Hospital Pediátrico Docente José Ramón Martínez')}</div><div class="h2">Servicio de Pediatría · Registro diario de Farmacología y Antimicrobianos</div><div class="code">Fecha: ${fmtD(r.fecha)}</div></div>
+  <div class="print-section"><h4>CONTROL DIARIO</h4><div class="print-mini"><b>Responsable:</b> ${esc(r.responsable||'—')} · <b>Casos antimicrobianos:</b> ${r.casos} · <b>Intervenciones:</b> ${r.interv}</div></div>
+  <div class="print-section"><h4>FARMACOLOGÍA</h4><div class="print-mini"><b>Medicamentos/cuadro básico:</b> ${esc(r.medicamentos||'—')}</div><div class="print-mini"><b>Problemas:</b> ${esc(r.problemas||'—')}</div><div class="print-mini"><b>Intervenciones:</b> ${esc(r.intervenciones||'—')}</div></div>
+  <div class="print-section"><h4>SUBCOMITÉ DE ANTIMICROBIANOS</h4><div class="print-mini"><b>Uso y oportunidad:</b> ${esc(r.uso||'—')}</div><div class="print-mini"><b>Cultivos/resultados:</b> ${esc(r.cultivos||'—')}</div><div class="print-mini"><b>RAM/eventos:</b> ${esc(r.ram||'—')}</div></div>
+  <div class="print-section"><h4>ACUERDOS / PENDIENTES</h4><div class="print-mini">${esc(r.acuerdos||'—')}</div></div>
+  <div class="print-footer"><div class="print-firma"><div class="f"><div class="line"></div>${esc(r.responsable||state.config.jefe||'Dr. Rodney Jáuregui Alonso')}<br><span style="font-size:7.5pt">Responsable del registro</span></div></div></div><div class="print-colophon">HPJRM 👶🏥 🇨🇺 · Registro asistencial diario</div></div>`;
+  $('printArea').innerHTML=html; navigateTo('impresion'); setTimeout(()=>window.print(),350);
 }
 function fmAgregarCaso(){
   state.fmCasoCount++;
