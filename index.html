@@ -2672,26 +2672,58 @@ function renderFmHist(){
 function renderMorbilidad(){
   const prox=proximaFecha(getTercerMartes);
   $('mbProx').textContent = prox? fmtD(prox.toISOString().slice(0,10)) : '—';
+  const acts=[...state.actasMorbilidad].sort((a,b)=>(b.fechaActa||b.fecha||'').localeCompare(a.fechaActa||a.fecha||''));
+  const casos=acts.flatMap(a=>Array.isArray(a.casos)?a.casos:[]);
+  const preocupantes=casos.filter(c=>String(c.prec||'').toLowerCase()==='sí').length;
+  const regMal=casos.filter(c=>['Regular','Mal'].includes(c.cal)).length;
+  const conPlan=casos.filter(c=>(c.plan||'').trim()).length;
   const html=`<div class="card morado">
-    <h3>📊 Nueva acta · Comité de Morbilidad crítica y grave</h3>
+    <h3>📊 Comité de Morbilidad crítica y grave</h3>
+    <div class="alert morado">
+      <strong>🎯 Objetivo del módulo</strong>
+      Registrar y analizar los casos de morbilidad crítica o grave para identificar problemas clínicos, organizativos y de calidad, y convertirlos en acciones de mejora. Los datos se registran manualmente: PediaHub no inventa diagnósticos ni conclusiones.
+    </div>
+    <div class="stat-grid" style="margin-bottom:10px">
+      <div class="stat-box"><div class="n">${acts.length}</div><div class="l">Actas</div></div>
+      <div class="stat-box"><div class="n">${casos.length}</div><div class="l">Casos</div></div>
+      <div class="stat-box"><div class="n">${preocupantes}</div><div class="l">Preocupantes</div></div>
+      <div class="stat-box"><div class="n">${regMal}</div><div class="l">Regular/Mal</div></div>
+      <div class="stat-box"><div class="n">${conPlan}</div><div class="l">Con plan</div></div>
+    </div>
+    <div class="section-title" style="font-size:.95em">📝 Nueva sesión</div>
     <div class="row">
-      <div class="field"><label>Fecha</label><input type="date" id="mb_fecha" value="${hoyISO()}"></div>
+      <div class="field"><label>Fecha de sesión</label><input type="date" id="mb_fecha" value="${hoyISO()}"></div>
       <div class="field"><label>Hora</label><input type="time" id="mb_hora" value="08:00"></div>
     </div>
-    <div class="field"><label>Participantes</label><textarea id="mb_participantes"></textarea>
+    <div class="field"><label>Participantes</label><textarea id="mb_participantes" placeholder="Puede seleccionar personal registrado o escribirlo manualmente"></textarea>
       <button class="btn sm cyan" style="margin-top:4px" onclick="abrirSelectorPersonal('mb_participantes')">👥 Seleccionar</button></div>
-    <div class="section-title" style="font-size:.95em">🩺 Casos</div>
+    <div class="alert amarillo">
+      <strong>⚠️ Criterio de uso</strong>
+      Añada solo casos realmente seleccionados por el servicio para revisión de morbilidad crítica/grave. La selección no se realiza automáticamente por PediaHub.
+    </div>
+    <div class="section-title" style="font-size:.95em">🩺 Casos analizados</div>
     <div id="mb_casosWrap"></div>
-    <button class="btn cyan block" onclick="mbAgregarCaso()">➕ Añadir caso</button>
-    <button class="btn amarillo block" style="margin-top:6px" onclick="importarDesdeAuditoria('mb')">📥 Importar desde auditoría</button>
-    <div class="field" style="margin-top:10px"><label>Conclusiones</label><textarea id="mb_conclusiones" style="min-height:100px"></textarea></div>
+    <div class="btn-group">
+      <button class="btn cyan" onclick="mbAgregarCaso()">➕ Añadir caso</button>
+      <button class="btn amarillo" onclick="importarDesdeAuditoria('mb')">📥 Importar desde auditoría</button>
+    </div>
+    <div class="field" style="margin-top:10px"><label>Conclusiones del comité</label><textarea id="mb_conclusiones" style="min-height:110px" placeholder="Hallazgos, problemas comunes, decisiones y oportunidades de mejora"></textarea></div>
     <div class="field"><label>Firmantes</label><input id="mb_firmantes">
       <button class="btn sm cyan" style="margin-top:4px" onclick="abrirSelectorPersonal('mb_firmantes')">👥 Seleccionar</button></div>
     <div class="grid2">
       <div class="field"><label>Dado en</label><input id="mb_dado" value="Guanajay"></div>
-      <div class="field"><label>Fecha acta</label><input type="date" id="mb_fechaActa" value="${hoyISO()}"></div>
+      <div class="field"><label>Fecha del acta</label><input type="date" id="mb_fechaActa" value="${hoyISO()}"></div>
     </div>
-    <button class="btn morado block" onclick="generarActaMorbilidad()">📄 Generar acta PDF</button>
+    <button class="btn morado block" onclick="generarActaMorbilidad()">📄 Guardar y generar acta</button>
+  </div>
+  <div class="card">
+    <h3>🗂️ Historial de sesiones</h3>
+    <div class="mini-list">
+      ${acts.slice(0,8).map(a=>`<div class="mini-item">
+        <div class="ico">📊</div>
+        <div class="body"><div class="t">${fmtD(a.fechaActa||a.fecha)}</div><div class="s">${a.casos?.length||0} caso(s) · ${a.participantes?esc(a.participantes):'Sin participantes registrados'}</div></div>
+      </div>`).join('') || '<div class="alert">Sin sesiones registradas.</div>'}
+    </div>
   </div>`;
   $('mbContenido').innerHTML=html;
   state.mbCasoCount=0;
@@ -2699,68 +2731,110 @@ function renderMorbilidad(){
 function mbAgregarCaso(){
   state.mbCasoCount++;
   const i=state.mbCasoCount;
-  const d=document.createElement('div'); d.className='card'; d.style.cssText='background:var(--g50);padding:8px;margin-bottom:6px';
-  d.innerHTML=`<b style="font-size:.85em">Caso ${i}</b>
-    <div class="grid2" style="margin-top:4px">
-      <div class="field" style="margin:0"><label style="font-size:.75em">Paciente</label><input class="mb-pac"></div>
-      <div class="field" style="margin:0"><label style="font-size:.75em">HC</label><input class="mb-hc"></div>
-      <div class="field" style="margin:0"><label style="font-size:.75em">Edad</label><input class="mb-edad"></div>
-      <div class="field" style="margin:0"><label style="font-size:.75em">Sala/Cama</label><input class="mb-sala"></div>
-      <div class="field" style="margin:0"><label style="font-size:.75em">Ingreso UTIP</label><input type="date" class="mb-futip"></div>
-      <div class="field" style="margin:0"><label style="font-size:.75em">Días</label><input class="mb-dias"></div>
-      <div class="field" style="margin:0"><label style="font-size:.75em">Dx ingreso</label><input class="mb-dxing"></div>
-      <div class="field" style="margin:0"><label style="font-size:.75em">Dx egreso</label><input class="mb-dxegr"></div>
+  const d=document.createElement('div');
+  d.className='card';
+  d.style.cssText='background:var(--g50);padding:10px;margin-bottom:8px;border-top:3px solid var(--morado)';
+  d.innerHTML=`<div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
+      <b style="font-size:.9em">Caso ${i}</b>
+      <button class="btn sm rojo" onclick="this.closest('.card').remove();mbRecalcularResumen()">🗑️</button>
     </div>
-    <div class="field" style="margin:4px 0"><label style="font-size:.75em">Resumen</label><textarea class="mb-resumen" style="min-height:50px"></textarea></div>
-    <div class="field" style="margin:4px 0"><label style="font-size:.75em">Análisis de confección HC</label><textarea class="mb-conf" style="min-height:50px"></textarea></div>
-    <div class="field" style="margin:4px 0"><label style="font-size:.75em">Análisis de evolución</label><textarea class="mb-evol" style="min-height:50px"></textarea></div>
-    <div class="field" style="margin:4px 0"><label style="font-size:.75em">Incidencias</label><textarea class="mb-inc" style="min-height:50px"></textarea></div>
-    <div class="field" style="margin:4px 0"><label style="font-size:.75em">Calificación</label><select class="mb-cal"><option>Bien</option><option>Regular</option><option>Mal</option></select></div>
-    <div class="field" style="margin:4px 0"><label style="font-size:.75em">¿Preocupante?</label><select class="mb-prec"><option>No</option><option>Sí</option></select></div>
-    <div class="field" style="margin:4px 0"><label style="font-size:.75em">Plan de acción</label><textarea class="mb-plan" style="min-height:50px"></textarea></div>
-    <button class="btn sm rojo" onclick="this.parentElement.remove()">🗑️</button>`;
+    <div class="grid2" style="margin-top:6px">
+      <div class="field" style="margin:0"><label>Paciente</label><input class="mb-pac"></div>
+      <div class="field" style="margin:0"><label>HC</label><input class="mb-hc"></div>
+      <div class="field" style="margin:0"><label>Edad</label><input class="mb-edad"></div>
+      <div class="field" style="margin:0"><label>Sexo</label><select class="mb-sexo"><option value="">—</option><option>F</option><option>M</option></select></div>
+      <div class="field" style="margin:0"><label>Sala/Cama o área</label><input class="mb-sala"></div>
+      <div class="field" style="margin:0"><label>Fecha de ingreso</label><input type="date" class="mb-fing"></div>
+      <div class="field" style="margin:0"><label>Días de hospitalización</label><input type="number" min="0" class="mb-dias"></div>
+      <div class="field" style="margin:0"><label>Área crítica / traslado</label><input class="mb-area" placeholder="Si corresponde"></div>
+      <div class="field" style="margin:0"><label>Dx de ingreso</label><input class="mb-dxing"></div>
+      <div class="field" style="margin:0"><label>Dx principal al cierre</label><input class="mb-dxegr"></div>
+      <div class="field" style="margin:0"><label>Situación al cierre</label><select class="mb-resultado"><option>Continúa ingresado</option><option>Alta</option><option>Traslado</option><option>Fallecimiento</option></select></div>
+      <div class="field" style="margin:0"><label>Gravedad / condición crítica</label><select class="mb-gravedad"><option>Grave</option><option>Crítica</option><option>Muy grave</option></select></div>
+    </div>
+    <div class="field" style="margin:5px 0"><label>Resumen clínico del caso</label><textarea class="mb-resumen" style="min-height:65px"></textarea></div>
+    <div class="field" style="margin:5px 0"><label>Análisis de confección de HC</label><textarea class="mb-conf" style="min-height:55px"></textarea></div>
+    <div class="field" style="margin:5px 0"><label>Análisis de evolución y conducta</label><textarea class="mb-evol" style="min-height:65px"></textarea></div>
+    <div class="field" style="margin:5px 0"><label>Complicaciones / eventos relevantes</label><textarea class="mb-comp" style="min-height:55px"></textarea></div>
+    <div class="field" style="margin:5px 0"><label>Factores contribuyentes o demoras identificadas</label><textarea class="mb-fact" style="min-height:55px" placeholder="Solo si fueron realmente identificados"></textarea></div>
+    <div class="field" style="margin:5px 0"><label>Incidencias</label><textarea class="mb-inc" style="min-height:55px"></textarea></div>
+    <div class="grid2">
+      <div class="field" style="margin:5px 0"><label>Calificación</label><select class="mb-cal" onchange="mbRecalcularResumen()"><option>Bien</option><option>Regular</option><option>Mal</option></select></div>
+      <div class="field" style="margin:5px 0"><label>¿Preocupante?</label><select class="mb-prec" onchange="mbRecalcularResumen()"><option>No</option><option>Sí</option></select></div>
+    </div>
+    <div class="field" style="margin:5px 0"><label>Oportunidad de mejora / plan de acción</label><textarea class="mb-plan" style="min-height:55px"></textarea></div>
+    <div class="grid2">
+      <div class="field" style="margin:5px 0"><label>Responsable de la acción</label><input class="mb-resp"></div>
+      <div class="field" style="margin:5px 0"><label>Plazo</label><input type="date" class="mb-plazo"></div>
+    </div>`;
   $('mb_casosWrap').appendChild(d);
+  mbRecalcularResumen();
+}
+function mbRecalcularResumen(){
+  const casos=[...document.querySelectorAll('#mb_casosWrap > .card')];
+  const prec=casos.filter(d=>d.querySelector('.mb-prec')?.value==='Sí').length;
+  const rm=casos.filter(d=>['Regular','Mal'].includes(d.querySelector('.mb-cal')?.value)).length;
+  const box=$('mb_liveSummary');
+  if(box) box.innerHTML=`<b>${casos.length}</b> caso(s) · <b>${prec}</b> preocupante(s) · <b>${rm}</b> Regular/Mal`;
 }
 function generarActaMorbilidad(){
-  const casos=[...document.querySelectorAll('#mb_casosWrap > div')].map(d=>{
+  const casos=[...document.querySelectorAll('#mb_casosWrap > .card')].map(d=>{
     const g=cls=>d.querySelector(cls)?.value||'';
-    return {pac:g('.mb-pac'),hc:g('.mb-hc'),edad:g('.mb-edad'),sala:g('.mb-sala'),futip:g('.mb-futip'),dias:g('.mb-dias'),
-      dxing:g('.mb-dxing'),dxegr:g('.mb-dxegr'),resumen:g('.mb-resumen'),conf:g('.mb-conf'),evol:g('.mb-evol'),
-      inc:g('.mb-inc'),cal:g('.mb-cal'),prec:g('.mb-prec'),plan:g('.mb-plan')};
-  });
-  const acta={id:uuid(), fecha:$('mb_fecha').value, hora:$('mb_hora').value, participantes:$('mb_participantes').value,
-    casos, conclusiones:$('mb_conclusiones').value, firmantes:$('mb_firmantes').value, dado:$('mb_dado').value, fechaActa:$('mb_fechaActa').value};
+    return {
+      pac:g('.mb-pac'),hc:g('.mb-hc'),edad:g('.mb-edad'),sexo:g('.mb-sexo'),sala:g('.mb-sala'),
+      fing:g('.mb-fing'),dias:g('.mb-dias'),area:g('.mb-area'),dxing:g('.mb-dxing'),dxegr:g('.mb-dxegr'),
+      resultado:g('.mb-resultado'),gravedad:g('.mb-gravedad'),resumen:g('.mb-resumen'),conf:g('.mb-conf'),
+      evol:g('.mb-evol'),comp:g('.mb-comp'),fact:g('.mb-fact'),inc:g('.mb-inc'),cal:g('.mb-cal'),
+      prec:g('.mb-prec'),plan:g('.mb-plan'),resp:g('.mb-resp'),plazo:g('.mb-plazo')
+    };
+  }).filter(c=>c.pac||c.hc||c.dxing||c.dxegr||c.resumen);
+  if(!casos.length){ toast('Añada al menos un caso antes de generar el acta','err'); return; }
+  const acta={
+    id:uuid(), fecha:$('mb_fecha').value, hora:$('mb_hora').value, participantes:$('mb_participantes').value,
+    casos, conclusiones:$('mb_conclusiones').value, firmantes:$('mb_firmantes').value,
+    dado:$('mb_dado').value, fechaActa:$('mb_fechaActa').value
+  };
   state.actasMorbilidad.push(acta); guardarDatos();
+  const total=casos.length, prec=casos.filter(c=>c.prec==='Sí').length, rm=casos.filter(c=>['Regular','Mal'].includes(c.cal)).length;
   const html=`<div class="print-doc">
-    <div class="print-header"><div class="h1">${esc(state.config.hospital||'Hospital Pediátrico Docente José Ramón Martínez')}</div>
-    <div class="h2">Servicio de Pediatría</div>
-    <div class="h2" style="font-weight:700">ANÁLISIS DE HISTORIA CLÍNICA · COMITÉ DE MORBILIDAD CRÍTICA Y GRAVE</div>
-    <div class="code">${generarNumeroActa(acta.fechaActa)}</div></div>
-    <div class="print-section"><h4>DATOS GENERALES</h4>
-      <div class="print-mini"><b>Fecha:</b> ${fmtD(acta.fecha)} · <b>Hora:</b> ${esc(acta.hora)}</div>
+    <div class="print-header">
+      <div class="h1">${esc(state.config.hospital||'Hospital Pediátrico Docente José Ramón Martínez')}</div>
+      <div class="h2">Servicio de Pediatría</div>
+      <div class="h2" style="font-weight:700">COMITÉ DE MORBILIDAD CRÍTICA Y GRAVE</div>
+      <div class="code">${generarNumeroActa(acta.fechaActa)}</div>
+    </div>
+    <div class="print-section"><h4>DATOS DE LA SESIÓN</h4>
+      <div class="print-mini"><b>Fecha:</b> ${fmtD(acta.fecha)} · <b>Hora:</b> ${esc(acta.hora)} · <b>Casos:</b> ${total}</div>
       <div class="print-mini"><b>Participantes:</b> ${esc(acta.participantes||'—')}</div>
     </div>
+    <div class="print-section"><h4>RESUMEN EJECUTIVO</h4>
+      <div class="print-mini"><b>Preocupantes:</b> ${prec} · <b>Regular/Mal:</b> ${rm}</div>
+      <div class="print-mini">${esc(acta.conclusiones||'—')}</div>
+    </div>
     <div class="print-section"><h4>CASOS ANALIZADOS</h4>
-      ${casos.map((c,i)=>`<div class="print-mini" style="margin-bottom:6px">
-        <b>Caso ${i+1}:</b> ${esc(c.pac||'—')} · HC ${esc(c.hc||'—')} · ${esc(c.edad||'—')} · ${esc(c.sala||'—')}<br>
-        <b>Ingreso UTIP:</b> ${fmtD(c.futip)} (${esc(c.dias||'—')} días) · <b>Dx ingreso:</b> ${esc(c.dxing||'—')} → <b>Dx egreso:</b> ${esc(c.dxegr||'—')}<br>
+      ${casos.map((c,i)=>`<div class="print-mini" style="margin-bottom:7px;padding-bottom:5px;border-bottom:1px solid #ccc">
+        <b>Caso ${i+1}:</b> ${esc(c.pac||'—')} · HC ${esc(c.hc||'—')} · ${esc(c.edad||'—')} · ${esc(c.sexo||'—')} · ${esc(c.sala||'—')}<br>
+        <b>Ingreso:</b> ${fmtD(c.fing)} · <b>Días:</b> ${esc(c.dias||'—')} · <b>Área crítica:</b> ${esc(c.area||'—')}<br>
+        <b>Gravedad:</b> ${esc(c.gravedad||'—')} · <b>Situación al cierre:</b> ${esc(c.resultado||'—')}<br>
+        <b>Dx ingreso:</b> ${esc(c.dxing||'—')} → <b>Dx principal:</b> ${esc(c.dxegr||'—')}<br>
         <b>Resumen:</b> ${esc(c.resumen||'—')}<br>
-        <b>Confección HC:</b> ${esc(c.conf||'—')}<br>
-        <b>Evolución:</b> ${esc(c.evol||'—')}<br>
+        <b>HC:</b> ${esc(c.conf||'—')}<br>
+        <b>Evolución/conducta:</b> ${esc(c.evol||'—')}<br>
+        <b>Complicaciones:</b> ${esc(c.comp||'—')}<br>
+        <b>Factores contribuyentes/demoras:</b> ${esc(c.fact||'—')}<br>
         <b>Incidencias:</b> ${esc(c.inc||'—')}<br>
         <b>Calificación:</b> ${esc(c.cal||'—')} · <b>Preocupante:</b> ${esc(c.prec||'—')}<br>
-        <b>Plan de acción:</b> ${esc(c.plan||'—')}
-      </div>`).join('')||'<div class="print-mini">Sin casos registrados</div>'}
+        <b>Plan:</b> ${esc(c.plan||'—')} · <b>Responsable:</b> ${esc(c.resp||'—')} · <b>Plazo:</b> ${fmtD(c.plazo)}
+      </div>`).join('')}
     </div>
-    <div class="print-section"><h4>CONCLUSIONES</h4><div class="print-mini">${esc(acta.conclusiones||'—')}</div></div>
-    <div class="print-footer">
+    <div class="print-section"><h4>FIRMAS</h4>
       <div class="print-firma">
         <div class="f"><div class="line"></div>${esc(state.config.jefe||'Dr. Rodney Jáuregui Alonso')}<br><span style="font-size:7.5pt">${esc(state.config.cargo||'Jefe del Servicio de Pediatría')}</span></div>
         ${acta.firmantes?`<div class="f"><div class="line"></div>${esc(acta.firmantes)}</div>`:''}
       </div>
-      <div style="margin-top:10px">Dado en ${esc(acta.dado)}, a ${fmtD(acta.fechaActa)}</div>
+      <div class="print-footer">Dado en ${esc(acta.dado)}, a ${fmtD(acta.fechaActa)}</div>
     </div>
-    <div class="print-colophon">HPJRM 👶🏥 🇨🇺 · Guardianes de la salud de los niños artemiseños</div>
+    <div class="print-colophon">HPJRM 👶🏥 🇨🇺 · Comité de Morbilidad</div>
   </div>`;
   $('printArea').innerHTML=html; navigateTo('impresion'); setTimeout(()=>window.print(),350);
   toast('Acta guardada','ok');
