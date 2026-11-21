@@ -1,0 +1,12 @@
+{
+  "name": "HPJRM · Hub del Jefe de Pediatría",
+  "short_name": "HPJRM",
+  "lang": "es",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f7f8fa",
+  "theme_color": "#0b3d91",
+  "description": "Hub de gestión del Servicio de Pediatría.",
+  "icons": []
+}
