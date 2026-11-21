@@ -1842,8 +1842,10 @@ function borrarHistorial(){
 }
 
 function renderGuardias(){
-  if(!$('g_inicio').value){ const d=new Date(); $('g_inicio').value=d.toISOString().slice(0,10); }
-  if(!$('g_fin').value){ const d=new Date(); d.setDate(d.getDate()+7); $('g_fin').value=d.toISOString().slice(0,10); }
+  const cfg=state.guardiasConfig||{};
+  if(!$('g_inicio').value){ $('g_inicio').value=cfg.aperturaFecha||hoyISO(); }
+  if(!$('g_fin').value){ const d=new Date($('g_inicio').value+'T00:00:00'); d.setDate(d.getDate()+7); $('g_fin').value=d.toISOString().slice(0,10); }
+  if(cfg.apertura) $('g_apertura').value=String(cfg.apertura);
   renderEquiposForm();
   renderCambiosGuardia();
   renderCalendarioGuardias();
@@ -1918,7 +1920,7 @@ function calcularEquipoPorFecha(fecha,ini){
 }
 function renderCalendarioGuardias(){
   const wrap=$('g_calendarioWrap'),ini=$('g_inicio').value,fin=$('g_fin').value;if(!ini||!fin){wrap.innerHTML='';return;}
-  const cfg=state.guardiasConfig||{};cfg.apertura=parseInt($('g_apertura').value||'1');cfg.aperturaFecha=cfg.aperturaFecha||ini;guardarDatos();
+  const cfg=state.guardiasConfig||{};cfg.apertura=parseInt($('g_apertura').value||'1');cfg.aperturaFecha=ini;guardarDatos();
   const d1=new Date(ini+'T00:00:00'),d2=new Date(fin+'T00:00:00');if(d2<d1){wrap.innerHTML='<div class="alert rojo">Fecha fin anterior a inicio.</div>';return;}
   const dias=[];for(let d=new Date(d1);d<=d2;d.setDate(d.getDate()+1)){const fecha=d.toISOString().slice(0,10);dias.push({fecha:new Date(d),iso:fecha,eq:calcularEquipoPorFecha(fecha,ini)});}
   wrap.innerHTML=`<div class="card cyan"><h3>📅 Calendario de guardias</h3><table><tr><th>Día</th><th>Fecha</th><th>Equipo</th><th>Roles / adecuaciones</th></tr>${dias.map(d=>{const roles=obtenerRolesGuardia(d.iso,d.eq),rs=ROLES_EQUIPO.map(r=>(roles[r.k]||[]).length?`${r.ico} ${roles[r.k].join(', ')}`:'').filter(Boolean).join('<br>'),ch=(cfg.cambios||[]).filter(x=>x.fecha===d.iso&&String(x.equipo)===String(d.eq));return`<tr><td>${d.fecha.toLocaleDateString('es-ES',{weekday:'short'})}</td><td>${fmtD(d.iso)}</td><td style="font-size:1.3em">${EMOJI_EQUIPO[d.eq]} Eq ${d.eq}</td><td style="font-size:.82em">${rs||'—'}${ch.length?`<div class="alert amarillo" style="margin-top:4px;padding:5px">🔄 ${ch.length} adecuación(es)</div>`:''}</td></tr>`;}).join('')}</table><div class="btn-group" style="margin-top:10px"><button class="btn amarillo" onclick="abrirCambioGuardia()">🔄 Cambio eventual</button><button class="btn verde" onclick="generarMensajeWhatsApp()">📱 Mensaje WhatsApp</button><button class="btn cyan" onclick="imprimirGuardias()">🖨️ PDF</button></div><div id="g_msgWrap"></div></div>`;
