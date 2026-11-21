@@ -2364,7 +2364,7 @@ function renderPaso5(r){
 function calSet(k,v){ state.revisionActual.calificacion=state.revisionActual.calificacion||{}; state.revisionActual.calificacion[k]=v; touchRevision(); }
 function analizarRuta(){
   const r=state.revisionActual; const rc=r.rutaCritica||{};
-  const hitos=[['primera_evo',10,'Primera evolución médica'],['admision',10,'Paso por admisión'],['entrada_sala',20,'Entrada en sala'],['recepcion_sala',60,'Recepción en sala']];
+  const hitos=[['primera_evo',10,'Primera evolución médica'],['admision',10,'Paso por admisión'],['entrada_sala',20,'Entrada en sala'],['recepcion_enf',60,'Recepción de enfermería']];
   const alertas=[];
   for(let i=1;i<hitos.length;i++){
     const [k,esp,lbl]=hitos[i]; const [k0]=hitos[i-1];
