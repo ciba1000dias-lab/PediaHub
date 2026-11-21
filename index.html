@@ -693,18 +693,186 @@ body{padding-bottom:105px}
 @media(max-width:699px){.hp-hero{min-height:245px}.hp-now-row{grid-template-columns:1fr 118px}.hp-now-time{padding:13px}.hp-now-time strong{font-size:26px}.hp-action-grid{grid-template-columns:repeat(2,1fr)}.hp-bottom-zone{grid-template-columns:1fr}.hp-stats .stat-grid{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:430px){.hp-hero{border-radius:25px;min-height:238px}.hp-hero-content{padding:25px 18px 18px}.hp-hero-title{font-size:31px}.hp-hero-footer{left:18px;right:18px}.hp-hero-badge{right:12px;top:12px}.hp-now-row{grid-template-columns:1fr 106px}.hp-now-main,.hp-now-time,.hp-attention,.hp-situation,.hp-actions,.hp-upcoming,.hp-access{border-radius:19px}.hp-action-grid{gap:7px}.hp-action-grid button{min-height:104px;padding:11px}.hp-action-icon{width:39px;height:39px;font-size:20px}.hp-section-head h2{font-size:16px}}
 
+
+/* ═══════════════════════════════════════════════════════════════
+   HPJRM VISUAL MOTION SYSTEM · v4
+   Premium mobile command center / micro-interactions
+   ═══════════════════════════════════════════════════════════════ */
+:root{
+  --hp-glass:rgba(255,255,255,.72);
+  --hp-line:rgba(116,157,184,.18);
+  --hp-teal:#13b8aa;
+  --hp-cyan:#2bd4e5;
+  --hp-deep:#06223d;
+  --hp-ease:cubic-bezier(.22,1,.36,1);
+}
+body{background:
+  radial-gradient(circle at 8% 8%,rgba(19,184,170,.08),transparent 24%),
+  radial-gradient(circle at 92% 18%,rgba(43,212,229,.07),transparent 22%),
+  linear-gradient(180deg,#f8fbfd 0%,#f1f6f9 100%);
+}
+.app-header{
+  height:66px;padding:9px 12px;
+  background:rgba(5,35,62,.88)!important;
+  backdrop-filter:blur(18px) saturate(150%);
+  -webkit-backdrop-filter:blur(18px) saturate(150%);
+  border-bottom:1px solid rgba(255,255,255,.12);
+  box-shadow:0 10px 30px rgba(3,29,53,.16);
+}
+.app-header:after{
+  content:"";position:absolute;left:0;right:0;bottom:0;height:1px;
+  background:linear-gradient(90deg,transparent,#31d8c5,transparent);
+  opacity:.55;
+}
+.app-header .logo{
+  width:40px!important;height:40px!important;border-radius:13px!important;
+  display:grid!important;place-items:center!important;
+  background:linear-gradient(145deg,#0bc3b2,#0b668c)!important;
+  box-shadow:0 0 0 1px rgba(255,255,255,.16),0 8px 20px rgba(0,190,180,.22)!important;
+  position:relative;overflow:visible;
+}
+.app-header .logo:before{
+  content:"";position:absolute;inset:-4px;border-radius:16px;
+  border:1px solid rgba(62,224,209,.28);animation:hpPulse 2.8s ease-out infinite;
+}
+.app-header .logo span{font-size:21px!important;text-shadow:0 2px 8px rgba(0,0,0,.2)}
+.hdr-btn{border:1px solid rgba(255,255,255,.12)!important;background:rgba(255,255,255,.08)!important;transition:transform .28s var(--hp-ease),background .2s}
+.hdr-btn:hover{transform:translateY(-2px) scale(1.04);background:rgba(255,255,255,.15)!important}
+.hp-menu-trigger{position:relative}
+.hp-menu-trigger .menu-bars{display:block;width:18px;height:14px;position:relative}
+.hp-menu-trigger .menu-bars i{position:absolute;left:0;width:18px;height:2px;border-radius:2px;background:#fff;transition:transform .35s var(--hp-ease),top .35s var(--hp-ease),opacity .2s}
+.hp-menu-trigger .menu-bars i:nth-child(1){top:0}.hp-menu-trigger .menu-bars i:nth-child(2){top:6px}.hp-menu-trigger .menu-bars i:nth-child(3){top:12px}
+body.hp-menu-active .hp-menu-trigger .menu-bars i:nth-child(1){top:6px;transform:rotate(45deg)}
+body.hp-menu-active .hp-menu-trigger .menu-bars i:nth-child(2){opacity:0}
+body.hp-menu-active .hp-menu-trigger .menu-bars i:nth-child(3){top:6px;transform:rotate(-45deg)}
+.hp-command-shell{padding-bottom:18px}
+.hp-topline{animation:hpRise .65s var(--hp-ease) both}
+.hp-hero{
+  transform:translateZ(0);
+  box-shadow:0 25px 60px rgba(4,25,45,.18);
+  animation:hpHeroIn .75s var(--hp-ease) both;
+}
+.hp-hero:after{
+  content:"";position:absolute;width:320px;height:320px;right:-150px;top:-165px;
+  border-radius:50%;border:1px solid rgba(127,255,239,.18);
+  box-shadow:0 0 0 34px rgba(127,255,239,.025),0 0 0 68px rgba(127,255,239,.018);
+  animation:hpOrbit 16s linear infinite;
+}
+.hp-hero-grid{animation:hpGrid 18s linear infinite}
+.hp-orbit-a{animation:hpSpin 18s linear infinite}
+.hp-orbit-b{animation:hpSpin 13s linear infinite reverse}
+.hp-hero-badge{animation:hpFloat 4s ease-in-out infinite}
+.hp-live-dot{animation:hpLive 1.8s ease-in-out infinite}
+.hp-now-row,.hp-attention,.hp-situation,.hp-actions,.hp-upcoming,.hp-access{
+  transition:transform .32s var(--hp-ease),box-shadow .32s var(--hp-ease),border-color .32s ease;
+}
+.hp-now-row>*,.hp-attention,.hp-situation,.hp-actions,.hp-upcoming,.hp-access{
+  animation:hpRise .65s var(--hp-ease) both;
+}
+.hp-now-row{animation-delay:.08s}.hp-attention{animation-delay:.13s}.hp-situation{animation-delay:.18s}
+.hp-actions{animation-delay:.23s}.hp-upcoming{animation-delay:.28s}.hp-access{animation-delay:.33s}
+.hp-now-row>*:hover,.hp-attention:hover,.hp-situation:hover,.hp-actions:hover,.hp-upcoming:hover,.hp-access:hover{
+  transform:translateY(-3px);
+  box-shadow:0 18px 38px rgba(7,27,51,.11);
+  border-color:rgba(19,184,170,.28);
+}
+.hp-action-grid button,.hp-module-grid button{
+  position:relative;overflow:hidden;
+  transition:transform .35s var(--hp-ease),box-shadow .35s var(--hp-ease),border-color .25s ease!important;
+}
+.hp-action-grid button:before,.hp-module-grid button:before{
+  content:"";position:absolute;inset:0;transform:translateX(-110%);
+  background:linear-gradient(100deg,transparent,rgba(255,255,255,.55),transparent);
+  transition:transform .65s var(--hp-ease);
+}
+.hp-action-grid button:hover:before,.hp-module-grid button:hover:before{transform:translateX(110%)}
+.hp-action-grid button:hover,.hp-module-grid button:hover{transform:translateY(-5px) scale(1.015)!important;box-shadow:0 15px 28px rgba(8,54,82,.13)!important}
+.hp-action-icon{transition:transform .35s var(--hp-ease),box-shadow .35s var(--hp-ease)!important}
+.hp-action-grid button:hover .hp-action-icon,.hp-module-grid button:hover .hp-action-icon{transform:rotate(-6deg) scale(1.1);box-shadow:0 8px 18px rgba(10,110,130,.16)}
+.view.active{animation:hpViewIn .48s var(--hp-ease) both}
+.bottom-nav{
+  height:68px!important;
+  background:rgba(255,255,255,.72)!important;
+  backdrop-filter:blur(22px) saturate(160%)!important;
+  -webkit-backdrop-filter:blur(22px) saturate(160%)!important;
+  border:1px solid rgba(255,255,255,.8)!important;
+  box-shadow:0 18px 42px rgba(8,48,76,.16)!important;
+}
+.bottom-nav button{position:relative;transition:transform .3s var(--hp-ease),color .2s}
+.bottom-nav button:after{
+  content:"";position:absolute;bottom:3px;width:5px;height:5px;border-radius:50%;
+  background:var(--hp-teal);transform:scale(0);transition:transform .3s var(--hp-ease);
+}
+.bottom-nav button.active:after{transform:scale(1)}
+.bottom-nav button.active{background:linear-gradient(145deg,#e7faf7,#f1fbfc)!important;box-shadow:inset 0 0 0 1px rgba(19,184,170,.08)}
+.bottom-nav button:active{transform:scale(.9)}
+.more-sheet{
+  display:block!important;visibility:hidden;pointer-events:none;opacity:0;
+  transform:translateY(22px) scale(.98);
+  transition:opacity .3s ease,transform .42s var(--hp-ease),visibility 0s linear .42s;
+  border:1px solid rgba(255,255,255,.82)!important;
+  background:rgba(248,252,254,.88)!important;
+  backdrop-filter:blur(28px) saturate(160%)!important;
+  -webkit-backdrop-filter:blur(28px) saturate(160%)!important;
+}
+.more-sheet.open{
+  visibility:visible;pointer-events:auto;opacity:1;transform:none;
+  transition:opacity .22s ease,transform .42s var(--hp-ease),visibility 0s;
+}
+.more-grid button{
+  position:relative;overflow:hidden;
+  min-height:68px!important;
+  background:linear-gradient(145deg,#fff,#eef7fa)!important;
+  border-color:#d9e9ee!important;
+  box-shadow:0 5px 15px rgba(10,69,95,.06);
+  transition:transform .3s var(--hp-ease),box-shadow .3s var(--hp-ease),background .3s;
+}
+.more-grid button:hover{transform:translateY(-4px);box-shadow:0 13px 25px rgba(10,69,95,.13);background:#fff!important}
+.hp-menu-backdrop{
+  position:fixed;inset:0;z-index:680;background:rgba(3,20,35,.38);
+  backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);
+  opacity:0;visibility:hidden;pointer-events:none;transition:opacity .3s ease,visibility 0s linear .3s;
+}
+.hp-menu-backdrop.open{opacity:1;visibility:visible;pointer-events:auto;transition:opacity .3s ease}
+@keyframes hpRise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+@keyframes hpHeroIn{from{opacity:0;transform:translateY(18px) scale(.985)}to{opacity:1;transform:none}}
+@keyframes hpViewIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@keyframes hpFloat{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-5px) rotate(1deg)}}
+@keyframes hpPulse{0%{transform:scale(.96);opacity:.7}70%,100%{transform:scale(1.12);opacity:0}}
+@keyframes hpLive{0%,100%{box-shadow:0 0 0 4px rgba(53,198,154,.10)}50%{box-shadow:0 0 0 8px rgba(53,198,154,.03)}}
+@keyframes hpGrid{from{background-position:0 0,0 0}to{background-position:30px 30px,30px 30px}}
+@keyframes hpSpin{to{transform:rotate(360deg)}}
+@keyframes hpOrbit{to{transform:rotate(-360deg)}}
+@media(min-width:700px){
+  .hp-menu-backdrop{display:block}
+  .more-sheet{
+    left:auto;right:20px;bottom:auto;top:76px;width:360px;
+    max-height:calc(100vh - 96px);overflow:auto;border-radius:24px;
+    box-shadow:0 28px 70px rgba(3,27,49,.25)!important;
+    transform:translateY(-10px) translateX(8px) scale(.98);
+  }
+  .more-grid{grid-template-columns:repeat(2,1fr)!important}
+}
+@media(max-width:699px){
+  .more-sheet{left:10px;right:10px;bottom:84px}
+}
+@media(prefers-reduced-motion:reduce){
+  *,*:before,*:after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition-duration:.01ms!important}
+}
+
 </style>
 </head>
 <body>
 
 <header class="app-header">
+  <button class="hdr-btn hp-menu-trigger" onclick="toggleHpMore()" title="Menú principal" aria-label="Abrir menú"><span class="menu-bars"><i></i><i></i><i></i></span></button>
   <div class="logo brand-mark" aria-label="Pediatría HPJRM"><span>✚</span></div>
   <div class="titles">
     <div class="t1">PEDIATRÍA HPJRM <span class="brand-flag">🇨🇺</span></div>
     <div class="t2" id="hdrSub">Centro de mando · Servicio de Pediatría</div>
   </div>
-  <button class="hdr-btn" onclick="abrirBusqueda()" title="Buscar">🔍</button>
-  <button class="hdr-btn" onclick="navigateTo('config')" title="Configuración">⚙️</button>
+  <button class="hdr-btn" onclick="abrirBusqueda()" title="Buscar">⌕</button>
+  <button class="hdr-btn" onclick="navigateTo('config')" title="Configuración">⚙</button>
 </header>
 
 <main class="wrap" id="app">
@@ -1096,7 +1264,7 @@ body{padding-bottom:105px}
 <section class="view" id="view-impresion"></section>
 
 </main>
-<div class="more-sheet" id="hpMoreSheet" aria-hidden="true"><div class="more-grid"><button onclick="hpNav('personal')">👥<br>Personal</button><button onclick="hpNav('pami')">🍼<br>Lactantes</button><button onclick="hpNav('fugas')">🚪<br>Fugas</button><button onclick="hpNav('farmacologia')">💊<br>Farmacología</button><button onclick="hpNav('morbilidad')">📈<br>Morbilidad</button><button onclick="hpNav('config')">⚙️<br>Configuración</button></div></div><nav class="bottom-nav" id="hpBottomNav" aria-label="Navegación principal"><button data-hp="inicio" class="active" onclick="hpNav('inicio')"><span>⌂</span><span>Inicio</span></button><button data-hp="guardias" onclick="hpNav('guardias')"><span>🩺</span><span>Guardia</span></button><button data-hp="auditor" onclick="hpNav('auditor')"><span>📋</span><span>Auditoría</span></button><button data-hp="medicamentos" onclick="hpNav('medicamentos')"><span>💊</span><span>Recursos</span></button><button data-hp="more" onclick="toggleHpMore()"><span>☰</span><span>Más</span></button></nav>
+<div class="hp-menu-backdrop" id="hpMenuBackdrop" onclick="toggleHpMore(false)"></div><div class="more-sheet" id="hpMoreSheet" aria-hidden="true"><div class="more-grid"><button onclick="hpNav('personal')">👥<br>Personal</button><button onclick="hpNav('pami')">🍼<br>Lactantes</button><button onclick="hpNav('fugas')">🚪<br>Fugas</button><button onclick="hpNav('farmacologia')">💊<br>Farmacología</button><button onclick="hpNav('morbilidad')">📈<br>Morbilidad</button><button onclick="hpNav('config')">⚙️<br>Configuración</button></div></div><nav class="bottom-nav" id="hpBottomNav" aria-label="Navegación principal"><button data-hp="inicio" class="active" onclick="hpNav('inicio')"><span>⌂</span><span>Inicio</span></button><button data-hp="guardias" onclick="hpNav('guardias')"><span>🩺</span><span>Guardia</span></button><button data-hp="auditor" onclick="hpNav('auditor')"><span>📋</span><span>Auditoría</span></button><button data-hp="medicamentos" onclick="hpNav('medicamentos')"><span>💊</span><span>Recursos</span></button><button data-hp="more" onclick="toggleHpMore()"><span>☰</span><span>Más</span></button></nav>
 
 <div id="printArea"></div>
 <div id="toastWrap"></div>
@@ -3924,6 +4092,20 @@ Object.assign(window, {
   $, esc, toast, fmtD, fmtDT, hoyISO, nowISO, uuid
 });
 </script>
-<script>function hpNav(view){if(view==='more'){toggleHpMore();return}if(typeof navigateTo==='function')navigateTo(view);document.querySelectorAll('.bottom-nav button[data-hp]').forEach(b=>b.classList.toggle('active',b.dataset.hp===view));const s=document.getElementById('hpMoreSheet');if(s)s.classList.remove('open')}function toggleHpMore(){const s=document.getElementById('hpMoreSheet');if(!s)return;s.classList.toggle('open');s.setAttribute('aria-hidden',s.classList.contains('open')?'false':'true')}document.addEventListener('click',function(e){const s=document.getElementById('hpMoreSheet');if(s&&s.classList.contains('open')&&!s.contains(e.target)&&!e.target.closest('[data-hp="more"]'))s.classList.remove('open')});</script>
+<script>function hpNav(view){if(view==='more'){toggleHpMore();return}if(typeof navigateTo==='function')navigateTo(view);document.querySelectorAll('.bottom-nav button[data-hp]').forEach(b=>b.classList.toggle('active',b.dataset.hp===view));toggleHpMore(false)}
+function toggleHpMore(force){
+  const s=document.getElementById('hpMoreSheet'), b=document.getElementById('hpMenuBackdrop');
+  if(!s)return;
+  const open=typeof force==='boolean'?force:!s.classList.contains('open');
+  s.classList.toggle('open',open); s.setAttribute('aria-hidden',open?'false':'true');
+  if(b)b.classList.toggle('open',open);
+  document.body.classList.toggle('hp-menu-active',open);
+}
+document.addEventListener('click',function(e){
+  const s=document.getElementById('hpMoreSheet');
+  if(s&&s.classList.contains('open')&&!s.contains(e.target)&&!e.target.closest('.hp-menu-trigger')&&!e.target.closest('.bottom-nav'))toggleHpMore(false);
+});
+document.addEventListener('keydown',function(e){if(e.key==='Escape')toggleHpMore(false)});
+</script>
 </body>
 </html>
