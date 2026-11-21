@@ -237,7 +237,14 @@ html[data-theme="dark"] .dock-item .lbl{color:#c4cbd6}
 #view-pami .lac-actions{display:flex;gap:4px;flex-shrink:0}
 #view-pami .lac-actions .btn{min-width:34px}
 #view-pami .lac-form-note{padding:9px 10px;border-radius:10px;background:var(--g50);border:1px dashed var(--border);font-size:.78em;color:var(--txt2);margin-bottom:10px}
-.pami-print-canvas{width:7.55in;min-height:5.05in;margin:0;padding:.25in .30in;background:#fff;color:#111827;border:1px solid #d8dee8;font-family:Arial,Helvetica,sans-serif;font-size:8pt;line-height:1.2;overflow:hidden}
+.pami-print-canvas{width:7.55in;min-height:5.05in;margin:0;padding:.25in .30in;background:#fff;color:#111827;border:1px solid #d8dee8;font-family:Arial,Helvetica,sans-serif;font-size:8pt;line-height:1.2;overflow:hidden;break-inside:avoid;page-break-inside:avoid}
+.pami-print-canvas.individual{height:5.05in}
+.pami-print-canvas.individual .pami-print-footer{margin-top:7px}
+.pami-print-canvas.individual .pami-print-section{margin-top:5px}
+.pami-print-canvas.individual .pami-print-table{font-size:7pt}
+.pami-print-canvas.individual .pami-print-table th,.pami-print-canvas.individual .pami-print-table td{padding:2.5px 4px}
+.pami-print-canvas.individual .pami-print-footer{font-size:6.8pt}
+@media(max-width:700px){.pami-print-canvas{width:100%;min-height:0}.pami-print-canvas.individual{height:auto}}
 .pami-print-head{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;border-bottom:2px solid #c8102e;padding-bottom:6px;margin-bottom:7px}
 .pami-print-brand{font-size:8pt;font-weight:800;color:#0b3d91;letter-spacing:.2px}
 .pami-print-title{font-size:11pt;font-weight:800;color:#111827}
@@ -2087,17 +2094,20 @@ function renderPAMI(){
 function renderLineaLactante(l){
   const edad=calcularEdadTexto(l.fNac);
   const ub=(l.sala||l.cama)?`${esc(l.sala||'—')} · Cama ${esc(l.cama||'—')}`:'Sin asignar';
-  return `<div class="linea" id="lac-${l.id}">
+  return `<div class="linea pami-list-card" id="lac-${l.id}">
     <div class="linea-head" onclick="this.parentElement.classList.toggle('open')">
       <span class="arr">▶</span>
-      <div style="flex:1;min-width:0">
-        <div style="font-weight:600;font-size:.9em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(l.nombre)}</div>
-        <div style="font-size:.75em;color:var(--g500)">HC ${esc(l.hc||'—')} · ${esc(edad)} · ${ub}</div>
+      <div class="lac-main">
+        <div class="lac-avatar">🍼</div>
+        <div class="lac-meta">
+          <div class="name">${esc(l.nombre)}</div>
+          <div class="sub">HC ${esc(l.hc||'—')} · ${esc(edad)} · ${ub}</div>
+        </div>
       </div>
       <div class="lac-actions">
-        <button class="btn sm morado" title="Emitir documento" onclick="event.stopPropagation();generarDocumentoLactante('${l.id}')">📄</button>
-        <button class="btn sm cyan" title="Editar" onclick="event.stopPropagation();editarLactante('${l.id}')">✏️</button>
-      <button class="btn sm rojo" title="Eliminar" onclick="event.stopPropagation();eliminarLactante('${l.id}')">🗑️</button>
+        <button class="btn sm morado" title="Emitir documento" aria-label="Emitir documento" onclick="event.stopPropagation();generarDocumentoLactante('${l.id}')">📄</button>
+        <button class="btn sm cyan" title="Editar" aria-label="Editar" onclick="event.stopPropagation();editarLactante('${l.id}')">✏️</button>
+        <button class="btn sm rojo" title="Eliminar" aria-label="Eliminar" onclick="event.stopPropagation();eliminarLactante('${l.id}')">🗑️</button>
       </div>
     </div>
     <div class="linea-body">
@@ -2194,7 +2204,7 @@ function generarDocumentoLactante(id){
   const edad=calcularEdadTexto(l.fNac);
   const codigo='PAMI-'+(l.hc||'SIN-HC')+'-'+(l.fIngreso||hoyISO()).replace(/-/g,'');
   const box=(k,v)=>'<div class="pami-print-box"><span class="k">'+k+'</span><span class="v">'+esc(v||'—')+'</span></div>';
-  const html='<div class="pami-print-canvas">'+
+  const html='<div class="pami-print-canvas individual">'+
     '<div class="pami-print-head"><div><div class="pami-print-brand">'+esc(state.config.hospital||'Hospital Pediátrico Docente José Ramón Martínez')+'</div>'+
     '<div class="pami-print-title">Registro de Lactante · PAMI</div><div class="pami-print-sub">Servicio de Pediatría · Documento individual</div></div>'+
     '<div class="pami-print-code">'+esc(codigo)+'<br>'+fmtD(hoyISO())+'</div></div>'+
@@ -2205,7 +2215,7 @@ function generarDocumentoLactante(id){
     '<tr><td>'+esc(l.dx||'—')+'</td><td>'+(l.varDx==='si'?esc(l.nuevoDx||'Sí, sin especificar'):'No')+'</td></tr></table></div>'+
     '<div class="pami-print-section"><h4>DATOS COMPLEMENTARIOS</h4><table class="pami-print-table"><tr><th>Dirección</th><th>Observaciones</th></tr>'+
     '<tr><td>'+esc(l.dir||'—')+'</td><td>'+esc(l.obs||'—')+'</td></tr></table></div>'+
-    '<div class="pami-print-footer"><div>Documento generado desde PediaHub · Datos almacenados localmente.</div>'+
+    '<div class="pami-print-footer"><div>Documento generado desde PediaHub · Registro asistencial.</div>'+
     '<div class="pami-print-firma"><div style="border-top:1px solid #475569;padding-top:2px">'+esc(state.config.jefe||'Dr. Rodney Jáuregui Alonso')+'<br>'+esc(state.config.cargo||'Jefe del Servicio de Pediatría')+'</div></div></div></div>';
   $('printArea').innerHTML=html; navigateTo('impresion'); setTimeout(()=>window.print(),350);
 }
