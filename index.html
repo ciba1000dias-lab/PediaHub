@@ -890,8 +890,7 @@ body.hp-menu-active .hp-menu-trigger .menu-bars i:nth-child(3){top:6px;transform
 .hp-fan-center{fill:var(--card);stroke:var(--border);stroke-width:1.5}
 .hp-fan-center-text{fill:var(--txt);font-size:10px;font-weight:800;text-anchor:middle}
 .hp-fan-center-sub{fill:var(--g500);font-size:7px;text-anchor:middle}
-.hp-status-fan.below{transform:rotate(180deg)}
-.hp-status-fan.below .hp-fan-svg{transform:rotate(180deg)}
+
 @media(max-width:430px){
  .hp-status-fan{width:286px;height:170px}
  .hp-fan-label{font-size:10px}
@@ -4396,9 +4395,9 @@ document.addEventListener('DOMContentLoaded',function(){setTimeout(render,200)})
   const fan=document.createElement('div');fan.className='hp-status-fan';
   const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');
   svg.setAttribute('viewBox','0 0 300 178');svg.classList.add('hp-fan-svg');
-  const cx=150,cy=164,r=136;
+  const cx=150,aboveSpace=bed.getBoundingClientRect().top>=190,cy=aboveSpace?164:14,r=136;
   HPST.forEach((item,i)=>{
-   const a0=270+i*30,a1=a0+30,mid=(a0+a1)/2;
+   const base=aboveSpace?270:90; const a0=base+i*30,a1=a0+30,mid=(a0+a1)/2;
    const path=document.createElementNS('http://www.w3.org/2000/svg','path');
    path.setAttribute('d',sectorPath(cx,cy,r,a0,a1));path.setAttribute('fill',item[2]);
    path.classList.add('hp-fan-sector');if(s.status===item[0])path.classList.add('f-current');
@@ -4431,7 +4430,6 @@ document.addEventListener('DOMContentLoaded',function(){setTimeout(render,200)})
   let top=rect.top-fh-gap;let above=true;
   if(top<6){top=rect.bottom+gap;above=false}
   fan.style.left=left+'px';fan.style.top=top+'px';
-  if(!above)fan.classList.add('below');
  }
  window.hpOpenStatusFan=openFan;
  window.addEventListener('resize',closeFan);
