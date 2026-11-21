@@ -2455,10 +2455,11 @@ function renderFarmacologia(){
     <h3>📋 Registro diario · Farmacología</h3>
     <div class="alert" style="margin-bottom:8px">Registro operativo del día. La fecha identifica cada actividad. No sustituye los datos reales del servicio ni genera hallazgos automáticamente.</div>
     <div class="row">
-      <div class="field"><label>📅 Fecha del registro</label><input type="date" id="fm_diario_fecha" value="${hoyISO()}"></div>
+      <div class="field"><label>📅 Fecha del registro</label><input type="date" id="fm_diario_fecha" value="${hoyISO()}" onchange="renderContextoMedicamentosFarmacologia()"></div>
       <div class="field"><label>Responsable</label><input id="fm_diario_resp" value="${esc(state.config.jefe||'Dr. Rodney Jáuregui Alonso')}"></div>
     </div>
     <div class="section-title" style="font-size:.92em">💊 Comité de Farmacología · actividad del día</div>
+    <div id="fm_d_medContext" style="margin-bottom:8px"></div>
     <div class="field"><label>Situación de los medicamentos / cuadro básico</label><textarea id="fm_d_med" placeholder="Disponibilidad, faltantes relevantes, presentaciones no disponibles, alternativas..."></textarea></div>
     <div class="field"><label>Problemas farmacoterapéuticos identificados</label><textarea id="fm_d_problemas" placeholder="Problemas reales detectados durante la actividad asistencial..."></textarea></div>
     <div class="field"><label>Intervenciones o decisiones realizadas</label><textarea id="fm_d_intervenciones" placeholder="Cambios, recomendaciones o decisiones tomadas por el servicio..."></textarea></div>
@@ -2504,13 +2505,27 @@ function renderFarmacologia(){
   <div class="section-title">📚 Actas formales anteriores</div><div id="fm_hist"></div>`;
   $('fmContenido').innerHTML=html;
   state.fmCasoCount=0; state.fmRAMCount=0; state.fmSubcomiteCount=0;
-  renderFarmacologiaDiarioHist(); renderFmHist();
+  renderFarmacologiaDiarioHist(); renderFmHist(); renderContextoMedicamentosFarmacologia();
+}
+function obtenerContextoMedicamentosFarmacologia(){
+  const familias=medFamiliasAusentes();
+  const alertas=familias.filter(f=>f.estado!=='ok').map(f=>({familia:f.nombre,estado:f.estado,medicamentos:f.meds.map(m=>({nombre:m.nombre,cantidad:Number(m.cantidad||0),estado:m.estado,presentacion:m.presentacion||''}))}));
+  const criticos=state.medicamentos.filter(m=>['critica','cero'].includes(m.estado)).map(m=>({nombre:m.nombre,familia:m.familia||'',cantidad:Number(m.cantidad||0),estado:m.estado}));
+  return {fecha:hoyISO(),familiasAlertas:alertas,medicamentosCriticos:criticos};
+}
+function renderContextoMedicamentosFarmacologia(){
+  const el=$('fm_d_medContext'); if(!el)return;
+  const ctx=obtenerContextoMedicamentosFarmacologia(), total=ctx.familiasAlertas.length+ctx.medicamentosCriticos.length;
+  if(!total){el.innerHTML='<div class="alert verde">✅ Sin alertas de disponibilidad registradas en Medicamentos al momento de la consulta.</div>';return;}
+  const fam=ctx.familiasAlertas.map(x=>'🚨 '+esc(x.familia)+' · '+(x.estado==='ausente'?'ausente':'sin cobertura suficiente')).join('<br>');
+  const med=ctx.medicamentosCriticos.slice(0,8).map(x=>'• '+esc(x.nombre)+(x.familia?' · '+esc(x.familia):'')+' · '+esc(x.estado)).join('<br>');
+  el.innerHTML='<div class="alert rojo"><b>🔗 Contexto automático desde Medicamentos</b><br>'+fam+(med?'<hr style="border:0;border-top:1px solid var(--border);margin:6px 0"><b>Medicamentos críticos/cero:</b><br>'+med:'')+'<div style="font-size:.75em;margin-top:6px">Dato informativo: confirma la situación real antes de incorporarla al registro del día.</div></div>';
 }
 function recogerRegistroFarmacologiaDiario(){
   return {id:uuid(),fecha:$('fm_diario_fecha')?.value||hoyISO(),responsable:$('fm_diario_resp')?.value||'',medicamentos:$('fm_d_med')?.value||'',problemas:$('fm_d_problemas')?.value||'',intervenciones:$('fm_d_intervenciones')?.value||'',casos:Number($('fm_d_casos')?.value||0),interv:Number($('fm_d_interv')?.value||0),uso:$('fm_d_uso')?.value||'',cultivos:$('fm_d_cultivos')?.value||'',ram:$('fm_d_ram')?.value||'',acuerdos:$('fm_d_acuerdos')?.value||'',actualizado:new Date().toISOString()};
 }
 function guardarRegistroFarmacologiaDiario(){
-  const r=recogerRegistroFarmacologiaDiario(), idx=state.registrosFarmacologiaDiarios.findIndex(x=>x.fecha===r.fecha);
+  const r=recogerRegistroFarmacologiaDiario(); r.contextoMedicamentos=obtenerContextoMedicamentosFarmacologia(); const idx=state.registrosFarmacologiaDiarios.findIndex(x=>x.fecha===r.fecha);
   if(idx>=0){r.id=state.registrosFarmacologiaDiarios[idx].id;state.registrosFarmacologiaDiarios[idx]=r;} else state.registrosFarmacologiaDiarios.push(r);
   state.registrosFarmacologiaDiarios.sort((a,b)=>String(b.fecha).localeCompare(String(a.fecha)));
   guardarDatos(); renderFarmacologiaDiarioHist(); toast(idx>=0?'Registro del día actualizado':'Registro diario guardado','ok');
