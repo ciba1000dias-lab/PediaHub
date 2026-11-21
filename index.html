@@ -367,6 +367,66 @@ body{padding-bottom:92px}
 .more-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}.more-grid button{min-height:58px;border:1px solid #e2e9f0;border-radius:13px;background:#f8fafc;color:#28435e;font-weight:700;font-size:.72em}
 @media(min-width:700px){body{padding-bottom:20px}.bottom-nav{display:none}.more-sheet{display:none!important}.wrap{padding:20px 18px 40px}.stat-grid{grid-template-columns:repeat(4,minmax(0,1fr))}.quick-grid{grid-template-columns:repeat(6,minmax(0,1fr))}.app-header{padding-left:max(18px,calc((100vw - 980px)/2))}}
 @media(max-width:380px){.quick-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.app-header .t1{font-size:.92em}}
+
+/* FINAL VISUAL LAYER · v1.1 */
+.command-status{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:7px;
+  margin:-2px 0 14px;
+}
+.command-status .status-cell{
+  min-width:0;
+  padding:9px 10px;
+  border:1px solid #dfe8ef;
+  border-radius:14px;
+  background:rgba(255,255,255,.86);
+  box-shadow:0 4px 14px rgba(18,63,120,.05);
+}
+.command-status .status-k{
+  display:block;
+  font-size:.57em;
+  font-weight:900;
+  letter-spacing:.7px;
+  color:#8291a0;
+}
+.command-status .status-v{
+  display:block;
+  margin-top:3px;
+  font-size:.78em;
+  font-weight:800;
+  color:#28435e;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.command-status .status-v.live{color:#0b7c83}
+.command-status .status-dot{
+  display:inline-block;
+  width:6px;height:6px;border-radius:50%;
+  background:#2f8f68;
+  margin-right:5px;
+  vertical-align:middle;
+}
+.dashboard-note{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding:9px 11px;
+  margin:0 0 14px;
+  border-radius:14px;
+  background:linear-gradient(90deg,#edf8f7,#f7fbfc);
+  border:1px solid #d6ece9;
+  color:#35536a;
+  font-size:.72em;
+  line-height:1.35;
+}
+.dashboard-note .note-ico{font-size:17px;flex:0 0 auto}
+@media(max-width:380px){
+  .command-status .status-cell{padding:8px 7px}
+  .command-status .status-v{font-size:.72em}
+}
+
 /* COMMAND CENTER */
 .hero-chief{position:relative;overflow:hidden;margin:0 0 14px;padding:20px 18px;border-radius:22px;color:#fff;background:linear-gradient(135deg,#0d315f 0%,#12517d 52%,#0b8d91 100%);box-shadow:0 14px 32px rgba(10,44,85,.20)}
 .hero-chief:after{content:"";position:absolute;width:150px;height:150px;border-radius:50%;right:-45px;top:-55px;background:rgba(255,255,255,.08);box-shadow:-55px 90px 0 rgba(255,255,255,.035)}
@@ -412,6 +472,14 @@ body{padding-bottom:92px}
     <div class="hero-sub" id="inicioSaludo">Cargando...</div>
     <div class="hero-meta"><span>🇨🇺 Hospital Pediátrico José Ramón Martínez</span><span>·</span><span>Servicio de Pediatría</span></div>
   </div>
+
+  <div class="command-status" aria-label="Estado de la sesión">
+    <div class="status-cell"><span class="status-k">FECHA</span><strong class="status-v" id="inicioFecha">—</strong></div>
+    <div class="status-cell"><span class="status-k">HORA LOCAL</span><strong class="status-v" id="inicioHora">—</strong></div>
+    <div class="status-cell"><span class="status-k">DATOS</span><strong class="status-v live"><span class="status-dot"></span>Sesión local</strong></div>
+  </div>
+
+  <div class="dashboard-note"><span class="note-ico">🧭</span><span>Centro de mando: la pantalla prioriza lo que requiere revisión del jefe y deja el detalle operativo dentro de cada módulo.</span></div>
 
   <div id="inicioBorrador"></div>
 
@@ -3525,6 +3593,14 @@ function compartirGmail(){
   window.location.href=`mailto:${to}?subject=${sub}&body=${body}`;
 }
 
+function actualizarRelojInicio(){
+  const now=new Date();
+  const fecha=now.toLocaleDateString('es-ES',{weekday:'short',day:'2-digit',month:'short',year:'numeric'});
+  const hora=now.toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'});
+  if($('inicioFecha')) $('inicioFecha').textContent=fecha.charAt(0).toUpperCase()+fecha.slice(1);
+  if($('inicioHora')) $('inicioHora').textContent=hora;
+}
+
 function initApp(){
   cargarDatos();
   if(state.config.tema) document.documentElement.dataset.theme=state.config.tema;
@@ -3534,6 +3610,8 @@ function initApp(){
     navigator.serviceWorker.register('sw.js').catch(()=>{});
   }
   renderInicio();
+  actualizarRelojInicio();
+  setInterval(actualizarRelojInicio,30000);
   setInterval(()=>{
     if(state.revisionActual && $('view-auditor').classList.contains('active')){
       if(state.seccionActual===1) sincronizarPaso1();
