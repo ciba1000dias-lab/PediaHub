@@ -4442,5 +4442,178 @@ window.renderGuardias=render;window.renderCalendarioGuardias=render;
 document.addEventListener('DOMContentLoaded',function(){setTimeout(render,200)});
 })();
 </script>
+
+<style id="bedmap-operativo-css">
+.hp-bedmap{margin-top:12px}
+.hp-bed-summary{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:10px 0}
+.hp-bed-kpi{background:var(--g50);border:1px solid var(--border);border-radius:12px;padding:10px;text-align:center}
+.hp-bed-kpi b{display:block;font-size:1.25em}.hp-bed-kpi span{font-size:.68em;color:var(--g500);font-weight:700}
+.hp-room{border:1px solid var(--border);border-radius:14px;margin:10px 0;background:var(--card);overflow:hidden}
+.hp-room-head{display:flex;align-items:center;gap:8px;padding:11px 12px;cursor:pointer;background:linear-gradient(135deg,var(--card),var(--g50))}
+.hp-room-head .arrow{margin-left:auto;transition:.2s}.hp-room.open .arrow{transform:rotate(180deg)}
+.hp-room-title{font-weight:800}.hp-room-sub{font-size:.72em;color:var(--g500);margin-top:2px}
+.hp-room-body{display:none;padding:0 10px 10px}.hp-room.open .hp-room-body{display:block}
+.hp-cub{border-left:4px solid var(--azul);margin:8px 0;border-radius:8px;background:var(--g50);overflow:hidden}
+.hp-cub-head{display:flex;align-items:center;justify-content:space-between;gap:6px;padding:8px 10px;cursor:pointer;font-size:.82em;font-weight:800}
+.hp-cub-body{display:none;padding:0 8px 8px}.hp-cub.open .hp-cub-body{display:flex;flex-wrap:wrap;gap:6px}
+.hp-bed{min-width:82px;flex:1 1 82px;max-width:125px;border:1.5px solid var(--border);border-radius:10px;padding:7px;background:var(--card);cursor:pointer;position:relative}
+.hp-bed b{display:block;font-size:.78em}.hp-bed small{display:block;font-size:.63em;color:var(--g500);margin-top:2px}
+.hp-bed.disponible{border-color:var(--verde);background:rgba(31,138,76,.07)}.hp-bed.ocupada{border-color:var(--azul);background:rgba(11,61,145,.08)}
+.hp-bed.cerrada{border-color:var(--rojo);background:rgba(200,16,46,.08)}.hp-bed.mantenimiento{border-color:var(--amarillo);background:rgba(245,158,11,.10)}
+.hp-bed.aislamiento{border-color:var(--morado);background:rgba(124,58,237,.08)}.hp-bed.reservada{border-color:var(--cyan);background:rgba(8,145,178,.08)}
+.hp-bed .dot{position:absolute;right:7px;top:7px;width:8px;height:8px;border-radius:50%;background:var(--g500)}
+.hp-bed.disponible .dot{background:var(--verde)}.hp-bed.ocupada .dot{background:var(--azul)}.hp-bed.cerrada .dot{background:var(--rojo)}.hp-bed.mantenimiento .dot{background:var(--amarillo)}.hp-bed.aislamiento .dot{background:var(--morado)}.hp-bed.reservada .dot{background:var(--cyan)}
+.hp-legend{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}.hp-legend span{font-size:.68em;padding:4px 7px;border-radius:12px;background:var(--g100)}
+.hp-bed-edit{display:grid;grid-template-columns:1fr 1fr;gap:8px}.hp-bed-edit .full{grid-column:1/-1}
+.hp-bed-note{font-size:.7em;color:var(--g500);line-height:1.4}
+@media(max-width:520px){.hp-bed-summary{grid-template-columns:repeat(2,1fr)}.hp-bed-edit{grid-template-columns:1fr}}
+</style>
+<script id="bedmap-operativo-v1">
+(function(){
+  const BEDKEY='hpjrm_bedmap_v1';
+  const STATUSES=[
+    ['disponible','Disponible para usar'],
+    ['ocupada','Ocupada'],
+    ['cerrada','Cerrada'],
+    ['mantenimiento','Mantenimiento / reparación'],
+    ['aislamiento','Aislamiento'],
+    ['reservada','Reservada']
+  ];
+  function escB(v){return typeof esc==='function'?esc(v==null?'':String(v)):String(v==null?'':v).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
+  function mkRange(n1,n2,type='Cama',status='disponible',reason=''){
+    const a=[]; for(let n=n1;n<=n2;n++)a.push({id:String(n),label:type+' '+n,type,status,reason}); return a;
+  }
+  function seed(){
+    const rooms=[];
+    rooms.push({id:'miscelanea',name:'Miscelánea 51',icon:'🛏️',note:'51 espacios. La numeración y los cierres conocidos se conservan del mapa actual.',cubs:[
+      {id:'m1',name:'Cubículo 1',spaces:mkRange(1,5,'Cama','cerrada','Baño roto')},
+      {id:'m2',name:'Cubículo 2',spaces:mkRange(6,11)},
+      {id:'m3',name:'Cubículo 3',spaces:mkRange(12,17)},
+      {id:'m4',name:'Cubículo 4',spaces:mkRange(18,23,'Cuna')},
+      {id:'m5',name:'Cubículo 5',spaces:mkRange(24,30)},
+      {id:'m6',name:'Cubículo 6',spaces:[...mkRange(31,33),...mkRange(34,35,'Cuna')]},
+      {id:'m7',name:'Cubículo 7',spaces:mkRange(36,41)},
+      {id:'m8',name:'Cubículo 8',spaces:mkRange(42,51)}
+    ]});
+    rooms.push({id:'eda',name:'EDA',icon:'🧸',note:'8 cunas habituales.',cubs:[{id:'e1',name:'Sala EDA',spaces:mkRange(1,8,'Cuna')}]});
+    const r1=[...mkRange(1,27)]; r1[26].status='cerrada'; r1[26].reason='Baño obstruido';
+    rooms.push({id:'resp1',name:'Respiratorio 1',icon:'🫁',note:'27 espacios · 23 camas + 4 cunas. Se conocen 9 espacios no disponibles; solo el cierre de la cama 27 está individualizado. Los otros 8 quedan como no individualizados hasta definir su número.',cubs:[
+      {id:'r1c1',name:'Cubículo 1',spaces:r1.slice(0,4)},
+      {id:'r1c2',name:'Cubículo 2',spaces:r1.slice(4,8)},
+      {id:'r1c3',name:'Cubículo 3',spaces:r1.slice(8,12)},
+      {id:'r1c4',name:'Cubículo 4',spaces:r1.slice(12,16)},
+      {id:'r1c5',name:'Cubículo 5',spaces:r1.slice(16,20)},
+      {id:'r1c6',name:'Cubículo 6',spaces:r1.slice(20,24)},
+      {id:'r1c7',name:'Cubículo 7',spaces:r1.slice(24,27)}
+    ],unassignedClosed:8});
+    rooms.push({id:'resp2',name:'Respiratorio 2',icon:'🫁',note:'20 espacios · 18 camas + 2 cunas. Cubiculación no registrada en el mapa actual.',cubs:[{id:'r2all',name:'Sala / distribución actual',spaces:[...mkRange(1,18),...mkRange(19,20,'Cuna')]}]});
+    rooms.push({id:'guardia',name:'Cuerpo de Guardia / Emergencia',icon:'🚑',note:'2 camas.',cubs:[{id:'g1',name:'Emergencia',spaces:mkRange(1,2)}]});
+    return {version:1,rooms};
+  }
+  function load(){
+    try{const x=JSON.parse(localStorage.getItem(BEDKEY)||'null');if(x&&x.version===1&&x.rooms)return x}catch(e){}
+    const x=seed();localStorage.setItem(BEDKEY,JSON.stringify(x));return x;
+  }
+  let map=load();
+  function allSpaces(){
+    const a=[]; map.rooms.forEach(r=>r.cubs.forEach(c=>c.spaces.forEach(s=>a.push({...s,room:r.name,cub:c.name}))));
+    return a;
+  }
+  function stats(){
+    const a=allSpaces(), un=map.rooms.reduce((n,r)=>n+(r.unassignedClosed||0),0);
+    const physical=a.length+un, closed=a.filter(s=>['cerrada','mantenimiento'].includes(s.status)).length+un;
+    return {physical,closed,operational:physical-closed,available:a.filter(s=>s.status==='disponible').length,occupied:a.filter(s=>s.status==='ocupada').length};
+  }
+  function syncProfile(){
+    try{
+      const p=state.serviceProfile||{};
+      p.structure=p.structure||{};
+      const st=stats();
+      p.structure.physicalCapacity=st.physical;
+      p.structure.operationalCapacity=st.operational;
+      p.structure.unavailable=st.closed;
+      state.serviceProfile=p;
+      localStorage.setItem('hpjrm_service_profile_v1',JSON.stringify(p));
+      return st;
+    }catch(e){return stats()}
+  }
+  function statusLabel(k){return (STATUSES.find(x=>x[0]===k)||['',''])[1]}
+  function bedHtml(s){
+    return '<button type="button" class="hp-bed '+escB(s.status)+'" onclick="hpBedEdit('+JSON.stringify(s.room||'')+','+JSON.stringify(s.cub||'')+','+JSON.stringify(s.id)+')" title="Tocar para cambiar estado"><span class="dot"></span><b>'+escB(s.type)+' '+escB(s.id)+'</b><small>'+escB(statusLabel(s.status))+'</small></button>';
+  }
+  window.hpBedEdit=function(roomName,cubName,id){
+    const r=map.rooms.find(x=>x.name===roomName); if(!r)return;
+    const c=r.cubs.find(x=>x.name===cubName); if(!c)return;
+    const s=c.spaces.find(x=>String(x.id)===String(id)); if(!s)return;
+    const body='<div class="hp-bed-edit">'+
+      '<div class="field"><label>Espacio</label><input value="'+escB(s.type+' '+s.id)+'" disabled></div>'+
+      '<div class="field"><label>Estado operativo</label><select id="hpBedStatus">'+STATUSES.map(x=>'<option value="'+x[0]+'" '+(x[0]===s.status?'selected':'')+'>'+x[1]+'</option>').join('')+'</select></div>'+
+      '<div class="field full"><label>Motivo / observación</label><textarea id="hpBedReason" placeholder="Ej.: baño roto, reparación de cama, aislamiento...">'+escB(s.reason||'')+'</textarea></div>'+
+      '<div class="field full hp-bed-note">Al guardar, la capacidad operacional y el total de no disponibles se recalculan automáticamente.</div></div>';
+    const modal=document.getElementById('modal');
+    if(typeof openModal==='function') openModal('🛏️ Estado del espacio',body,[
+      {text:'Cancelar',cls:'btn gris',action:'closeModal()'},
+      {text:'Guardar',cls:'btn verde',action:'hpBedSave('+JSON.stringify(roomName)+','+JSON.stringify(cubName)+','+JSON.stringify(id)+')'}
+    ]);
+    else if(modal){modal.innerHTML=body;modal.style.display='block'}
+  };
+  window.hpBedSave=function(roomName,cubName,id){
+    const r=map.rooms.find(x=>x.name===roomName); if(!r)return;
+    const c=r.cubs.find(x=>x.name===cubName); if(!c)return;
+    const s=c.spaces.find(x=>String(x.id)===String(id)); if(!s)return;
+    s.status=document.getElementById('hpBedStatus').value;
+    s.reason=document.getElementById('hpBedReason').value.trim();
+    localStorage.setItem(BEDKEY,JSON.stringify(map)); syncProfile(); if(typeof closeModal==='function')closeModal(); renderBedMap();
+    if(typeof toast==='function')toast('Estado actualizado','ok');
+  };
+  function renderRoom(r){
+    const stRoom=r.cubs.reduce((acc,c)=>{c.spaces.forEach(s=>{acc.total++;if(['cerrada','mantenimiento'].includes(s.status))acc.off++;if(s.status==='disponible')acc.avail++;});return acc},{total:0,off:0,avail:0});
+    const open=window.hpOpenRooms&&window.hpOpenRooms[r.id]!==false;
+    return '<div class="hp-room '+(open?'open':'')+'" id="room-'+escB(r.id)+'"><div class="hp-room-head" onclick="hpToggleRoom('+JSON.stringify(r.id)+')"><div style="font-size:22px">'+escB(r.icon)+'</div><div><div class="hp-room-title">'+escB(r.name)+'</div><div class="hp-room-sub">'+stRoom.total+' espacios · '+stRoom.avail+' disponibles · '+stRoom.off+' no operativos'+(r.unassignedClosed?' · '+r.unassignedClosed+' no individualizados':'')+'</div></div><div class="arrow">⌄</div></div><div class="hp-room-body">'+
+      '<div class="hp-bed-note" style="padding:7px 2px">'+escB(r.note||'')+'</div>'+
+      r.cubs.map(c=>renderCub(r,c)).join('')+'</div></div>';
+  }
+  function renderCub(r,c){
+    const off=c.spaces.filter(s=>['cerrada','mantenimiento'].includes(s.status)).length, av=c.spaces.filter(s=>s.status==='disponible').length;
+    const open=window.hpOpenCubs&&window.hpOpenCubs[r.id+'|'+c.id]===true;
+    return '<div class="hp-cub '+(open?'open':'')+'"><div class="hp-cub-head" onclick="hpToggleCub('+JSON.stringify(r.id)+','+JSON.stringify(c.id)+')"><span>▸ '+escB(c.name)+' · '+c.spaces.length+' espacios · '+av+' disponibles · '+off+' no operativos</span><span>⌄</span></div><div class="hp-cub-body">'+c.spaces.map(s=>bedHtml({...s,room:r.name,cub:c.name})).join('')+'</div></div>';
+  }
+  window.hpOpenRooms={}; window.hpOpenCubs={};
+  window.hpToggleRoom=function(id){window.hpOpenRooms[id]=!(window.hpOpenRooms[id]!==false);renderBedMap()};
+  window.hpToggleCub=function(r,c){window.hpOpenCubs[r+'|'+c]=!(window.hpOpenCubs[r+'|'+c]===true);renderBedMap()};
+  window.renderBedMap=function(){
+    const host=document.getElementById('hp-bedmap-host'); if(!host)return;
+    const st=syncProfile();
+    host.innerHTML='<div class="hp-bed-summary">'+
+      '<div class="hp-bed-kpi"><b>'+st.physical+'</b><span>ESPACIOS FÍSICOS</span></div>'+
+      '<div class="hp-bed-kpi"><b>'+st.operational+'</b><span>OPERACIONALES</span></div>'+
+      '<div class="hp-bed-kpi"><b>'+st.available+'</b><span>DISPONIBLES</span></div>'+
+      '<div class="hp-bed-kpi"><b>'+st.closed+'</b><span>NO OPERATIVOS</span></div></div>'+
+      '<div class="hp-legend"><span>🟢 Disponible</span><span>🔵 Ocupada</span><span>🔴 Cerrada</span><span>🟡 Mantenimiento</span><span>🟣 Aislamiento</span><span>🔷 Reservada</span></div>'+
+      map.rooms.map(renderRoom).join('')+
+      '<div class="hp-bed-note" style="margin:8px 2px">Toca una cama/cuna para cambiar su estado. Los totales se actualizan y quedan guardados en este dispositivo.</div>';
+  };
+  window.renderServicioBeds=function(){
+    let host=document.getElementById('hp-bedmap-host');
+    if(!host){
+      const v=document.getElementById('view-servicio'); if(!v)return;
+      host=document.createElement('div');host.id='hp-bedmap-host';host.className='hp-service-card hp-bedmap';
+      v.prepend(host);
+    }
+    renderBedMap();
+  };
+  const oldNav=window.navigateTo;
+  window.navigateTo=function(v){
+    if(v==='servicio'){
+      const out=oldNav?oldNav(v):null;
+      setTimeout(()=>renderServicioBeds(),30);
+      return out;
+    }
+    return oldNav?oldNav(v):null;
+  };
+  document.addEventListener('DOMContentLoaded',function(){setTimeout(renderServicioBeds,80)});
+})();
+</script>
+
 </body>
 </html>
