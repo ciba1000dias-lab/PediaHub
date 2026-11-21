@@ -880,7 +880,28 @@ body.hp-menu-active .hp-menu-trigger .menu-bars i:nth-child(3){top:6px;transform
 @media(max-width:520px){.hp-bed-summary{grid-template-columns:repeat(2,1fr)}.hp-bed-edit{grid-template-columns:1fr}}
 </style>
 </style>
-</head>
+<style id="hp-bed-status-fan-css">
+.hp-status-fan{position:fixed;z-index:1500;display:grid;grid-template-columns:repeat(2,minmax(118px,1fr));gap:7px;padding:9px;background:var(--card);border:1px solid var(--border);border-radius:18px;box-shadow:0 14px 38px rgba(0,0,0,.28);width:min(265px,calc(100vw - 20px));transform-origin:center;animation:hpFanIn .16s ease-out}
+@keyframes hpFanIn{from{opacity:0;transform:scale(.82)}to{opacity:1;transform:scale(1)}}
+.hp-status-fan .hp-fan-title{grid-column:1/-1;font-size:.72em;font-weight:800;color:var(--txt2);padding:2px 4px 1px;display:flex;justify-content:space-between;align-items:center}
+.hp-status-fan .hp-fan-title small{font-weight:500;color:var(--g500)}
+.hp-status-fan button{border:0;border-radius:12px;padding:10px 7px;min-height:48px;color:#fff;font-weight:800;font-size:.72em;line-height:1.1;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,.16);transition:transform .12s,filter .12s}
+.hp-status-fan button:active{transform:scale(.95)}
+.hp-status-fan button:hover{filter:brightness(1.08)}
+.hp-status-fan .f-disponible{background:linear-gradient(135deg,#16a34a,#15803d)}
+.hp-status-fan .f-ocupada{background:linear-gradient(135deg,#2563eb,#1d4ed8)}
+.hp-status-fan .f-cerrada{background:linear-gradient(135deg,#dc2626,#b91c1c)}
+.hp-status-fan .f-mantenimiento{background:linear-gradient(135deg,#f59e0b,#d97706)}
+.hp-status-fan .f-aislamiento{background:linear-gradient(135deg,#7c3aed,#5b21b6)}
+.hp-status-fan .f-reservada{background:linear-gradient(135deg,#0891b2,#0e7490)}
+.hp-status-fan .f-current{outline:3px solid rgba(255,255,255,.85);outline-offset:-5px}
+.hp-status-fan .f-arrow{position:absolute;width:14px;height:14px;background:var(--card);border-left:1px solid var(--border);border-top:1px solid var(--border);transform:rotate(45deg);top:-8px;left:var(--hp-arrow-left,50%)}
+.hp-status-fan.below .f-arrow{top:auto;bottom:-8px;transform:rotate(225deg)}
+@media(max-width:430px){
+ .hp-status-fan{grid-template-columns:repeat(2,minmax(0,1fr));width:min(250px,calc(100vw - 16px));gap:6px;padding:8px;border-radius:16px}
+ .hp-status-fan button{min-height:46px;font-size:.68em;padding:8px 5px}
+}
+</style></head>
 <body>
 
 <header class="app-header">
@@ -4284,7 +4305,7 @@ window.hpToggleRoom=id=>{const opening=!window.hpOpenRooms[id];window.hpOpenRoom
 window.hpToggleCub=(r,c)=>{const k=r+'|'+c;const opening=!window.hpOpenCubs[k];Object.keys(window.hpOpenCubs).forEach(x=>{if(x.indexOf(r+'|')===0)delete window.hpOpenCubs[x]});if(opening)window.hpOpenCubs[k]=true;renderBedMap()};
 window.renderBedMap=function(){let h=document.getElementById('hp-bedmap-host');if(!h)return;let x=sync();h.innerHTML='<div class="hp-bed-summary"><div class="hp-bed-kpi"><b>'+x.physical+'</b><span>FÍSICOS</span></div><div class="hp-bed-kpi"><b>'+x.operational+'</b><span>OPERACIONALES</span></div><div class="hp-bed-kpi"><b>'+x.available+'</b><span>DISPONIBLES</span></div><div class="hp-bed-kpi"><b>'+x.closed+'</b><span>NO OPERATIVOS</span></div></div><div class="hp-legend"><span>🟢 Disponible</span><span>🔵 Ocupada</span><span>🔴 Cerrada</span><span>🟡 Mantenimiento</span><span>🟣 Aislamiento</span><span>🔷 Reservada</span></div>'+map.rooms.map(r=>{let a=all().filter(s=>r.cubs.some(c=>c.spaces.includes(s))),off=a.filter(s=>['cerrada','mantenimiento'].includes(s.status)).length,av=a.filter(s=>s.status==='disponible').length;return '<div class="hp-room '+(window.hpOpenRooms[r.id]?'open':'')+'"><div class="hp-room-head" data-hp-room="'+E(r.id)+'"><div style="font-size:22px">'+r.icon+'</div><div><div class="hp-room-title">'+E(r.name)+'</div><div class="hp-room-sub">'+a.length+' espacios · '+av+' disponibles · '+off+' no operativos</div></div><div class="arrow">'+(window.hpOpenRooms[r.id]?'⌃':'⌄')+'</div></div><div class="hp-room-body">'+r.cubs.map(c=>'<div class="hp-cub '+(window.hpOpenCubs[r.id+'|'+c.id]?'open':'')+'"><div class="hp-cub-head" data-hp-cub-room="'+E(r.id)+'" data-hp-cub-id="'+E(c.id)+'"><span>▸ '+E(c.name)+' · '+c.spaces.length+' espacios</span><span>⌄</span></div><div class="hp-cub-body">'+c.spaces.map(s=>bed(r,c,s)).join('')+'</div></div>').join('')+'</div></div>'}).join('')+'<div class="hp-bed-note">Toca una sala para desplegarla; luego toca un cubículo para ver sus camas o cunas. Toca una cama/cuna para cambiar su estado.</div>'}
 
-if(!window.__hpBedMapDelegated){window.__hpBedMapDelegated=true;document.addEventListener('click',function(e){const room=e.target.closest('[data-room-toggle]');if(room){window.hpToggleRoom(room.dataset.roomToggle);return}const cub=e.target.closest('[data-cub-toggle-room]');if(cub){window.hpToggleCub(cub.dataset.cubToggleRoom,cub.dataset.cubToggleId);return}const bed=e.target.closest('[data-bed-room]');if(bed){window.hpBedEdit(bed.dataset.bedRoom,bed.dataset.bedCub,bed.dataset.bedId);return}})}
+if(!window.__hpBedMapDelegated){window.__hpBedMapDelegated=true;document.addEventListener('click',function(e){const room=e.target.closest('[data-hp-room]');if(room){window.hpCloseStatusFan();window.hpToggleRoom(room.dataset.hpRoom);return}const cub=e.target.closest('[data-hp-cub-room]');if(cub){window.hpCloseStatusFan();window.hpToggleCub(cub.dataset.hpCubRoom,cub.dataset.hpCubId);return}const bed=e.target.closest('[data-bed-room]');if(bed){e.preventDefault();e.stopPropagation();window.hpOpenStatusFan(bed);return}if(!e.target.closest('.hp-status-fan'))window.hpCloseStatusFan()})}
 window.renderServicioBeds=function(){let v=document.getElementById('view-servicio');if(!v)return;let h=document.getElementById('hp-bedmap-host');if(!h){h=document.createElement('div');h.id='hp-bedmap-host';h.className='hp-service-card hp-bedmap';v.innerHTML='';v.appendChild(h)}renderBedMap()}
 document.addEventListener('DOMContentLoaded',()=>setTimeout(renderServicioBeds,100));
 const oldNav=window.navigateTo;window.navigateTo=function(v){if(v==='servicio'){let el=document.getElementById('view-servicio');document.querySelectorAll('.view').forEach(x=>x.classList.remove('active'));if(el)el.classList.add('active');window.scrollTo({top:0,behavior:'smooth'});setTimeout(renderServicioBeds,30);return}return oldNav?oldNav(v):null};
@@ -4332,5 +4353,40 @@ document.addEventListener('DOMContentLoaded',function(){setTimeout(render,200)})
 
 
 
-</body>
+<script id="hp-bed-status-fan-js">
+(function(){
+ const HPST=[['disponible','Disponible para usar','f-disponible'],['ocupada','Ocupada','f-ocupada'],['cerrada','Cerrada','f-cerrada'],['mantenimiento','Mantenimiento / reparación','f-mantenimiento'],['aislamiento','Aislamiento','f-aislamiento'],['reservada','Reservada','f-reservada']];
+ function closeFan(){const x=document.querySelector('.hp-status-fan');if(x)x.remove();window.__hpFanBed=null}
+ window.hpCloseStatusFan=closeFan;
+ window.hpOpenStatusFan=function(bed){
+   closeFan();
+   const rid=bed.dataset.bedRoom,cid=bed.dataset.bedCub,id=bed.dataset.bedId;
+   const r=map.rooms.find(x=>x.id===rid),c=r&&r.cubs.find(x=>x.id===cid),s=c&&c.spaces.find(x=>x.id===id);if(!s)return;
+   window.__hpFanBed={rid:rid,cid:cid,id:id};
+   const fan=document.createElement('div');fan.className='hp-status-fan';fan.setAttribute('role','dialog');
+   fan.innerHTML='<div class="hp-fan-title">🛏️ '+E(s.type+' '+s.id)+'<small>Selecciona estado</small></div>'+
+     HPST.map(x=>'<button type="button" class="'+x[2]+' '+(s.status===x[0]?'f-current':'')+'" data-hp-status="'+x[0]+'">'+x[1]+'</button>').join('')+
+     '<span class="f-arrow"></span>';
+   document.body.appendChild(fan);
+   fan.querySelectorAll('[data-hp-status]').forEach(b=>b.addEventListener('click',function(ev){ev.stopPropagation();window.hpSetStatusFromFan(this.dataset.hpStatus)}));
+   const rect=bed.getBoundingClientRect(),vw=window.innerWidth,vh=window.innerHeight;
+   const fw=fan.offsetWidth,fh=fan.offsetHeight,gap=10;
+   let left=rect.left+rect.width/2-fw/2;
+   left=Math.max(8,Math.min(left,vw-fw-8));
+   let top=rect.bottom+gap,below=true;
+   if(top+fh>vh-8 && rect.top-fh-gap>=8){top=rect.top-fh-gap;below=false}
+   fan.style.left=left+'px';fan.style.top=top+'px';if(!below)fan.classList.add('below');
+   const arrow=Math.max(18,Math.min(fw-18,rect.left+rect.width/2-left));fan.style.setProperty('--hp-arrow-left',(arrow-7)+'px');
+ };
+ window.hpSetStatusFromFan=function(status){
+   const q=window.__hpFanBed;if(!q)return;
+   const r=map.rooms.find(x=>x.id===q.rid),c=r&&r.cubs.find(x=>x.id===q.cid),s=c&&c.spaces.find(x=>x.id===q.id);if(!s)return;
+   s.status=status;
+   localStorage.setItem(K,JSON.stringify(map));sync();closeFan();renderBedMap();
+   if(typeof toast==='function')toast('Estado: '+(ST.find(x=>x[0]===status)||['',status])[1],'ok');
+ };
+ window.addEventListener('resize',closeFan);
+ window.addEventListener('scroll',closeFan,{passive:true});
+})();
+</script></body>
 </html>
