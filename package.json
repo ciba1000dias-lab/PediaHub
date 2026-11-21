@@ -1,0 +1,19 @@
+{
+  "name": "hpjrm",
+  "version": "6.2.0",
+  "private": true,
+  "description": "HPJRM · Hub del Jefe de Pediatría",
+  "scripts": {
+    "prepare:web": "node scripts/prepare-web.mjs",
+    "cap:sync": "npm run prepare:web && npx cap sync android",
+    "cap:open": "npm run prepare:web && npx cap sync android && npx cap open android",
+    "cap:build": "npm run prepare:web && npx cap sync android && cd android && ./gradlew assembleDebug"
+  },
+  "dependencies": {
+    "@capacitor/android": "^7.4.0",
+    "@capacitor/core": "^7.4.0"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^7.4.0"
+  }
+}
