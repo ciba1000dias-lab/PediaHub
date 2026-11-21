@@ -1001,6 +1001,10 @@ body.hp-menu-active .hp-menu-trigger .menu-bars i:nth-child(3){top:6px;transform
 <section class="view" id="view-guardias">
   <div class="card morado">
     <h3>🩺 Distribuidor de guardias</h3>
+    <div class="alert morado" style="margin-bottom:10px">
+      <strong>📅 Planificación mensual</strong>
+      El ciclo vigente comienza el <b>21 de noviembre de 2026</b> con <b>🟣 Equipo 4</b> y mantiene 24×72. La planificación del mes siguiente se revisa el <b>día 25</b>. Diciembre y la primera oncena de enero permanecen cargados como planificación especial de fin de año.
+    </div>
     <div class="row">
       <div class="field"><label>Fecha inicio</label><input type="date" id="g_inicio"></div>
       <div class="field"><label>Fecha fin</label><input type="date" id="g_fin"></div>
@@ -1633,7 +1637,7 @@ const ROLES_EQUIPO = [
 ];
 const EMOJI_EQUIPO = {1:'🔴',2:'🟡',3:'🔵',4:'🟣'};
 const GUARDIA_ESPECIAL_HASTA_11_ENERO = {
-"2026-12-27":["PENDIENTE DE DEFINIR"],"2026-12-28":["Rodney Jáuregui Alonso","Janet Rodríguez Hernández","MGI (pendiente de identificar)"],"2026-12-29":["Meivel Caridad Pérez González","Azzeb Águila Alemu","Noel Duarte Izquierdo"],"2026-12-30":["Yelaine Boucourt","Katileydi Chamizo Perdomo","Beatriz","MGI (pendiente de identificar)"],"2026-12-31":["Dalia Acosta Figueroa","Daylen Gómez González","Yania (pendiente de identificar)"],"2027-01-01":["Duvania Alcántara Castaño","Ruberkys Garcia Vargas","Zaydenis"],"2027-01-02":["Rodney Jáuregui Alonso","Janet Rodríguez Hernández","Yelaine Zambrana"],"2027-01-03":["Meivel Caridad Pérez González","Azzeb Águila Alemu","Noel Duarte Izquierdo"],"2027-01-04":["Yelaine Boucourt","Katileydi Chamizo Perdomo","Beatriz","MGI (pendiente de identificar)"],"2027-01-05":["Duvania Alcántara Castaño","Ruberkys Garcia Vargas","Zaydenis","MGI (pendiente de identificar)"],"2027-01-06":["Janet Rodríguez Hernández","Dalia Acosta Figueroa","Daylen Gómez González","Yelaine Zambrana"],"2027-01-07":["Meivel Caridad Pérez González","Azzeb Águila Alemu","Noel Duarte Izquierdo"],"2027-01-08":["Yelaine Boucourt","Katileydi Chamizo Perdomo","Beatriz"],"2027-01-09":["Duvania Alcántara Castaño","Zaydenis","Ruberkys Garcia Vargas"],"2027-01-10":["Janet Rodríguez Hernández","Dalia Acosta Figueroa","Daylen Gómez González"],"2027-01-11":["Meivel Caridad Pérez González","Azzeb Águila Alemu","Noel Duarte Izquierdo"]};
+"2026-12-28":["Rodney Jáuregui Alonso","Janet Rodríguez Hernández","MGI (pendiente de identificar)"],"2026-12-29":["Meivel Caridad Pérez González","Azzeb Águila Alemu","Noel Duarte Izquierdo"],"2026-12-30":["Yelaine Boucourt","Katileydi Chamizo Perdomo","Beatriz","MGI (pendiente de identificar)"],"2026-12-31":["Dalia Acosta Figueroa","Daylen Gómez González","Yania (pendiente de identificar)"],"2027-01-01":["Duvania Alcántara Castaño","Ruberkys Garcia Vargas","Zaydenis"],"2027-01-02":["Rodney Jáuregui Alonso","Janet Rodríguez Hernández","Yelaine Zambrana"],"2027-01-03":["Meivel Caridad Pérez González","Azzeb Águila Alemu","Noel Duarte Izquierdo"],"2027-01-04":["Yelaine Boucourt","Katileydi Chamizo Perdomo","Beatriz","MGI (pendiente de identificar)"],"2027-01-05":["Duvania Alcántara Castaño","Ruberkys Garcia Vargas","Zaydenis","MGI (pendiente de identificar)"],"2027-01-06":["Janet Rodríguez Hernández","Dalia Acosta Figueroa","Daylen Gómez González","Yelaine Zambrana"],"2027-01-07":["Meivel Caridad Pérez González","Azzeb Águila Alemu","Noel Duarte Izquierdo"],"2027-01-08":["Yelaine Boucourt","Katileydi Chamizo Perdomo","Beatriz"],"2027-01-09":["Duvania Alcántara Castaño","Zaydenis","Ruberkys Garcia Vargas"],"2027-01-10":["Janet Rodríguez Hernández","Dalia Acosta Figueroa","Daylen Gómez González"],"2027-01-11":["Meivel Caridad Pérez González","Azzeb Águila Alemu","Noel Duarte Izquierdo"]};
 const GUARDIA_EQUIPOS = {
   1:['Dalia Acosta Figueroa','Daylen Gómez González','Janet Rodríguez Hernández','Yadira Días','Yelaine Zambrana'],
   2:['Azzeb Águila Alemu','Meivel Caridad Pérez González','Sisy Ruiz Ortega','Noel Duarte Izquierdo'],
@@ -1677,7 +1681,17 @@ const state = {
   "Yelaine Zambrana": "+5354099343",
   "Zaydenis": "+5355256340"
 },
-  version:'6.2'
+  version:'6.3',
+  agendaAsistente:{
+    planificacionGuardiasDia:25,
+    guardiasVigentesDesde:'2026-11-21',
+    equipoApertura:4,
+    coberturaPlanificadaHasta:'2027-01-11',
+    resumenDiario:true,
+    correoDiarioProgramado:true,
+    correoDiarioHoraObjetivo:'08:00',
+    correoDiarioDestinatario:'docenciahpjrm@gmail.com'
+  }
 };
 
 const KEYS = {
@@ -1840,7 +1854,7 @@ function confirmar(msg, onOk){
    ============================================================ */
 function obtenerGuardiaProgramada(fecha){
   if(GUARDIA_ESPECIAL_HASTA_11_ENERO[fecha]) return {fecha,especial:true,equipo:null,nombres:GUARDIA_ESPECIAL_HASTA_11_ENERO[fecha]};
-  const ini=(state.guardiasConfig||{}).aperturaFecha||'2026-11-09', equipo=calcularEquipoPorFecha(fecha,ini);
+  const ini=(state.guardiasConfig||{}).aperturaFecha||'2026-11-21', equipo=calcularEquipoPorFecha(fecha,ini);
   if(!equipo) return null;
   return {fecha,especial:false,equipo,nombres:GUARDIA_EQUIPOS[equipo]||[]};
 }
@@ -2509,7 +2523,7 @@ function borrarHistorial(){
 
 function renderGuardias(){
   const cfg=state.guardiasConfig||{};
-  if(!$('g_inicio').value){ $('g_inicio').value=cfg.aperturaFecha||hoyISO(); }
+  if(!$('g_inicio').value){ $('g_inicio').value=cfg.aperturaFecha||'2026-11-21'; }
   if(!$('g_fin').value){ const fin=cfg.calendarioFin||'2027-01-11'; $('g_fin').value=fin; }
   if(cfg.apertura) $('g_apertura').value=String(cfg.apertura);
   renderEquiposForm();
