@@ -1,0 +1,8 @@
+{
+  "appId": "cu.hpjrm.pediatria",
+  "appName": "HPJRM",
+  "webDir": "www",
+  "server": {
+    "androidScheme": "https"
+  }
+}
