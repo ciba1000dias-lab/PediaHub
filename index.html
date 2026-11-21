@@ -674,6 +674,25 @@ body{padding-bottom:105px}
   .dashboard-secondary{grid-template-columns:1fr 1fr}
 }
 
+
+/* PEDIATRÍA HPJRM · STRUCTURAL COMMAND CENTER v3 */
+.hp-command-shell{display:flex;flex-direction:column;gap:14px}
+.hp-topline{display:flex;justify-content:space-between;align-items:center;padding:0 4px;color:#73869a;font-size:10px;font-weight:900;letter-spacing:1.2px}
+.hp-topline-left{display:flex;align-items:center;gap:7px}.hp-live-dot{width:7px;height:7px;border-radius:50%;background:#35c69a;box-shadow:0 0 0 4px rgba(53,198,154,.12)}.hp-divider{opacity:.35}.hp-topline-right{text-transform:uppercase}
+.hp-hero{position:relative;min-height:250px;border-radius:30px;overflow:hidden;isolation:isolate;color:#fff;background:linear-gradient(135deg,#041526 0%,#073d68 52%,#07858b 100%);box-shadow:0 24px 55px rgba(4,25,45,.22)}
+.hp-hero-grid{position:absolute;inset:0;opacity:.25;background-image:linear-gradient(rgba(255,255,255,.07) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.07) 1px,transparent 1px);background-size:30px 30px;mask-image:linear-gradient(135deg,#000 20%,transparent 85%)}
+.hp-orbit{position:absolute;border:1px solid rgba(129,239,220,.24);border-radius:50%}.hp-orbit-a{width:270px;height:270px;right:-105px;top:-115px}.hp-orbit-b{width:190px;height:190px;right:-55px;top:-75px;border-color:rgba(255,255,255,.13)}
+.hp-hero-content{position:relative;padding:27px 22px 20px;z-index:2}.hp-eyebrow{font-size:9px;letter-spacing:2px;font-weight:900;color:#79e4d6;margin-bottom:13px}.hp-hero-title{font-size:clamp(31px,8vw,52px);font-weight:850;line-height:.98;letter-spacing:-1.8px}.hp-hero-title span{color:#8ce8dc}.hp-hero-sub{margin-top:13px;font-size:12px;color:rgba(255,255,255,.75);max-width:520px}.hp-hero-badge{position:absolute;right:18px;top:18px;display:flex;align-items:center;gap:8px;padding:8px 10px;border:1px solid rgba(255,255,255,.17);background:rgba(255,255,255,.08);border-radius:14px;backdrop-filter:blur(10px)}.hp-hero-badge span{font-size:20px}.hp-hero-badge small{font-size:7px;line-height:1.15;font-weight:900;letter-spacing:.8px;opacity:.8}.hp-hero-footer{position:absolute;left:22px;right:22px;bottom:15px;display:flex;justify-content:space-between;align-items:center;font-size:9px;color:rgba(255,255,255,.55);padding-top:10px;border-top:1px solid rgba(255,255,255,.12)}
+.hp-now-row{display:grid;grid-template-columns:1fr 145px;gap:10px}.hp-now-main,.hp-now-time,.hp-attention,.hp-situation,.hp-actions,.hp-upcoming,.hp-access{border:1px solid #dce7ee;background:rgba(255,255,255,.84);box-shadow:0 12px 30px rgba(7,27,51,.07);border-radius:22px}
+.hp-now-main{padding:16px}.hp-now-time{padding:16px;display:flex;flex-direction:column;justify-content:center;background:linear-gradient(145deg,#eaf8f7,#f8fbfc)}
+.hp-section-kicker,.hp-section-caption{font-size:8px;font-weight:900;letter-spacing:1.1px;color:#8494a3}.hp-section-kicker{color:#087d82;margin-bottom:9px}.hp-section-kicker span,.hp-section-number{color:#13a7a5;margin-right:7px}.hp-time-label{font-size:8px;font-weight:900;letter-spacing:1px;color:#7b8c9c}.hp-now-time strong{font-size:31px;line-height:1.05;color:#0b4f8a;letter-spacing:-1px;margin:5px 0}.hp-time-status{font-size:8px;color:#718397}.hp-time-status i{display:inline-block;width:6px;height:6px;border-radius:50%;background:#35b883;margin-right:4px}
+.hp-attention,.hp-situation,.hp-actions{padding:16px}.hp-section-head{display:flex;justify-content:space-between;align-items:flex-end;gap:10px;margin-bottom:12px}.hp-section-head>div{display:flex;align-items:center}.hp-section-head h2{margin:0;font-size:18px;letter-spacing:-.5px;color:#112f4b}.hp-section-number{font-size:8px;font-weight:900;letter-spacing:1px}.hp-attention-body{border-radius:16px;background:linear-gradient(145deg,#fffaf0,#fff);border:1px solid #f1e5cb;padding:11px}.hp-disclaimer{margin-top:9px;padding-top:8px;border-top:1px dashed #e5d9bf;font-size:8px;color:#8a7b63}
+.hp-situation{background:linear-gradient(145deg,#fff,#f4fafb)}.hp-stats .stat-grid{grid-template-columns:repeat(4,1fr)}
+.hp-action-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}.hp-action-grid button{position:relative;min-height:112px;text-align:left;border:1px solid #dce7ee;border-radius:18px;background:linear-gradient(145deg,#fff,#f5f9fb);padding:13px;cursor:pointer;color:#173650;box-shadow:0 6px 18px rgba(7,27,51,.05);transition:.2s}.hp-action-grid button:hover{transform:translateY(-3px);box-shadow:0 14px 25px rgba(7,27,51,.11)}.hp-action-icon{display:grid;place-items:center;width:43px;height:43px;border-radius:13px;background:#eaf5f7;font-size:22px;margin-bottom:10px}.hp-action-grid button>span:nth-child(2){display:block;font-size:11px;font-weight:900}.hp-action-grid button b{display:block;margin-top:4px;font-size:8px;color:#8091a1;font-weight:700}
+.hp-bottom-zone{display:grid;grid-template-columns:1.1fr .9fr;gap:14px}.hp-upcoming,.hp-access{padding:16px}.hp-section-head.compact{margin-bottom:9px}.hp-section-head.compact h2{font-size:15px}.hp-module-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px}.hp-module-grid button{min-height:58px;border:1px solid #e0e8ee;border-radius:14px;background:#f8fbfc;color:#31516b;font-weight:800;font-size:17px;cursor:pointer}.hp-module-grid button span{display:block;font-size:8px;margin-top:3px}
+@media(max-width:699px){.hp-hero{min-height:245px}.hp-now-row{grid-template-columns:1fr 118px}.hp-now-time{padding:13px}.hp-now-time strong{font-size:26px}.hp-action-grid{grid-template-columns:repeat(2,1fr)}.hp-bottom-zone{grid-template-columns:1fr}.hp-stats .stat-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:430px){.hp-hero{border-radius:25px;min-height:238px}.hp-hero-content{padding:25px 18px 18px}.hp-hero-title{font-size:31px}.hp-hero-footer{left:18px;right:18px}.hp-hero-badge{right:12px;top:12px}.hp-now-row{grid-template-columns:1fr 106px}.hp-now-main,.hp-now-time,.hp-attention,.hp-situation,.hp-actions,.hp-upcoming,.hp-access{border-radius:19px}.hp-action-grid{gap:7px}.hp-action-grid button{min-height:104px;padding:11px}.hp-action-icon{width:39px;height:39px;font-size:20px}.hp-section-head h2{font-size:16px}}
+
 </style>
 </head>
 <body>
@@ -691,62 +710,85 @@ body{padding-bottom:105px}
 <main class="wrap" id="app">
 
 <section class="view active" id="view-inicio">
-  <div class="hero-chief">
-    <div class="hero-kicker">CENTRO DE MANDO · HPJRM</div>
-    <div class="hero-title">Buenos días, Dr. Rodney</div>
-    <div class="hero-sub" id="inicioSaludo">Cargando...</div>
-    <div class="hero-meta"><span>🇨🇺 Hospital Pediátrico José Ramón Martínez</span><span>·</span><span>Servicio de Pediatría</span></div>
-  </div>
-
-  <div class="command-status" aria-label="Estado de la sesión">
-    <div class="status-cell"><span class="status-k">FECHA</span><strong class="status-v" id="inicioFecha">—</strong></div>
-    <div class="status-cell"><span class="status-k">HORA LOCAL</span><strong class="status-v" id="inicioHora">—</strong></div>
-    <div class="status-cell"><span class="status-k">DATOS</span><strong class="status-v live"><span class="status-dot"></span>Sesión local</strong></div>
-  </div>
-
-  <div class="dashboard-note"><span class="note-ico">🧭</span><span>Centro de mando: la pantalla prioriza lo que requiere revisión del jefe y deja el detalle operativo dentro de cada módulo.</span></div>
-
-  <div id="inicioBorrador"></div>
-
-  <div class="command-grid">
-    <div class="command-card command-primary">
-      <div class="command-label">🩺 AHORA</div>
-      <div id="inicioGuardiaHoy"></div>
+  <div class="hp-command-shell">
+    <div class="hp-topline">
+      <div class="hp-topline-left"><span class="hp-live-dot"></span><span>OPERATIVO</span><span class="hp-divider">/</span><span>HPJRM</span></div>
+      <div class="hp-topline-right" id="inicioFecha">—</div>
     </div>
-    <div class="command-card">
-      <div class="command-label">📊 SITUACIÓN</div>
-      <div id="inicioStats"></div>
+
+    <div class="hp-hero">
+      <div class="hp-hero-grid"></div>
+      <div class="hp-orbit hp-orbit-a"></div><div class="hp-orbit hp-orbit-b"></div>
+      <div class="hp-hero-content">
+        <div class="hp-eyebrow">CENTRO DE MANDO PEDIÁTRICO</div>
+        <div class="hp-hero-title">Buenos días,<br><span>Dr. Rodney</span></div>
+        <div class="hp-hero-sub" id="inicioSaludo">Cargando...</div>
+      </div>
+      <div class="hp-hero-badge"><span>✚</span><small>PEDIATRÍA<br>HPJRM</small></div>
+      <div class="hp-hero-footer"><span>Hospital Pediátrico José Ramón Martínez</span><span>🇨🇺</span></div>
     </div>
-  </div>
 
-  <div class="section-title dashboard-heading">⚠️ Lo que requiere atención</div>
-  <div class="attention-panel">
-    <div class="attention-caption">PEDIATRÍA HPJRM NO DECIDE POR EL JEFE · PRESENTA INFORMACIÓN PARA SU REVISIÓN</div>
-    <div id="inicioAlertas"></div>
-  </div>
-
-  <div class="section-title dashboard-heading">⚡ Acciones frecuentes</div>
-  <div class="quick-grid">
-    <div class="q-btn" onclick="nuevaAuditoria()"><div class="ico">📋</div><div class="t">Auditoría HC</div></div>
-    <div class="q-btn" onclick="navigateTo('guardias')"><div class="ico">🩺</div><div class="t">Guardias</div></div>
-    <div class="q-btn" onclick="abrirModalLactante()"><div class="ico">🍼</div><div class="t">Nuevo lactante</div></div>
-    <div class="q-btn" onclick="abrirModalMedicamento()"><div class="ico">💊</div><div class="t">Medicamentos</div></div>
-    <div class="q-btn" onclick="abrirModalFuga()"><div class="ico">🚪</div><div class="t">Registrar fuga</div></div>
-    <div class="q-btn" onclick="navigateTo('farmacologia')"><div class="ico">🧪</div><div class="t">Farmacología</div></div>
-  </div>
-
-  <div class="dashboard-secondary">
-    <div>
-      <div class="section-title">📅 Próximos comités</div>
-      <div id="inicioComites" class="mini-list"></div>
+    <div class="hp-now-row">
+      <div class="hp-now-main">
+        <div class="hp-section-kicker"><span>01</span> AHORA</div>
+        <div id="inicioGuardiaHoy"></div>
+      </div>
+      <div class="hp-now-time">
+        <span class="hp-time-label">HORA LOCAL</span>
+        <strong id="inicioHora">—</strong>
+        <span class="hp-time-status"><i></i> Sesión local</span>
+      </div>
     </div>
-    <div>
-      <div class="section-title">🧭 Acceso rápido</div>
-      <div class="quick-strip">
-        <button onclick="navigateTo('morbilidad')">📈 Morbilidad</button>
-        <button onclick="navigateTo('calidad')">✓ Calidad</button>
-        <button onclick="navigateTo('personal')">👥 Personal</button>
-        <button onclick="navigateTo('calendario')">📅 Calendario</button>
+
+    <div id="inicioBorrador"></div>
+
+    <div class="hp-attention">
+      <div class="hp-section-head">
+        <div><span class="hp-section-number">02</span><h2>Atención</h2></div>
+        <span class="hp-section-caption">Revisión del jefe</span>
+      </div>
+      <div class="hp-attention-body">
+        <div id="inicioAlertas"></div>
+        <div class="hp-disclaimer">PEDIATRÍA HPJRM presenta información y recomendaciones. La decisión corresponde al jefe.</div>
+      </div>
+    </div>
+
+    <div class="hp-situation">
+      <div class="hp-section-head">
+        <div><span class="hp-section-number">03</span><h2>Situación del servicio</h2></div>
+        <span class="hp-section-caption">Datos registrados</span>
+      </div>
+      <div id="inicioStats" class="hp-stats"></div>
+    </div>
+
+    <div class="hp-actions">
+      <div class="hp-section-head">
+        <div><span class="hp-section-number">04</span><h2>Acciones</h2></div>
+        <span class="hp-section-caption">Acceso inmediato</span>
+      </div>
+      <div class="hp-action-grid">
+        <button onclick="nuevaAuditoria()"><span class="hp-action-icon">📋</span><span>Auditoría HC</span><b>Revisar</b></button>
+        <button onclick="navigateTo('guardias')"><span class="hp-action-icon">🩺</span><span>Guardias</span><b>Organizar</b></button>
+        <button onclick="abrirModalLactante()"><span class="hp-action-icon">🍼</span><span>PAMI</span><b>Nuevo registro</b></button>
+        <button onclick="abrirModalMedicamento()"><span class="hp-action-icon">💊</span><span>Medicamentos</span><b>Controlar</b></button>
+        <button onclick="abrirModalFuga()"><span class="hp-action-icon">🚪</span><span>Fuga</span><b>Registrar</b></button>
+        <button onclick="navigateTo('farmacologia')"><span class="hp-action-icon">🧪</span><span>Farmacología</span><b>Analizar</b></button>
+      </div>
+    </div>
+
+    <div class="hp-bottom-zone">
+      <div class="hp-upcoming">
+        <div class="hp-section-head compact"><div><span class="hp-section-number">05</span><h2>Próximos</h2></div></div>
+        <div id="inicioComites" class="mini-list"></div>
+      </div>
+      <div class="hp-access">
+        <div class="hp-section-head compact"><div><span class="hp-section-number">06</span><h2>Módulos</h2></div></div>
+        <div class="hp-module-grid">
+          <button onclick="navigateTo('morbilidad')">📈<span>Morbilidad</span></button>
+          <button onclick="navigateTo('calidad')">✓<span>Calidad</span></button>
+          <button onclick="navigateTo('personal')">👥<span>Personal</span></button>
+          <button onclick="navigateTo('calendario')">📅<span>Calendario</span></button>
+        </div>
       </div>
     </div>
   </div>
