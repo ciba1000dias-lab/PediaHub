@@ -4238,169 +4238,34 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape')toggleHpMore
 @media(max-width:520px){.hp-service-grid{grid-template-columns:1fr}.hp-service-card.full{grid-column:auto}.hp-service-stats{grid-template-columns:repeat(2,1fr)}}
 </style>
 
-<script id="hp-service-map-block">
+
+<style id="bedmap-operativo-css">
+.hp-bedmap{margin-top:12px}.hp-bed-summary{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:10px 0}.hp-bed-kpi{background:var(--g50);border:1px solid var(--border);border-radius:12px;padding:10px;text-align:center}.hp-bed-kpi b{display:block;font-size:1.25em}.hp-bed-kpi span{font-size:.68em;color:var(--g500);font-weight:700}.hp-room{border:1px solid var(--border);border-radius:14px;margin:10px 0;background:var(--card);overflow:hidden}.hp-room-head{display:flex;align-items:center;gap:8px;padding:11px 12px;cursor:pointer;background:linear-gradient(135deg,var(--card),var(--g50))}.hp-room-head .arrow{margin-left:auto}.hp-room-title{font-weight:800}.hp-room-sub{font-size:.72em;color:var(--g500);margin-top:2px}.hp-room-body{display:none;padding:0 10px 10px}.hp-room.open .hp-room-body{display:block}.hp-cub{border-left:4px solid var(--azul);margin:8px 0;border-radius:8px;background:var(--g50);overflow:hidden}.hp-cub-head{display:flex;align-items:center;justify-content:space-between;gap:6px;padding:8px 10px;cursor:pointer;font-size:.82em;font-weight:800}.hp-cub-body{display:none;padding:0 8px 8px;flex-wrap:wrap;gap:6px}.hp-cub.open .hp-cub-body{display:flex}.hp-bed{min-width:82px;flex:1 1 82px;max-width:125px;border:1.5px solid var(--border);border-radius:10px;padding:7px;background:var(--card);cursor:pointer;position:relative}.hp-bed b{display:block;font-size:.78em}.hp-bed small{display:block;font-size:.63em;color:var(--g500);margin-top:2px}.hp-bed.disponible{border-color:var(--verde);background:rgba(31,138,76,.07)}.hp-bed.ocupada{border-color:var(--azul);background:rgba(11,61,145,.08)}.hp-bed.cerrada{border-color:var(--rojo);background:rgba(200,16,46,.08)}.hp-bed.mantenimiento{border-color:var(--amarillo);background:rgba(245,158,11,.10)}.hp-bed.aislamiento{border-color:var(--morado);background:rgba(124,58,237,.08)}.hp-bed.reservada{border-color:var(--cyan);background:rgba(8,145,178,.08)}.hp-bed .dot{position:absolute;right:7px;top:7px;width:8px;height:8px;border-radius:50%;background:var(--g500)}.hp-bed.disponible .dot{background:var(--verde)}.hp-bed.ocupada .dot{background:var(--azul)}.hp-bed.cerrada .dot{background:var(--rojo)}.hp-bed.mantenimiento .dot{background:var(--amarillo)}.hp-bed.aislamiento .dot{background:var(--morado)}.hp-bed.reservada .dot{background:var(--cyan)}.hp-bed-edit{display:grid;grid-template-columns:1fr 1fr;gap:8px}.hp-bed-edit .full{grid-column:1/-1}.hp-bed-note{font-size:.7em;color:var(--g500);line-height:1.4}@media(max-width:520px){.hp-bed-summary{grid-template-columns:repeat(2,1fr)}.hp-bed-edit{grid-template-columns:1fr}}
+</style>
+<script id="bedmap-operativo-v2">
 (function(){
-  const HP_SERVICE_KEY='hpjrm_service_profile_v1';
-  const profile={
-    version:1,
-    hospital:'Hospital Pediátrico José Ramón Martínez',
-    service:'Servicio de Pediatría HPJRM',
-    chief:'Dr. Rodney Jáuregui Alonso',
-    structure:{
-      physicalCapacity:108,
-      operationalCapacity:94,
-      unavailable:14,
-      areas:[
-        {name:'Miscelánea 51',capacity:'46 camas + 5 cunas',detail:'Cubículo 1: camas 1–5 cerradas por baño roto. Cubículo 2: camas 6–11 febriles intensivos. Cubículo 3: camas 12–17 dengue con signos de alarma. Cubículo 4: cunas 18–23 lactantes febriles. Cubículo 5: camas 24–30 febriles. Cubículo 6: camas 31–33 + cunas 34–35 semi-aislados. Cubículo 7: camas 36–41 febriles. Cubículo 8: camas 42–51, flexible; puede recibir EDA.'},
-        {name:'EDA',capacity:'8 cunas habituales',detail:'Área destinada habitualmente a enfermedad diarreica aguda.'},
-        {name:'Respiratorio 1',capacity:'27 espacios · 23 camas + 4 cunas',detail:'2 camas semi-aisladas. Espacio/cubículo 1–8. Cama 27 cerrada por baño obstruido; 9 espacios no disponibles.'},
-        {name:'Respiratorio 2',capacity:'20 espacios · 18 camas + 2 cunas',detail:'Antigua sala quirúrgica actualmente destinada a atención respiratoria.'},
-        {name:'Cuerpo de Guardia / Emergencia',capacity:'2 camas',detail:'Atención de emergencia.'}
-      ]
-    },
-    staffing:{
-      specialists:[
-        {name:'Dr. Julio César León Campos',role:'Especialista en Pediatría',rp:'',location:'Artemisa',status:'Activo · sin guardias ordinarias',note:'Pasa visita en Miscelánea, camas 6–30, lunes y jueves.'},
-        {name:'Dr. Lázaro Sergio Álvarez Mesa',role:'Especialista en Pediatría · Docencia',rp:'194946',location:'Guanajay',status:'Activo · docencia exclusivamente'},
-        {name:'Dr. Rodney Jáuregui Alonso',role:'Jefe del Servicio · Especialista en Pediatría',rp:'181907',location:'Mariel/Cabañas',status:'Jefe · participa en guardias especiales de fin de año'}
-      ],
-      teams:[
-        {id:1,color:'🔴',name:'Equipo ❤️',leader:'Dalia Acosta Figueroa',members:['Dalia Acosta Figueroa · RP 21000542 · Artemisa','Daylen Gómez González · RP 22001601 · San Antonio','Janet Rodríguez Hernández · RP 112259 · Artemisa','Yadira Días · Guanajay · solo 08:00–16:00','Yelaine Zambrana · residente 2.º año · Mariel/Cabañas'],note:'Yadira mantiene restricción horaria; Yelaine Zambrana es residente.'},
-        {id:2,color:'🟡',name:'Equipo 💛',leader:'Meivel Caridad Pérez González',members:['Azzeb Águila Alemu · Bauta','Meivel Caridad Pérez González · RP 19000253 · Candelaria','Sisy Ruiz Ortega · RP 21000799 · Artemisa · 3 meses de licencia','Noel Duarte Izquierdo · RP 24000367 · residente · Mariel/Cabañas'],note:'Sisy está de licencia y no participa en guardias actuales.'},
-        {id:3,color:'🔵',name:'Equipo 💙',leader:'Yelaine Boucourt',members:['Yelaine Boucourt · Candelaria','Katileydi Chamizo Perdomo · RP M180040 · Candelaria','Beatriz · Pediatría · Guanajay'],note:'Equipo activo.'},
-        {id:4,color:'🟣',name:'Equipo 💜',leader:'Duvania Alcántara Castaño',members:['Duvania Alcántara Castaño · RP 177564 · Candelaria','Zaydenis · Artemisa','Ruberkys Garcia Vargas · RP 105971 · Guanajay · licencia'],note:'Ruberkys está de licencia y no participa actualmente.'}
-      ],
-      residents:[
-        {name:'Nadia Yanela Matos Sandoval',rp:'M26000357',year:'1.º año',location:'Bahía Honda',status:'Embarazada · APS · no participa en guardias actuales'},
-        {name:'Daniela Armas Santos',rp:'24000332',year:'2.º año',location:'Caimito',status:'Licencia sin sueldo · no participa actualmente'},
-        {name:'Noel Duarte Izquierdo',rp:'24000367',year:'Residente',location:'Mariel/Cabañas',status:'Activo · integrado al Equipo 💛'},
-        {name:'Yelaine Zambrana',rp:'',year:'2.º año',location:'Mariel/Cabañas',status:'Activa · integrada al Equipo ❤️'},
-        {name:'Yailenis de la Caridad Fernández Abrahantes',rp:'M22001587',year:'3.º año',location:'Güira de Melena',status:'Rotación por Terapia · no se cuenta para guardias actuales'}
-      ],
-      temporary:'Residentes temporales de MGI/Neonatología pueden incorporarse a guardias 24×72 cuando corresponda. No se registran nombres no confirmados.'
-    },
-    guardRules:{
-      cycle:'💜 → ❤️ → 💛 → 💙 → 💜',
-      pattern:'24×72',
-      fixedTeams:true,
-      automaticSubstitution:false,
-      yadira:'08:00–16:00',
-      note:'PediaHub recomienda; el Jefe decide. No se realizan sustituciones automáticas.'
-    }
-  };
-
-  function hpLoadService(){
-    try{
-      const saved=JSON.parse(localStorage.getItem(HP_SERVICE_KEY)||'null');
-      return saved && saved.version===1 ? Object.assign({},profile,saved) : profile;
-    }catch(e){return profile}
-  }
-  const service=hpLoadService();
-  try{ state.serviceProfile=service; }catch(e){}
-  localStorage.setItem(HP_SERVICE_KEY,JSON.stringify(service));
-
-  function escS(v){return typeof esc==='function'?esc(v==null?'':String(v)):String(v==null?'':v).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
-  function serviceStats(){return {areas:service.structure.areas.length,physical:service.structure.physicalCapacity,operational:service.structure.operationalCapacity,staff:service.staffing.specialists.length+service.staffing.residents.length+service.staffing.teams.reduce((n,t)=>n+t.members.length,0)}}
-  function renderServicio(){
-    const v=document.getElementById('view-servicio'); if(!v)return;
-    const st=serviceStats();
-    v.innerHTML=`
-      <div class="hp-service-hero">
-        <div class="hp-service-kicker">BLOQUE 1 · MAPA OPERATIVO</div>
-        <div class="hp-service-title">Conocer el servicio</div>
-        <div class="hp-service-sub">${escS(service.hospital)} · ${escS(service.service)}</div>
-        <div class="hp-service-stats">
-          <div class="hp-service-stat"><b>${st.areas}</b><span>ÁREAS</span></div>
-          <div class="hp-service-stat"><b>${st.physical}</b><span>ESPACIOS FÍSICOS</span></div>
-          <div class="hp-service-stat"><b>${st.operational}</b><span>OPERACIONALES</span></div>
-          <div class="hp-service-stat"><b>${st.physical-st.operational}</b><span>NO DISPONIBLES</span></div>
-        </div>
-      </div>
-
-      <div class="hp-service-grid">
-        <div class="hp-service-card full">
-          <h3><span>🏥</span>Estructura física y capacidad</h3>
-          ${service.structure.areas.map(a=>`<div class="hp-service-area"><div class="top"><div class="name">${escS(a.name)}</div><div class="cap">${escS(a.capacity)}</div></div><div class="desc">${escS(a.detail)}</div></div>`).join('')}
-          <div style="margin-top:9px"><span class="hp-service-badge ok">✓ Capacidad operacional: ${st.operational}</span><span class="hp-service-badge off">⚠ No disponibles: ${st.physical-st.operational}</span><span class="hp-service-badge">Capacidad física: ${st.physical}</span></div>
-        </div>
-
-        <div class="hp-service-card">
-          <h3><span>👑</span>Especialistas y dirección</h3>
-          ${service.staffing.specialists.map(p=>`<div class="hp-service-person"><div class="avatar">👨‍⚕️</div><div class="pbody"><div class="pn">${escS(p.name)}</div><div class="ps">${escS(p.role)}${p.rp?' · RP '+escS(p.rp):''}<br>${escS(p.location)} · ${escS(p.status)}${p.note?'<br>'+escS(p.note):''}</div></div></div>`).join('')}
-        </div>
-
-        <div class="hp-service-card">
-          <h3><span>🎓</span>Residentes</h3>
-          ${service.staffing.residents.map(p=>`<div class="hp-service-person"><div class="avatar">🎓</div><div class="pbody"><div class="pn">${escS(p.name)}</div><div class="ps">${escS(p.year)}${p.rp?' · RP '+escS(p.rp):''}${p.location?' · '+escS(p.location):''}<br>${escS(p.status)}</div></div></div>`).join('')}
-        </div>
-
-        <div class="hp-service-card full">
-          <h3><span>👥</span>Equipos de guardia</h3>
-          ${service.staffing.teams.map(t=>`<div class="hp-team t${t.id}"><div class="teamhead">${t.color} ${escS(t.name)} · Jefe: ${escS(t.leader)}</div><div class="members">${t.members.map(escS).join(' · ')}</div><div class="hp-service-note" style="margin-top:4px">${escS(t.note)}</div></div>`).join('')}
-          <div class="hp-service-note" style="margin-top:8px"><b>Personal temporal:</b> ${escS(service.staffing.temporary)}</div>
-        </div>
-
-        <div class="hp-service-card full">
-          <h3><span>🩺</span>Reglas operativas de guardia</h3>
-          <div><span class="hp-service-badge">24×72</span><span class="hp-service-badge">Ciclo ${escS(service.guardRules.cycle)}</span><span class="hp-service-badge">Equipos fijos</span><span class="hp-service-badge warn">Sin sustitución automática</span><span class="hp-service-badge warn">Yadira 08:00–16:00</span></div>
-          <p class="hp-service-note" style="margin:8px 0 0">${escS(service.guardRules.note)}</p>
-        </div>
-      </div>
-
-      <div class="hp-service-card">
-        <h3><span>🧠</span>¿Para qué sirve este mapa?</h3>
-        <div class="hp-service-note">Este bloque no pretende mostrar la actividad del día todavía. Define el contexto estructural que los demás módulos utilizarán para interpretar los datos reales: capacidad, áreas, personal, equipos y restricciones.</div>
-        <div class="hp-service-action">
-          <button class="btn azul" onclick="navigateTo('guardias')">🩺 Ver guardias</button>
-          <button class="btn cyan" onclick="navigateTo('personal')">👥 Ver personal</button>
-        </div>
-      </div>`;
-  }
-
-  function addServiceView(){
-    if(!document.getElementById('view-servicio')){
-      const v=document.createElement('section'); v.className='view'; v.id='view-servicio'; document.getElementById('app').appendChild(v);
-    }
-    const sheet=document.getElementById('hpMoreSheet');
-    if(sheet && !sheet.querySelector('[data-service-nav]')){
-      const grid=sheet.querySelector('.more-grid');
-      if(grid){ const b=document.createElement('button'); b.setAttribute('data-service-nav','1'); b.setAttribute('onclick',"hpNav('servicio')"); b.innerHTML='🏥<br>Servicio'; grid.insertBefore(b,grid.firstChild); }
-    }
-    const modules=document.querySelector('.hp-module-grid');
-    if(modules && !modules.querySelector('[data-service-module]')){
-      const b=document.createElement('button'); b.setAttribute('data-service-module','1'); b.setAttribute('onclick',"navigateTo('servicio')"); b.innerHTML='🏥<span>Servicio</span>'; modules.insertBefore(b,modules.firstChild);
-    }
-  }
-
-  const oldHpNav=window.hpNav;
-  window.hpNav=function(view){ if(view==='servicio'){ toggleHpMore(false); navigateTo('servicio'); return; } return oldHpNav?oldHpNav(view):navigateTo(view); };
-  const oldNavigate=window.navigateTo;
-  window.navigateTo=function(v){ if(v==='servicio'){ document.querySelectorAll('.view').forEach(x=>x.classList.remove('active')); const el=document.getElementById('view-servicio'); if(el)el.classList.add('active'); document.querySelectorAll('.dock-item').forEach(b=>b.classList.toggle('active',false)); window.scrollTo({top:0,behavior:'smooth'}); renderServicio(); return; } return oldNavigate(v); };
-
-  document.addEventListener('DOMContentLoaded',function(){
-    addServiceView();
-    try{
-      const existing=JSON.parse(localStorage.getItem(KEYS.personal)||'[]');
-      const roster=[
-        ['Dr. Julio César León Campos','','Especialista en Pediatría',''],
-        ['Dr. Lázaro Sergio Álvarez Mesa','194946','Especialista en Pediatría · Docencia',''],
-        ['Dr. Rodney Jáuregui Alonso','181907','Jefe del Servicio · Especialista en Pediatría',''],
-        ['Azzeb Águila Alemu','','Pediatría','2'],['Meivel Caridad Pérez González','19000253','Pediatría · Líder de equipo','2'],['Sisy Ruiz Ortega','21000799','Pediatría · Licencia','2'],['Noel Duarte Izquierdo','24000367','Residente · 2.º año','2'],
-        ['Yelaine Boucourt','','Pediatría · Líder de equipo','3'],['Katileydi Chamizo Perdomo','M180040','Pediatría','3'],['Beatriz','','Pediatría','3'],
-        ['Dalia Acosta Figueroa','21000542','Pediatría · Líder de equipo','1'],['Daylen Gómez González','22001601','Pediatría','1'],['Janet Rodríguez Hernández','112259','Pediatría','1'],['Yadira Días','','Pediatría · Restricción 08:00–16:00','1'],['Yelaine Zambrana','','Residente · 2.º año','1'],
-        ['Duvania Alcántara Castaño','177564','Pediatría · Líder de equipo','4'],['Zaydenis','','Pediatría','4'],['Ruberkys Garcia Vargas','105971','Pediatría · Licencia','4'],
-        ['Nadia Yanela Matos Sandoval','M26000357','Residente · 1.º año · APS',''],['Daniela Armas Santos','24000332','Residente · 2.º año · Licencia sin sueldo',''],['Yailenis de la Caridad Fernández Abrahantes','M22001587','Residente · 3.º año · Terapia','']
-      ];
-      const norm=x=>(x||'').trim().toLowerCase();
-      roster.forEach(([nombre,rp,nivel,equipo])=>{
-        if(!existing.some(p=>norm(p.nombre)===norm(nombre))){
-          existing.push({id:(typeof uuid==='function'?uuid():Date.now()+Math.random()),nombre,rp,nivel,equipo});
-        }
-      });
-      localStorage.setItem(KEYS.personal,JSON.stringify(existing));
-      try{state.personal=existing}catch(e){}
-    }catch(e){}
-  });
+const K='hpjrm_bedmap_v2',ST=[['disponible','Disponible para usar'],['ocupada','Ocupada'],['cerrada','Cerrada'],['mantenimiento','Mantenimiento / reparación'],['aislamiento','Aislamiento'],['reservada','Reservada']];
+const E=v=>typeof esc==='function'?esc(v==null?'':String(v)):String(v==null?'':v).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+const R=(a,b,t='Cama',s='disponible')=>{let x=[];for(let i=a;i<=b;i++)x.push({id:String(i),type:t,status:s,reason:''});return x};
+function seed(){let m=[];m.push({id:'mis',name:'Miscelánea 51',icon:'🛏️',cubs:[['1',1,5,'Cama','cerrada'],['2',6,11],['3',12,17],['4',18,23,'Cuna'],['5',24,30],['6',31,33],['6c',34,35,'Cuna'],['7',36,41],['8',42,51]].map(x=>({id:x[0],name:'Cubículo '+x[0],spaces:R(x[1],x[2],x[3]||'Cama',x[4]||'disponible')}))});
+m.push({id:'eda',name:'EDA',icon:'🧸',cubs:[{id:'s',name:'Sala EDA',spaces:R(1,8,'Cuna')}]});
+m.push({id:'r1',name:'Respiratorio 1',icon:'🫁',cubs:[{id:'1',name:'Cubículo 1',spaces:R(1,4)},{id:'2',name:'Cubículo 2',spaces:R(5,8)},{id:'3',name:'Cubículo 3',spaces:R(9,12)},{id:'4',name:'Cubículo 4',spaces:R(13,16)},{id:'5',name:'Cubículo 5',spaces:R(17,20)},{id:'6',name:'Cubículo 6',spaces:R(21,24)},{id:'7',name:'Cubículo 7',spaces:R(25,27)}]});
+m.find(x=>x.id==='r1').cubs.at(-1).spaces.at(-1).status='cerrada';
+m.push({id:'r2',name:'Respiratorio 2',icon:'🫁',cubs:[{id:'s',name:'Sala',spaces:[...R(1,18),...R(19,20,'Cuna')]}]});
+m.push({id:'em',name:'Cuerpo de Guardia / Emergencia',icon:'🚑',cubs:[{id:'s',name:'Emergencia',spaces:R(1,2)}]});return {version:2,rooms:m}}
+function load(){try{let x=JSON.parse(localStorage.getItem(K)||'null');if(x&&x.version===2)return x}catch(e){}let x=seed();localStorage.setItem(K,JSON.stringify(x));return x}
+let map=load();
+function all(){let a=[];map.rooms.forEach(r=>r.cubs.forEach(c=>c.spaces.forEach(s=>a.push(s))));return a}
+function stats(){let a=all(),closed=a.filter(s=>['cerrada','mantenimiento'].includes(s.status)).length;return{physical:a.length,closed,operational:a.length-closed,available:a.filter(s=>s.status==='disponible').length,occupied:a.filter(s=>s.status==='ocupada').length}}
+function sync(){let p=state.serviceProfile||{};p.structure=p.structure||{};let x=stats();p.structure.physicalCapacity=x.physical;p.structure.operationalCapacity=x.operational;p.structure.unavailable=x.closed;state.serviceProfile=p;localStorage.setItem('hpjrm_service_profile_v1',JSON.stringify(p));return x}
+function bed(r,c,s){return '<button class="hp-bed '+E(s.status)+'" onclick="hpBedEdit('+JSON.stringify(r.id)+','+JSON.stringify(c.id)+','+JSON.stringify(s.id)+')"><span class="dot"></span><b>'+E(s.type)+' '+E(s.id)+'</b><small>'+E((ST.find(x=>x[0]===s.status)||['',''])[1])+'</small></button>'}
+window.hpBedEdit=function(rid,cid,id){let r=map.rooms.find(x=>x.id===rid),c=r&&r.cubs.find(x=>x.id===cid),s=c&&c.spaces.find(x=>x.id===id);if(!s)return;let body='<div class="hp-bed-edit"><div class="field"><label>Espacio</label><input value="'+E(s.type+' '+s.id)+'" disabled></div><div class="field"><label>Estado</label><select id="hpBS">'+ST.map(x=>'<option value="'+x[0]+'" '+(x[0]===s.status?'selected':'')+'>'+x[1]+'</option>').join('')+'</select></div><div class="field full"><label>Observación</label><textarea id="hpBR">'+E(s.reason||'')+'</textarea></div></div>';if(typeof openModal==='function')openModal('🛏️ Estado del espacio',body,[{text:'Cancelar',cls:'btn gris',action:'closeModal()'},{text:'Guardar',cls:'btn verde',action:'hpBedSave('+JSON.stringify(rid)+','+JSON.stringify(cid)+','+JSON.stringify(id)+')'}])}
+window.hpBedSave=function(rid,cid,id){let r=map.rooms.find(x=>x.id===rid),c=r&&r.cubs.find(x=>x.id===cid),s=c&&c.spaces.find(x=>x.id===id);if(!s)return;s.status=document.getElementById('hpBS').value;s.reason=document.getElementById('hpBR').value.trim();localStorage.setItem(K,JSON.stringify(map));sync();closeModal();renderBedMap();if(typeof toast==='function')toast('Estado actualizado','ok')}
+window.hpOpenRooms={};window.hpOpenCubs={};window.hpToggleRoom=id=>{window.hpOpenRooms[id]=!window.hpOpenRooms[id];renderBedMap()};window.hpToggleCub=(r,c)=>{let k=r+'|'+c;window.hpOpenCubs[k]=!window.hpOpenCubs[k];renderBedMap()};
+window.renderBedMap=function(){let h=document.getElementById('hp-bedmap-host');if(!h)return;let x=sync();h.innerHTML='<div class="hp-bed-summary"><div class="hp-bed-kpi"><b>'+x.physical+'</b><span>FÍSICOS</span></div><div class="hp-bed-kpi"><b>'+x.operational+'</b><span>OPERACIONALES</span></div><div class="hp-bed-kpi"><b>'+x.available+'</b><span>DISPONIBLES</span></div><div class="hp-bed-kpi"><b>'+x.closed+'</b><span>NO OPERATIVOS</span></div></div><div class="hp-legend"><span>🟢 Disponible</span><span>🔵 Ocupada</span><span>🔴 Cerrada</span><span>🟡 Mantenimiento</span><span>🟣 Aislamiento</span><span>🔷 Reservada</span></div>'+map.rooms.map(r=>{let a=all().filter(s=>r.cubs.some(c=>c.spaces.includes(s))),off=a.filter(s=>['cerrada','mantenimiento'].includes(s.status)).length,av=a.filter(s=>s.status==='disponible').length;return '<div class="hp-room open"><div class="hp-room-head" onclick="hpToggleRoom('+JSON.stringify(r.id)+')"><div style="font-size:22px">'+r.icon+'</div><div><div class="hp-room-title">'+E(r.name)+'</div><div class="hp-room-sub">'+a.length+' espacios · '+av+' disponibles · '+off+' no operativos</div></div><div class="arrow">⌄</div></div><div class="hp-room-body">'+r.cubs.map(c=>'<div class="hp-cub"><div class="hp-cub-head" onclick="hpToggleCub('+JSON.stringify(r.id)+','+JSON.stringify(c.id)+')"><span>▸ '+E(c.name)+' · '+c.spaces.length+' espacios</span><span>⌄</span></div><div class="hp-cub-body">'+c.spaces.map(s=>bed(r,c,s)).join('')+'</div></div>').join('')+'</div></div>'}).join('')+'<div class="hp-bed-note">Toca una cama o cuna para cambiar su estado.</div>'}
+window.renderServicioBeds=function(){let v=document.getElementById('view-servicio');if(!v)return;let h=document.getElementById('hp-bedmap-host');if(!h){h=document.createElement('div');h.id='hp-bedmap-host';h.className='hp-service-card hp-bedmap';v.innerHTML='';v.appendChild(h)}renderBedMap()}
+document.addEventListener('DOMContentLoaded',()=>setTimeout(renderServicioBeds,100));
+const oldNav=window.navigateTo;window.navigateTo=function(v){if(v==='servicio'){let el=document.getElementById('view-servicio');document.querySelectorAll('.view').forEach(x=>x.classList.remove('active'));if(el)el.classList.add('active');window.scrollTo({top:0,behavior:'smooth'});setTimeout(renderServicioBeds,30);return}return oldNav?oldNav(v):null};
 })();
 </script>
 
@@ -4443,177 +4308,7 @@ document.addEventListener('DOMContentLoaded',function(){setTimeout(render,200)})
 })();
 </script>
 
-<style id="bedmap-operativo-css">
-.hp-bedmap{margin-top:12px}
-.hp-bed-summary{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:10px 0}
-.hp-bed-kpi{background:var(--g50);border:1px solid var(--border);border-radius:12px;padding:10px;text-align:center}
-.hp-bed-kpi b{display:block;font-size:1.25em}.hp-bed-kpi span{font-size:.68em;color:var(--g500);font-weight:700}
-.hp-room{border:1px solid var(--border);border-radius:14px;margin:10px 0;background:var(--card);overflow:hidden}
-.hp-room-head{display:flex;align-items:center;gap:8px;padding:11px 12px;cursor:pointer;background:linear-gradient(135deg,var(--card),var(--g50))}
-.hp-room-head .arrow{margin-left:auto;transition:.2s}.hp-room.open .arrow{transform:rotate(180deg)}
-.hp-room-title{font-weight:800}.hp-room-sub{font-size:.72em;color:var(--g500);margin-top:2px}
-.hp-room-body{display:none;padding:0 10px 10px}.hp-room.open .hp-room-body{display:block}
-.hp-cub{border-left:4px solid var(--azul);margin:8px 0;border-radius:8px;background:var(--g50);overflow:hidden}
-.hp-cub-head{display:flex;align-items:center;justify-content:space-between;gap:6px;padding:8px 10px;cursor:pointer;font-size:.82em;font-weight:800}
-.hp-cub-body{display:none;padding:0 8px 8px}.hp-cub.open .hp-cub-body{display:flex;flex-wrap:wrap;gap:6px}
-.hp-bed{min-width:82px;flex:1 1 82px;max-width:125px;border:1.5px solid var(--border);border-radius:10px;padding:7px;background:var(--card);cursor:pointer;position:relative}
-.hp-bed b{display:block;font-size:.78em}.hp-bed small{display:block;font-size:.63em;color:var(--g500);margin-top:2px}
-.hp-bed.disponible{border-color:var(--verde);background:rgba(31,138,76,.07)}.hp-bed.ocupada{border-color:var(--azul);background:rgba(11,61,145,.08)}
-.hp-bed.cerrada{border-color:var(--rojo);background:rgba(200,16,46,.08)}.hp-bed.mantenimiento{border-color:var(--amarillo);background:rgba(245,158,11,.10)}
-.hp-bed.aislamiento{border-color:var(--morado);background:rgba(124,58,237,.08)}.hp-bed.reservada{border-color:var(--cyan);background:rgba(8,145,178,.08)}
-.hp-bed .dot{position:absolute;right:7px;top:7px;width:8px;height:8px;border-radius:50%;background:var(--g500)}
-.hp-bed.disponible .dot{background:var(--verde)}.hp-bed.ocupada .dot{background:var(--azul)}.hp-bed.cerrada .dot{background:var(--rojo)}.hp-bed.mantenimiento .dot{background:var(--amarillo)}.hp-bed.aislamiento .dot{background:var(--morado)}.hp-bed.reservada .dot{background:var(--cyan)}
-.hp-legend{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}.hp-legend span{font-size:.68em;padding:4px 7px;border-radius:12px;background:var(--g100)}
-.hp-bed-edit{display:grid;grid-template-columns:1fr 1fr;gap:8px}.hp-bed-edit .full{grid-column:1/-1}
-.hp-bed-note{font-size:.7em;color:var(--g500);line-height:1.4}
-@media(max-width:520px){.hp-bed-summary{grid-template-columns:repeat(2,1fr)}.hp-bed-edit{grid-template-columns:1fr}}
-</style>
-<script id="bedmap-operativo-v1">
-(function(){
-  const BEDKEY='hpjrm_bedmap_v1';
-  const STATUSES=[
-    ['disponible','Disponible para usar'],
-    ['ocupada','Ocupada'],
-    ['cerrada','Cerrada'],
-    ['mantenimiento','Mantenimiento / reparación'],
-    ['aislamiento','Aislamiento'],
-    ['reservada','Reservada']
-  ];
-  function escB(v){return typeof esc==='function'?esc(v==null?'':String(v)):String(v==null?'':v).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
-  function mkRange(n1,n2,type='Cama',status='disponible',reason=''){
-    const a=[]; for(let n=n1;n<=n2;n++)a.push({id:String(n),label:type+' '+n,type,status,reason}); return a;
-  }
-  function seed(){
-    const rooms=[];
-    rooms.push({id:'miscelanea',name:'Miscelánea 51',icon:'🛏️',note:'51 espacios. La numeración y los cierres conocidos se conservan del mapa actual.',cubs:[
-      {id:'m1',name:'Cubículo 1',spaces:mkRange(1,5,'Cama','cerrada','Baño roto')},
-      {id:'m2',name:'Cubículo 2',spaces:mkRange(6,11)},
-      {id:'m3',name:'Cubículo 3',spaces:mkRange(12,17)},
-      {id:'m4',name:'Cubículo 4',spaces:mkRange(18,23,'Cuna')},
-      {id:'m5',name:'Cubículo 5',spaces:mkRange(24,30)},
-      {id:'m6',name:'Cubículo 6',spaces:[...mkRange(31,33),...mkRange(34,35,'Cuna')]},
-      {id:'m7',name:'Cubículo 7',spaces:mkRange(36,41)},
-      {id:'m8',name:'Cubículo 8',spaces:mkRange(42,51)}
-    ]});
-    rooms.push({id:'eda',name:'EDA',icon:'🧸',note:'8 cunas habituales.',cubs:[{id:'e1',name:'Sala EDA',spaces:mkRange(1,8,'Cuna')}]});
-    const r1=[...mkRange(1,27)]; r1[26].status='cerrada'; r1[26].reason='Baño obstruido';
-    rooms.push({id:'resp1',name:'Respiratorio 1',icon:'🫁',note:'27 espacios · 23 camas + 4 cunas. Se conocen 9 espacios no disponibles; solo el cierre de la cama 27 está individualizado. Los otros 8 quedan como no individualizados hasta definir su número.',cubs:[
-      {id:'r1c1',name:'Cubículo 1',spaces:r1.slice(0,4)},
-      {id:'r1c2',name:'Cubículo 2',spaces:r1.slice(4,8)},
-      {id:'r1c3',name:'Cubículo 3',spaces:r1.slice(8,12)},
-      {id:'r1c4',name:'Cubículo 4',spaces:r1.slice(12,16)},
-      {id:'r1c5',name:'Cubículo 5',spaces:r1.slice(16,20)},
-      {id:'r1c6',name:'Cubículo 6',spaces:r1.slice(20,24)},
-      {id:'r1c7',name:'Cubículo 7',spaces:r1.slice(24,27)}
-    ],unassignedClosed:8});
-    rooms.push({id:'resp2',name:'Respiratorio 2',icon:'🫁',note:'20 espacios · 18 camas + 2 cunas. Cubiculación no registrada en el mapa actual.',cubs:[{id:'r2all',name:'Sala / distribución actual',spaces:[...mkRange(1,18),...mkRange(19,20,'Cuna')]}]});
-    rooms.push({id:'guardia',name:'Cuerpo de Guardia / Emergencia',icon:'🚑',note:'2 camas.',cubs:[{id:'g1',name:'Emergencia',spaces:mkRange(1,2)}]});
-    return {version:1,rooms};
-  }
-  function load(){
-    try{const x=JSON.parse(localStorage.getItem(BEDKEY)||'null');if(x&&x.version===1&&x.rooms)return x}catch(e){}
-    const x=seed();localStorage.setItem(BEDKEY,JSON.stringify(x));return x;
-  }
-  let map=load();
-  function allSpaces(){
-    const a=[]; map.rooms.forEach(r=>r.cubs.forEach(c=>c.spaces.forEach(s=>a.push({...s,room:r.name,cub:c.name}))));
-    return a;
-  }
-  function stats(){
-    const a=allSpaces(), un=map.rooms.reduce((n,r)=>n+(r.unassignedClosed||0),0);
-    const physical=a.length+un, closed=a.filter(s=>['cerrada','mantenimiento'].includes(s.status)).length+un;
-    return {physical,closed,operational:physical-closed,available:a.filter(s=>s.status==='disponible').length,occupied:a.filter(s=>s.status==='ocupada').length};
-  }
-  function syncProfile(){
-    try{
-      const p=state.serviceProfile||{};
-      p.structure=p.structure||{};
-      const st=stats();
-      p.structure.physicalCapacity=st.physical;
-      p.structure.operationalCapacity=st.operational;
-      p.structure.unavailable=st.closed;
-      state.serviceProfile=p;
-      localStorage.setItem('hpjrm_service_profile_v1',JSON.stringify(p));
-      return st;
-    }catch(e){return stats()}
-  }
-  function statusLabel(k){return (STATUSES.find(x=>x[0]===k)||['',''])[1]}
-  function bedHtml(s){
-    return '<button type="button" class="hp-bed '+escB(s.status)+'" onclick="hpBedEdit('+JSON.stringify(s.room||'')+','+JSON.stringify(s.cub||'')+','+JSON.stringify(s.id)+')" title="Tocar para cambiar estado"><span class="dot"></span><b>'+escB(s.type)+' '+escB(s.id)+'</b><small>'+escB(statusLabel(s.status))+'</small></button>';
-  }
-  window.hpBedEdit=function(roomName,cubName,id){
-    const r=map.rooms.find(x=>x.name===roomName); if(!r)return;
-    const c=r.cubs.find(x=>x.name===cubName); if(!c)return;
-    const s=c.spaces.find(x=>String(x.id)===String(id)); if(!s)return;
-    const body='<div class="hp-bed-edit">'+
-      '<div class="field"><label>Espacio</label><input value="'+escB(s.type+' '+s.id)+'" disabled></div>'+
-      '<div class="field"><label>Estado operativo</label><select id="hpBedStatus">'+STATUSES.map(x=>'<option value="'+x[0]+'" '+(x[0]===s.status?'selected':'')+'>'+x[1]+'</option>').join('')+'</select></div>'+
-      '<div class="field full"><label>Motivo / observación</label><textarea id="hpBedReason" placeholder="Ej.: baño roto, reparación de cama, aislamiento...">'+escB(s.reason||'')+'</textarea></div>'+
-      '<div class="field full hp-bed-note">Al guardar, la capacidad operacional y el total de no disponibles se recalculan automáticamente.</div></div>';
-    const modal=document.getElementById('modal');
-    if(typeof openModal==='function') openModal('🛏️ Estado del espacio',body,[
-      {text:'Cancelar',cls:'btn gris',action:'closeModal()'},
-      {text:'Guardar',cls:'btn verde',action:'hpBedSave('+JSON.stringify(roomName)+','+JSON.stringify(cubName)+','+JSON.stringify(id)+')'}
-    ]);
-    else if(modal){modal.innerHTML=body;modal.style.display='block'}
-  };
-  window.hpBedSave=function(roomName,cubName,id){
-    const r=map.rooms.find(x=>x.name===roomName); if(!r)return;
-    const c=r.cubs.find(x=>x.name===cubName); if(!c)return;
-    const s=c.spaces.find(x=>String(x.id)===String(id)); if(!s)return;
-    s.status=document.getElementById('hpBedStatus').value;
-    s.reason=document.getElementById('hpBedReason').value.trim();
-    localStorage.setItem(BEDKEY,JSON.stringify(map)); syncProfile(); if(typeof closeModal==='function')closeModal(); renderBedMap();
-    if(typeof toast==='function')toast('Estado actualizado','ok');
-  };
-  function renderRoom(r){
-    const stRoom=r.cubs.reduce((acc,c)=>{c.spaces.forEach(s=>{acc.total++;if(['cerrada','mantenimiento'].includes(s.status))acc.off++;if(s.status==='disponible')acc.avail++;});return acc},{total:0,off:0,avail:0});
-    const open=window.hpOpenRooms&&window.hpOpenRooms[r.id]!==false;
-    return '<div class="hp-room '+(open?'open':'')+'" id="room-'+escB(r.id)+'"><div class="hp-room-head" onclick="hpToggleRoom('+JSON.stringify(r.id)+')"><div style="font-size:22px">'+escB(r.icon)+'</div><div><div class="hp-room-title">'+escB(r.name)+'</div><div class="hp-room-sub">'+stRoom.total+' espacios · '+stRoom.avail+' disponibles · '+stRoom.off+' no operativos'+(r.unassignedClosed?' · '+r.unassignedClosed+' no individualizados':'')+'</div></div><div class="arrow">⌄</div></div><div class="hp-room-body">'+
-      '<div class="hp-bed-note" style="padding:7px 2px">'+escB(r.note||'')+'</div>'+
-      r.cubs.map(c=>renderCub(r,c)).join('')+'</div></div>';
-  }
-  function renderCub(r,c){
-    const off=c.spaces.filter(s=>['cerrada','mantenimiento'].includes(s.status)).length, av=c.spaces.filter(s=>s.status==='disponible').length;
-    const open=window.hpOpenCubs&&window.hpOpenCubs[r.id+'|'+c.id]===true;
-    return '<div class="hp-cub '+(open?'open':'')+'"><div class="hp-cub-head" onclick="hpToggleCub('+JSON.stringify(r.id)+','+JSON.stringify(c.id)+')"><span>▸ '+escB(c.name)+' · '+c.spaces.length+' espacios · '+av+' disponibles · '+off+' no operativos</span><span>⌄</span></div><div class="hp-cub-body">'+c.spaces.map(s=>bedHtml({...s,room:r.name,cub:c.name})).join('')+'</div></div>';
-  }
-  window.hpOpenRooms={}; window.hpOpenCubs={};
-  window.hpToggleRoom=function(id){window.hpOpenRooms[id]=!(window.hpOpenRooms[id]!==false);renderBedMap()};
-  window.hpToggleCub=function(r,c){window.hpOpenCubs[r+'|'+c]=!(window.hpOpenCubs[r+'|'+c]===true);renderBedMap()};
-  window.renderBedMap=function(){
-    const host=document.getElementById('hp-bedmap-host'); if(!host)return;
-    const st=syncProfile();
-    host.innerHTML='<div class="hp-bed-summary">'+
-      '<div class="hp-bed-kpi"><b>'+st.physical+'</b><span>ESPACIOS FÍSICOS</span></div>'+
-      '<div class="hp-bed-kpi"><b>'+st.operational+'</b><span>OPERACIONALES</span></div>'+
-      '<div class="hp-bed-kpi"><b>'+st.available+'</b><span>DISPONIBLES</span></div>'+
-      '<div class="hp-bed-kpi"><b>'+st.closed+'</b><span>NO OPERATIVOS</span></div></div>'+
-      '<div class="hp-legend"><span>🟢 Disponible</span><span>🔵 Ocupada</span><span>🔴 Cerrada</span><span>🟡 Mantenimiento</span><span>🟣 Aislamiento</span><span>🔷 Reservada</span></div>'+
-      map.rooms.map(renderRoom).join('')+
-      '<div class="hp-bed-note" style="margin:8px 2px">Toca una cama/cuna para cambiar su estado. Los totales se actualizan y quedan guardados en este dispositivo.</div>';
-  };
-  window.renderServicioBeds=function(){
-    let host=document.getElementById('hp-bedmap-host');
-    if(!host){
-      const v=document.getElementById('view-servicio'); if(!v)return;
-      host=document.createElement('div');host.id='hp-bedmap-host';host.className='hp-service-card hp-bedmap';
-      v.prepend(host);
-    }
-    renderBedMap();
-  };
-  const oldNav=window.navigateTo;
-  window.navigateTo=function(v){
-    if(v==='servicio'){
-      const out=oldNav?oldNav(v):null;
-      setTimeout(()=>renderServicioBeds(),30);
-      return out;
-    }
-    return oldNav?oldNav(v):null;
-  };
-  document.addEventListener('DOMContentLoaded',function(){setTimeout(renderServicioBeds,80)});
-})();
-</script>
+
 
 </body>
 </html>
