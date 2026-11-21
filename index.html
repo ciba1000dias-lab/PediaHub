@@ -1128,7 +1128,7 @@ body.hp-menu-active .hp-menu-trigger .menu-bars i:nth-child(3){top:6px;transform
     <div class="stat-grid" id="medStats"></div>
     <div class="btn-group"><button class="btn cyan" onclick="abrirModalMedicamento()">➕ Añadir medicamento</button><button class="btn sm verde" onclick="exportarMedicamentosCSV()">📤 CSV</button><button class="btn sm amarillo" onclick="medPrepararCorreo()">✉️ Correo</button></div>
     <div class="field" style="margin-top:10px"><label>Familias terapéuticas que deben estar disponibles</label><input id="medFamiliasVigiladas" placeholder="Ej.: antibióticos, antipiréticos, broncodilatadores" onchange="guardarFamiliasMedicamentos()"></div>
-    <div class="med-email-note">📧 Destinatario de alertas: <b>docenciahpjrm@gmail.com</b>. La aplicación detecta familias ausentes y prepara el correo de alerta. El envío automático real requiere un servicio de correo conectado; no se simula un envío.</div>
+    <div class="med-email-note">📧 Destinatario de alertas: <b>docenciahpjrm+pediatria@gmail.com</b>. La aplicación detecta familias ausentes y prepara el correo de alerta. El envío automático real requiere un servicio de correo conectado; no se simula un envío.</div>
     <label style="display:flex;align-items:center;gap:8px;margin-top:8px;font-size:.8em"><input type="checkbox" id="medAutoCorreo" onchange="medToggleAutoCorreo(this)"> Preparar automáticamente el correo cuando aparezca una nueva alerta</label>
   </div>
   <div id="medAlertas" class="med-alert-panel"></div><div id="medLista"></div>
@@ -1689,7 +1689,7 @@ const state = {
   seccionActual:1, tabMedicamento:'general',
   tipoCompartir:null, calendarioFecha:new Date(), config:{},
   personalModalDestino:null, personalModalSeleccion:new Set(),
-  medConfig:{familiasVigiladas:[],correo:'docenciahpjrm@gmail.com',autoCorreo:false,ultimaAlerta:''},
+  medConfig:{familiasVigiladas:[],correo:'docenciahpjrm+pediatria@gmail.com',autoCorreo:false,ultimaAlerta:''},
   telefonos:{
   "Azzeb Águila Alemu": "+5356403292",
   "Beatriz": "+5354438605",
@@ -1722,7 +1722,7 @@ const state = {
     resumenDiario:true,
     correoDiarioProgramado:true,
     correoDiarioHoraObjetivo:'08:00',
-    correoDiarioDestinatario:'docenciahpjrm@gmail.com'
+    correoDiarioDestinatario:'docenciahpjrm+pediatria@gmail.com'
   }
 };
 
@@ -4438,5 +4438,108 @@ document.addEventListener('DOMContentLoaded',function(){setTimeout(render,200)})
   if(!e.target.closest('.hp-status-fan')&&!e.target.closest('[data-bed-room]'))closeFan();
  });
 })();
-</script></body>
+</script>
+<script id="guardias-agenda-operativa-v4">
+(function(){
+  const AGENDA_CORREO='docenciahpjrm+pediatria@gmail.com';
+  const AGENDA_IDENTIDAD='Asistente del Jefe de Servicio de Pediatría';
+  function cfg(){
+    state.guardiasConfig=state.guardiasConfig||{};
+    state.guardiasConfig.cambios=state.guardiasConfig.cambios||[];
+    state.guardiasConfig.apertura=4;
+    state.guardiasConfig.aperturaFecha='2026-11-21';
+    state.guardiasConfig.calendarioFin='2027-01-11';
+    state.guardiasConfig.planificacionMensualDia=25;
+    state.guardiasConfig.correoAgenda=AGENDA_CORREO;
+    state.guardiasConfig.identidadAgenda=AGENDA_IDENTIDAD;
+    state.guardiasConfig.coberturaPlanificadaHasta='2027-01-11';
+    return state.guardiasConfig;
+  }
+  function isoAdd(iso,n){const d=new Date(iso+'T00:00:00');d.setDate(d.getDate()+n);return d.toISOString().slice(0,10)}
+  function dateLabel(iso){return new Date(iso+'T00:00:00').toLocaleDateString('es-ES',{weekday:'short',day:'2-digit',month:'2-digit'})}
+  function effective(iso){
+    if(typeof obtenerGuardiaProgramada!=='function')return null;
+    const g=obtenerGuardiaProgramada(iso);if(!g)return null;
+    let ns=[...(g.nombres||[])];
+    const norm=s=>(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim().toLowerCase();
+    (cfg().cambios||[]).filter(x=>x.fecha===iso).forEach(x=>{
+      if(x.tipo==='sustitucion'){ns=ns.filter(n=>norm(n)!==norm(x.original));if(x.nuevo&&!ns.some(n=>norm(n)===norm(x.nuevo)))ns.push(x.nuevo)}
+      if(x.tipo==='agregar'&&x.nuevo&&!ns.some(n=>norm(n)===norm(x.nuevo)))ns.push(x.nuevo);
+      if(x.tipo==='retirar')ns=ns.filter(n=>norm(n)!==norm(x.original));
+    });
+    g.nombres=ns;g.cambios=(cfg().cambios||[]).filter(x=>x.fecha===iso);return g;
+  }
+  function planningRows(){
+    const c=cfg(),ini=c.aperturaFecha||'2026-11-21',fin=c.calendarioFin||'2027-01-11',rows=[];
+    for(let iso=ini;iso<=fin;iso=isoAdd(iso,1)){const g=effective(iso);if(!g)continue;const eq=g.especial?'📅 Especial':({1:'🔴 Equipo ❤️',2:'🟡 Equipo 💛',3:'🔵 Equipo 💙',4:'🟣 Equipo 💜'}[g.equipo]||'Equipo');rows.push({iso,g,eq})}
+    return rows;
+  }
+  function renderPlanningTable(){
+    const host=document.getElementById('gaoPlanning');if(!host)return;
+    const rows=planningRows();
+    host.innerHTML=rows.length?'<div class="gao-plan-wrap"><table class="gao-plan-table"><thead><tr><th>Fecha</th><th>Equipo</th><th>Médicos</th><th>Estado</th></tr></thead><tbody>'+
+      rows.map(x=>'<tr><td><b>'+dateLabel(x.iso)+'</b><br><span class="gao-plan-date">'+fmtD(x.iso)+'</span></td><td><b>'+esc(x.eq)+'</b>'+(x.g.especial?'<br><span class="gao-special-tag">PLANIFICACIÓN ESPECIAL</span>':'')+'</td><td>'+(x.g.nombres||[]).map(esc).join('<br>')+'</td><td>'+(x.g.cambios&&x.g.cambios.length?'<span class="pill amarillo">🔄 Modificada</span>':'<span class="pill verde">✓ Publicada</span>')+'</td></tr>').join('')+
+      '</tbody></table></div>':'<div class="gao-alert">No hay guardias en el período planificado.</div>';
+  }
+  function renderAgendaV4(){
+    if(typeof window.__gaoOriginalRender==='function')window.__gaoOriginalRender();
+    setTimeout(function(){
+      const root=document.getElementById('g_operativa');if(!root)return;
+      let plan=document.getElementById('gaoPlanningCard');
+      if(!plan){
+        plan=document.createElement('div');plan.id='gaoPlanningCard';plan.className='gao-card';
+        plan.innerHTML='<div class="gao-head"><h3 style="margin:0">📋 Planificación efectiva</h3><span class="muted">21/11 → 11/01</span></div><div class="gao-alert purple">La secuencia ordinaria es <b>24×72</b>. Las fechas marcadas como especiales conservan la planificación de fin de año ya publicada.</div><div id="gaoPlanning"></div>';
+        const cards=root.querySelectorAll('.gao-card');const anchor=cards.length?cards[cards.length-1]:null;if(anchor)root.insertBefore(plan,anchor);else root.appendChild(plan);
+      }
+      renderPlanningTable();
+      const configCard=document.createElement('div');configCard.className='gao-card';
+      configCard.innerHTML='<div class="gao-head"><h3 style="margin:0">⚙️ Planificación y comunicaciones</h3><span class="muted">Control mensual</span></div><div class="gao-alert ok"><b>'+AGENDA_IDENTIDAD+'</b><br>Correo de agenda: '+AGENDA_CORREO+'</div><div class="gao-alert">📅 Cada día <b>25</b> se revisa y prepara el mes siguiente. Las guardias ya publicadas no se modifican automáticamente.</div><div class="btn-group"><button class="btn cyan" onclick="generarMensajeWhatsApp()">📱 Compartir agenda</button><button class="btn verde" onclick="imprimirGuardias()">🖨️ PDF</button></div>';
+      root.appendChild(configCard);
+    },20);
+  }
+  if(!window.__gaoOriginalRender)window.__gaoOriginalRender=window.renderGuardias;
+  window.renderGuardias=renderAgendaV4;
+  const navOld=window.navigateTo;
+  if(!window.__gaoNavV4){
+    window.__gaoNavV4=true;
+    window.navigateTo=function(v){
+      if(v==='guardias-config'){
+        if(typeof navOld==='function')navOld('guardias');
+        setTimeout(function(){const el=document.getElementById('g_operativa');if(el)el.scrollIntoView({behavior:'smooth',block:'start'})},120);
+        return;
+      }
+      return navOld?navOld(v):null;
+    };
+  }
+  const oldShare=window.generarMensajeWhatsApp;
+  if(typeof oldShare==='function'&&!window.__gaoShareV4){
+    window.__gaoShareV4=true;
+    window.generarMensajeWhatsApp=function(){
+      oldShare();
+      const ta=document.getElementById('g_msgText');
+      if(ta&&!ta.value.startsWith(AGENDA_IDENTIDAD))ta.value=AGENDA_IDENTIDAD+'\n📧 '+AGENDA_CORREO+'\n\n'+ta.value;
+    };
+  }
+  const oldPrint=window.imprimirGuardias;
+  if(typeof oldPrint==='function'&&!window.__gaoPrintV4){
+    window.__gaoPrintV4=true;
+    window.imprimirGuardias=function(){
+      oldPrint();
+      setTimeout(function(){
+        const pa=document.getElementById('printArea');
+        if(pa&&!pa.innerHTML.includes(AGENDA_IDENTIDAD))pa.innerHTML=pa.innerHTML.replace('Servicio de Pediatría · Distribución de guardias','Servicio de Pediatría · Distribución de guardias<br><span style="font-size:8pt">'+AGENDA_IDENTIDAD+' · '+AGENDA_CORREO+'</span>');
+      },80);
+    };
+  }
+  cfg();guardarDatos();
+})();
+</script>
+<style id="guardias-agenda-operativa-v4-css">
+.gao-plan-wrap{max-height:560px;overflow:auto;border:1px solid var(--border);border-radius:12px}
+.gao-plan-table{margin:0;font-size:.78em}.gao-plan-table th{position:sticky;top:0;z-index:2;background:var(--g100)}
+.gao-plan-table td{padding:8px 6px;vertical-align:top}.gao-plan-date{font-size:.85em;color:var(--g500)}
+.gao-special-tag{display:inline-block;margin-top:4px;padding:2px 5px;border-radius:6px;background:rgba(236,72,153,.12);color:var(--rosa);font-size:.72em;font-weight:800}
+@media(max-width:520px){.gao-plan-table{font-size:.7em}.gao-plan-table th:nth-child(3),.gao-plan-table td:nth-child(3){min-width:170px}.gao-plan-wrap{max-height:520px}}
+</style>
+</body>
 </html>
