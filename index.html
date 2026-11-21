@@ -869,6 +869,16 @@ body.hp-menu-active .hp-menu-trigger .menu-bars i:nth-child(3){top:6px;transform
 .phone-actions{display:flex;gap:5px;flex-shrink:0}.phone-actions a,.phone-actions button{min-width:38px;text-decoration:none}
 .phone-note{font-size:.76em;color:var(--txt2);padding:9px 10px;border-radius:10px;background:var(--g50);border:1px dashed var(--border);margin-top:8px}
 @media(max-width:520px){.phone-actions .phone-label{display:none}}
+<style id="hp-service-bedmap-final">
+.hp-service-card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:14px;box-shadow:var(--shadow);margin-bottom:12px}
+.hp-service-title{display:flex;align-items:center;gap:10px;margin-bottom:12px}.hp-service-title span{font-size:24px}.hp-service-title b{display:block;font-size:1.05em}.hp-service-title small{display:block;color:var(--g500);font-size:.72em;margin-top:2px}
+.hp-bedmap{overflow:hidden}.hp-bed-summary{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-bottom:10px}.hp-bed-kpi{padding:10px 6px;border:1px solid var(--border);border-radius:12px;text-align:center;background:var(--g50)}.hp-bed-kpi b{display:block;font-size:1.45em;color:var(--azul)}.hp-bed-kpi span{font-size:.64em;color:var(--g500);font-weight:800}
+.hp-legend{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px;font-size:.68em;color:var(--txt2)}.hp-legend span{padding:5px 7px;border-radius:8px;background:var(--g50);border:1px solid var(--border)}
+.hp-room{border:1px solid var(--border);border-radius:13px;margin-bottom:7px;overflow:hidden;background:var(--card)}.hp-room-head{display:flex;align-items:center;gap:9px;padding:11px;cursor:pointer}.hp-room-title{font-weight:800;font-size:.9em}.hp-room-sub{font-size:.68em;color:var(--g500);margin-top:2px}.hp-room-head .arrow{margin-left:auto;color:var(--g500)}.hp-room-body{display:none;padding:0 8px 8px;border-top:1px dashed var(--border)}.hp-room.open .hp-room-body{display:block}
+.hp-cub{border:1px solid var(--border);border-radius:10px;margin-top:7px;overflow:hidden}.hp-cub-head{display:flex;justify-content:space-between;gap:6px;padding:8px 10px;cursor:pointer;font-size:.82em;font-weight:800}.hp-cub-body{display:none;padding:0 8px 8px;flex-wrap:wrap;gap:6px}.hp-cub.open .hp-cub-body{display:flex}
+.hp-bed{min-width:82px;flex:1 1 82px;max-width:125px;border:1.5px solid var(--border);border-radius:10px;padding:7px;background:var(--card);cursor:pointer;position:relative}.hp-bed b{display:block;font-size:.78em}.hp-bed small{display:block;font-size:.63em;color:var(--g500);margin-top:2px}.hp-bed.disponible{border-color:var(--verde);background:rgba(31,138,76,.07)}.hp-bed.ocupada{border-color:var(--azul);background:rgba(11,61,145,.08)}.hp-bed.cerrada{border-color:var(--rojo);background:rgba(200,16,46,.08)}.hp-bed.mantenimiento{border-color:var(--amarillo);background:rgba(245,158,11,.10)}.hp-bed.aislamiento{border-color:var(--morado);background:rgba(124,58,237,.08)}.hp-bed.reservada{border-color:var(--cyan);background:rgba(8,145,178,.08)}.hp-bed .dot{position:absolute;right:7px;top:7px;width:8px;height:8px;border-radius:50%;background:var(--g500)}.hp-bed.disponible .dot{background:var(--verde)}.hp-bed.ocupada .dot{background:var(--azul)}.hp-bed.cerrada .dot{background:var(--rojo)}.hp-bed.mantenimiento .dot{background:var(--amarillo)}.hp-bed.aislamiento .dot{background:var(--morado)}.hp-bed.reservada .dot{background:var(--cyan)}.hp-bed-edit{display:grid;grid-template-columns:1fr 1fr;gap:8px}.hp-bed-edit .full{grid-column:1/-1}.hp-bed-note{font-size:.7em;color:var(--g500);line-height:1.4}
+@media(max-width:520px){.hp-bed-summary{grid-template-columns:repeat(2,1fr)}.hp-bed-edit{grid-template-columns:1fr}}
+</style>
 </style>
 </head>
 <body>
@@ -996,6 +1006,13 @@ body.hp-menu-active .hp-menu-trigger .menu-bars i:nth-child(3){top:6px;transform
     </div>
   </div>
   <div id="histLista"></div>
+</section>
+
+<section class="view" id="view-servicio">
+  <div class="hp-service-card hp-bedmap">
+    <div class="hp-service-title"><span>🏥</span><div><b>Servicio de Pediatría</b><small>Mapa operativo de camas y cunas</small></div></div>
+    <div id="hp-bedmap-host"></div>
+  </div>
 </section>
 
 <section class="view" id="view-guardias">
@@ -1290,7 +1307,7 @@ body.hp-menu-active .hp-menu-trigger .menu-bars i:nth-child(3){top:6px;transform
 <section class="view" id="view-impresion"></section>
 
 </main>
-<div class="hp-menu-backdrop" id="hpMenuBackdrop" onclick="toggleHpMore(false)"></div><div class="more-sheet" id="hpMoreSheet" aria-hidden="true"><div style="display:flex;align-items:center;gap:10px;padding:4px 2px 12px;margin-bottom:8px;border-bottom:1px solid var(--border)"><img src="https://i.ibb.co/mF2GJjbd/IMG-20260930-WA0034.jpg" alt="Logo institucional HPJRM" style="width:42px;height:42px;object-fit:contain;border-radius:10px;background:#fff;padding:3px"><div><b>PEDIATRÍA HPJRM</b><div style="font-size:.72em;color:var(--g500)">Identidad institucional</div></div></div><div class="more-grid"><button onclick="hpNav('personal')">👥<br>Personal</button><button onclick="hpNav('agenda-telefonica')">📞<br>Agenda</button><button onclick="hpNav('pami')">🍼<br>Lactantes</button><button onclick="hpNav('fugas')">🚪<br>Fugas</button><button onclick="hpNav('farmacologia')">💊<br>Farmacología</button><button onclick="hpNav('morbilidad')">📈<br>Morbilidad</button><button onclick="hpNav('config')">⚙️<br>Configuración</button></div></div><nav class="bottom-nav" id="hpBottomNav" aria-label="Navegación principal"><button data-hp="inicio" class="active" onclick="hpNav('inicio')"><span>⌂</span><span>Inicio</span></button><button data-hp="guardias" onclick="hpNav('guardias')"><span>🩺</span><span>Guardia</span></button><button data-hp="auditor" onclick="hpNav('auditor')"><span>📋</span><span>Auditoría</span></button><button data-hp="medicamentos" onclick="hpNav('medicamentos')"><span>💊</span><span>Recursos</span></button><button data-hp="more" onclick="toggleHpMore()"><span>☰</span><span>Más</span></button></nav>
+<div class="hp-menu-backdrop" id="hpMenuBackdrop" onclick="toggleHpMore(false)"></div><div class="more-sheet" id="hpMoreSheet" aria-hidden="true"><div style="display:flex;align-items:center;gap:10px;padding:4px 2px 12px;margin-bottom:8px;border-bottom:1px solid var(--border)"><img src="https://i.ibb.co/mF2GJjbd/IMG-20260930-WA0034.jpg" alt="Logo institucional HPJRM" style="width:42px;height:42px;object-fit:contain;border-radius:10px;background:#fff;padding:3px"><div><b>PEDIATRÍA HPJRM</b><div style="font-size:.72em;color:var(--g500)">Identidad institucional</div></div></div><div class="more-grid"><button onclick="hpNav('servicio')">🏥<br>Servicio</button><button onclick="hpNav('personal')">👥<br>Personal</button><button onclick="hpNav('agenda-telefonica')">📞<br>Agenda</button><button onclick="hpNav('pami')">🍼<br>Lactantes</button><button onclick="hpNav('fugas')">🚪<br>Fugas</button><button onclick="hpNav('farmacologia')">💊<br>Farmacología</button><button onclick="hpNav('morbilidad')">📈<br>Morbilidad</button><button onclick="hpNav('config')">⚙️<br>Configuración</button></div></div><nav class="bottom-nav" id="hpBottomNav" aria-label="Navegación principal"><button data-hp="inicio" class="active" onclick="hpNav('inicio')"><span>⌂</span><span>Inicio</span></button><button data-hp="guardias" onclick="hpNav('guardias')"><span>🩺</span><span>Guardia</span></button><button data-hp="auditor" onclick="hpNav('auditor')"><span>📋</span><span>Auditoría</span></button><button data-hp="medicamentos" onclick="hpNav('medicamentos')"><span>💊</span><span>Recursos</span></button><button data-hp="more" onclick="toggleHpMore()"><span>☰</span><span>Más</span></button></nav>
 
 <div id="printArea"></div>
 <div id="toastWrap"></div>
@@ -4244,16 +4261,16 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape')toggleHpMore
 </style>
 <script id="bedmap-operativo-v2">
 (function(){
-const K='hpjrm_bedmap_v2',ST=[['disponible','Disponible para usar'],['ocupada','Ocupada'],['cerrada','Cerrada'],['mantenimiento','Mantenimiento / reparación'],['aislamiento','Aislamiento'],['reservada','Reservada']];
+const K='hpjrm_bedmap_v3',ST=[['disponible','Disponible para usar'],['ocupada','Ocupada'],['cerrada','Cerrada'],['mantenimiento','Mantenimiento / reparación'],['aislamiento','Aislamiento'],['reservada','Reservada']];
 const E=v=>typeof esc==='function'?esc(v==null?'':String(v)):String(v==null?'':v).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 const R=(a,b,t='Cama',s='disponible')=>{let x=[];for(let i=a;i<=b;i++)x.push({id:String(i),type:t,status:s,reason:''});return x};
 function seed(){let m=[];m.push({id:'mis',name:'Miscelánea 51',icon:'🛏️',cubs:[['1',1,5,'Cama','cerrada'],['2',6,11],['3',12,17],['4',18,23,'Cuna'],['5',24,30],['6',31,33],['6c',34,35,'Cuna'],['7',36,41],['8',42,51]].map(x=>({id:x[0],name:'Cubículo '+x[0],spaces:R(x[1],x[2],x[3]||'Cama',x[4]||'disponible')}))});
 m.push({id:'eda',name:'EDA',icon:'🧸',cubs:[{id:'s',name:'Sala EDA',spaces:R(1,8,'Cuna')}]});
 m.push({id:'r1',name:'Respiratorio 1',icon:'🫁',cubs:[{id:'1',name:'Cubículo 1',spaces:R(1,4)},{id:'2',name:'Cubículo 2',spaces:R(5,8)},{id:'3',name:'Cubículo 3',spaces:R(9,12)},{id:'4',name:'Cubículo 4',spaces:R(13,16)},{id:'5',name:'Cubículo 5',spaces:R(17,20)},{id:'6',name:'Cubículo 6',spaces:R(21,24)},{id:'7',name:'Cubículo 7',spaces:R(25,27)}]});
-m.find(x=>x.id==='r1').cubs.at(-1).spaces.at(-1).status='cerrada';
+m.find(x=>x.id==='r1').cubs.at(-1).spaces.forEach(s=>{if(['25','26','27'].includes(s.id))s.status='cerrada'});m.find(x=>x.id==='r1').cubs[0].spaces[0].status='cerrada';m.find(x=>x.id==='r1').cubs[0].spaces[1].status='cerrada';m.find(x=>x.id==='r1').cubs[1].spaces[0].status='cerrada';m.find(x=>x.id==='r1').cubs[1].spaces[1].status='cerrada';m.find(x=>x.id==='r1').cubs[2].spaces[0].status='cerrada';m.find(x=>x.id==='r1').cubs[2].spaces[1].status='cerrada';m.find(x=>x.id==='r1').cubs[3].spaces[0].status='cerrada';
 m.push({id:'r2',name:'Respiratorio 2',icon:'🫁',cubs:[{id:'s',name:'Sala',spaces:[...R(1,18),...R(19,20,'Cuna')]}]});
-m.push({id:'em',name:'Cuerpo de Guardia / Emergencia',icon:'🚑',cubs:[{id:'s',name:'Emergencia',spaces:R(1,2)}]});return {version:2,rooms:m}}
-function load(){try{let x=JSON.parse(localStorage.getItem(K)||'null');if(x&&x.version===2)return x}catch(e){}let x=seed();localStorage.setItem(K,JSON.stringify(x));return x}
+m.push({id:'em',name:'Cuerpo de Guardia / Emergencia',icon:'🚑',cubs:[{id:'s',name:'Emergencia',spaces:R(1,2)}]});return {version:3,rooms:m}}
+function load(){try{let x=JSON.parse(localStorage.getItem(K)||'null');if(x&&x.version===3)return x}catch(e){}let x=seed();localStorage.setItem(K,JSON.stringify(x));return x}
 let map=load();
 function all(){let a=[];map.rooms.forEach(r=>r.cubs.forEach(c=>c.spaces.forEach(s=>a.push(s))));return a}
 function stats(){let a=all(),closed=a.filter(s=>['cerrada','mantenimiento'].includes(s.status)).length;return{physical:a.length,closed,operational:a.length-closed,available:a.filter(s=>s.status==='disponible').length,occupied:a.filter(s=>s.status==='ocupada').length}}
