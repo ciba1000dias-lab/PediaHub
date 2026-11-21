@@ -4,11 +4,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <meta name="theme-color" content="#0b3d91">
+<meta name="application-name" content="PEDIATRÍA HPJRM">
+<meta name="description" content="Centro de mando del Servicio de Pediatría del Hospital Pediátrico José Ramón Martínez.">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="HPJRM">
 <link rel="manifest" href="manifest.json">
-<title>Hub HPJRM · Jefe de Pediatría</title>
+<title>PEDIATRÍA HPJRM · Centro de mando</title>
 <style>
 :root{
   --rojo:#c8102e; --rojo-o:#a00d24;
@@ -329,15 +331,40 @@ html[data-theme="dark"] .dock-item .lbl{color:#c4cbd6}
   @page{size:letter portrait;margin:.35in}
 }
 
+/* PEDIATRÍA HPJRM · VISUAL SYSTEM v1 */
+:root{--azul:#123f78;--azul-o:#0a2c55;--turq:#0b9aa6;--verde:#2f8f68;--bg:#f5f8fb;--card:#fff;--border:#e2e9f0;--shadow:0 10px 30px rgba(18,63,120,.08);--shadow-soft:0 4px 16px rgba(18,63,120,.07)}
+html,body{background:radial-gradient(circle at 92% 4%,rgba(11,154,166,.10),transparent 24%),radial-gradient(circle at 3% 18%,rgba(47,143,104,.07),transparent 22%),var(--bg)}
+body{padding-bottom:92px}
+.app-header{position:sticky;top:0;z-index:500;min-height:66px;padding:9px 14px;background:linear-gradient(135deg,#123f78 0%,#0b5b8f 58%,#0b8d91 100%);box-shadow:0 8px 24px rgba(10,44,85,.22);border-bottom:1px solid rgba(255,255,255,.18)}
+.app-header:after{content:"";position:absolute;left:0;right:0;bottom:0;height:2px;background:linear-gradient(90deg,#62d7c8,#fff,#78c99d);opacity:.8}
+.app-header .logo{width:43px;height:43px;border-radius:14px;flex:0 0 43px;display:grid;place-items:center;font-size:20px;background:linear-gradient(145deg,rgba(255,255,255,.22),rgba(255,255,255,.08));border:1px solid rgba(255,255,255,.28);box-shadow:inset 0 1px 0 rgba(255,255,255,.28),0 5px 15px rgba(0,0,0,.12)}
+.brand-mark span{font-size:22px;font-weight:900}.brand-flag{font-size:.82em;opacity:.9}
+.app-header .t1{font-size:1.02em;letter-spacing:.2px;font-weight:800}.app-header .t2{font-size:.69em;opacity:.88;margin-top:2px}
+.hdr-btn{width:40px;height:40px;border-radius:13px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.18);box-shadow:inset 0 1px 0 rgba(255,255,255,.1)}
+.wrap{max-width:980px;padding:14px 12px 22px}.view.active{animation:hpFade .28s ease}@keyframes hpFade{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+.card{position:relative;background:rgba(255,255,255,.96);border:1px solid rgba(226,233,240,.95);border-top:0!important;border-radius:18px;padding:16px;margin-bottom:13px;box-shadow:var(--shadow);overflow:hidden}
+.card:before{content:"";position:absolute;left:0;top:0;right:0;height:4px;background:linear-gradient(90deg,#123f78,#0b9aa6,#2f8f68)}
+.card.rojo:before{background:linear-gradient(90deg,#c8102e,#f06a7d)}.card.amarillo:before{background:linear-gradient(90deg,#d99000,#f4c34f)}.card.morado:before{background:linear-gradient(90deg,#6d3bc1,#9d7be0)}.card.rosa:before{background:linear-gradient(90deg,#d0448c,#ef8ebc)}
+.card>h3{font-size:1.02em;margin:2px 0 10px}.section-title{margin:20px 2px 9px;font-size:1em;letter-spacing:.1px;color:var(--azul);font-weight:800}
+.stat-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.stat-box{min-height:78px;padding:12px 9px;border-radius:15px;background:linear-gradient(145deg,#fff,#f4f8fb);border:1px solid #e0e8f0;box-shadow:var(--shadow-soft)}.stat-box .n{font-size:1.72em;color:var(--azul)}.stat-box .l{font-size:.66em;letter-spacing:.5px}
+.quick-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}.q-btn{min-height:88px;padding:12px 5px;border-radius:16px;background:linear-gradient(145deg,#fff,#f7fafc);border:1px solid #e0e8f0;box-shadow:var(--shadow-soft)}.q-btn:active{transform:scale(.97)}.q-btn .ico{font-size:25px}.q-btn .t{font-size:.7em}
+.field input,.field select,.field textarea{min-height:44px;border-radius:13px;border-color:#dce5ee;box-shadow:0 2px 8px rgba(18,63,120,.03)}
+.btn{min-height:42px;border-radius:13px;font-weight:700;box-shadow:0 5px 12px rgba(18,63,120,.10)}.btn.ghost{box-shadow:none}.linea,.mini-item{border-radius:13px;border-color:#e0e8f0}.mini-item{padding:10px 11px;background:#f8fafc}
+.bottom-nav{position:fixed;left:10px;right:10px;bottom:max(10px,env(safe-area-inset-bottom));z-index:700;height:64px;padding:6px;display:grid;grid-template-columns:repeat(5,1fr);gap:4px;background:rgba(255,255,255,.94);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border:1px solid rgba(210,222,232,.9);border-radius:20px;box-shadow:0 14px 35px rgba(18,63,120,.18)}
+.bottom-nav button{border:0;background:transparent;color:#66778a;border-radius:14px;font:700 10px/1.1 var(--font-family);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;cursor:pointer}.bottom-nav button span:first-child{font-size:19px;line-height:1}.bottom-nav button.active{color:#0b6e82;background:#e8f7f5}
+.more-sheet{position:fixed;left:10px;right:10px;bottom:84px;z-index:690;display:none;padding:12px;border-radius:20px;background:rgba(255,255,255,.97);backdrop-filter:blur(18px);border:1px solid #dce5ee;box-shadow:0 18px 45px rgba(18,63,120,.20)}.more-sheet.open{display:block;animation:sheetIn .18s ease}@keyframes sheetIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.more-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}.more-grid button{min-height:58px;border:1px solid #e2e9f0;border-radius:13px;background:#f8fafc;color:#28435e;font-weight:700;font-size:.72em}
+@media(min-width:700px){body{padding-bottom:20px}.bottom-nav{display:none}.more-sheet{display:none!important}.wrap{padding:20px 18px 40px}.stat-grid{grid-template-columns:repeat(4,minmax(0,1fr))}.quick-grid{grid-template-columns:repeat(6,minmax(0,1fr))}.app-header{padding-left:max(18px,calc((100vw - 980px)/2))}}
+@media(max-width:380px){.quick-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.app-header .t1{font-size:.92em}}
 </style>
 </head>
 <body>
 
 <header class="app-header">
-  <div class="logo">👶</div>
+  <div class="logo brand-mark" aria-label="Pediatría HPJRM"><span>✚</span></div>
   <div class="titles">
-    <div class="t1">HPJRM <span style="opacity:.85;font-size:.9em">🇨🇺</span></div>
-    <div class="t2" id="hdrSub">Hub del Jefe de Servicio · Pediatría</div>
+    <div class="t1">PEDIATRÍA HPJRM <span class="brand-flag">🇨🇺</span></div>
+    <div class="t2" id="hdrSub">Centro de mando · Servicio de Pediatría</div>
   </div>
   <button class="hdr-btn" onclick="abrirBusqueda()" title="Buscar">🔍</button>
   <button class="hdr-btn" onclick="navigateTo('config')" title="Configuración">⚙️</button>
@@ -347,7 +374,7 @@ html[data-theme="dark"] .dock-item .lbl{color:#c4cbd6}
 
 <section class="view active" id="view-inicio">
   <div class="card amarillo">
-    <h3>👶 Bienvenido, Dr. Rodney</h3>
+    <h3>👋 Bienvenido, Dr. Rodney</h3>
     <div style="font-size:.88em;color:var(--txt2)" id="inicioSaludo">Cargando...</div>
   </div>
   <div id="inicioBorrador"></div>
@@ -673,6 +700,7 @@ html[data-theme="dark"] .dock-item .lbl{color:#c4cbd6}
 <section class="view" id="view-impresion"></section>
 
 </main>
+<div class="more-sheet" id="hpMoreSheet" aria-hidden="true"><div class="more-grid"><button onclick="hpNav('personal')">👥<br>Personal</button><button onclick="hpNav('pami')">🍼<br>Lactantes</button><button onclick="hpNav('fugas')">🚪<br>Fugas</button><button onclick="hpNav('farmacologia')">💊<br>Farmacología</button><button onclick="hpNav('morbilidad')">📈<br>Morbilidad</button><button onclick="hpNav('config')">⚙️<br>Configuración</button></div></div><nav class="bottom-nav" id="hpBottomNav" aria-label="Navegación principal"><button data-hp="inicio" class="active" onclick="hpNav('inicio')"><span>⌂</span><span>Inicio</span></button><button data-hp="guardias" onclick="hpNav('guardias')"><span>🩺</span><span>Guardia</span></button><button data-hp="auditor" onclick="hpNav('auditor')"><span>📋</span><span>Auditoría</span></button><button data-hp="medicamentos" onclick="hpNav('medicamentos')"><span>💊</span><span>Recursos</span></button><button data-hp="more" onclick="toggleHpMore()"><span>☰</span><span>Más</span></button></nav>
 
 <div id="printArea"></div>
 <div id="toastWrap"></div>
@@ -2189,7 +2217,7 @@ function generarDocumentoLactante(id){
     '<tr><td>'+esc(l.dx||'—')+'</td><td>'+(l.varDx==='si'?esc(l.nuevoDx||'Sí, sin especificar'):'No')+'</td></tr></table></div>'+
     '<div class="pami-print-section"><h4>DATOS COMPLEMENTARIOS</h4><table class="pami-print-table"><tr><th>Dirección</th><th>Observaciones</th></tr>'+
     '<tr><td>'+esc(l.dir||'—')+'</td><td>'+esc(l.obs||'—')+'</td></tr></table></div>'+
-    '<div class="pami-print-footer"><div>Documento generado desde PediaHub · Registro asistencial.</div>'+
+    '<div class="pami-print-footer"><div>Documento generado desde PEDIATRÍA HPJRM · Registro asistencial.</div>'+
     '<div class="pami-print-firma"><div style="border-top:1px solid #475569;padding-top:2px">'+esc(state.config.jefe||'Dr. Rodney Jáuregui Alonso')+'<br>'+esc(state.config.cargo||'Jefe del Servicio de Pediatría')+'</div></div></div></div>';
   $('printArea').innerHTML=html; navigateTo('impresion'); setTimeout(()=>window.print(),350);
 }
@@ -2240,7 +2268,7 @@ function guardarMedConfig(){try{localStorage.setItem('hpjrm_med_config_v6_2',JSO
 function guardarFamiliasMedicamentos(){const raw=($('medFamiliasVigiladas')?.value||'');state.medConfig.familiasVigiladas=[...new Set(raw.split(',').map(x=>x.trim()).filter(Boolean))];guardarMedConfig();renderMedicamentos();}
 function medFamiliasAusentes(){return (state.medConfig.familiasVigiladas||[]).map(nombre=>{const key=nombre.trim().toLowerCase();const meds=state.medicamentos.filter(m=>(m.familia||'').trim().toLowerCase()===key);const disponibles=meds.filter(m=>Number(m.cantidad||0)>0&&m.estado!=='cero');return {nombre,meds,disponibles,estado:disponibles.length?'ok':(meds.length?'alerta':'ausente')};});}
 function medRenderAlertas(){const out=$('medAlertas');if(!out)return;const familias=medFamiliasAusentes();if(!familias.length){out.innerHTML='<div class="alert">ℹ️ Configure las familias terapéuticas vigiladas para activar la detección de ausencias.</div>';return;}const aus=familias.filter(f=>f.estado==='ausente'),alerta=familias.filter(f=>f.estado==='alerta');const html=familias.map(f=>{const cls=f.estado==='ok'?'ok':f.estado==='alerta'?'alerta':'ausente';const ico=f.estado==='ok'?'✅':f.estado==='alerta'?'⚠️':'🚨';const txt=f.estado==='ok'?'Disponible':f.estado==='alerta'?'Sin cobertura suficiente / registros en cero':'AUSENTE';return '<div class="med-family-item '+cls+'"><div class="ico">'+ico+'</div><div class="body"><div class="name">'+esc(f.nombre)+'</div><div class="sub">'+txt+' · '+f.meds.length+' medicamento(s) registrado(s)</div></div></div>';}).join('');const aviso=(aus.length||alerta.length)?'<div class="alert rojo"><strong>🚨 Alerta de disponibilidad</strong>'+(aus.length+alerta.length)+' familia(s) requieren revisión: '+aus.map(f=>esc(f.nombre)).concat(alerta.map(f=>esc(f.nombre))).join(', ')+'.</div>':'<div class="alert verde"><strong>✅ Cobertura por familias</strong>Todas las familias vigiladas tienen al menos un medicamento con disponibilidad registrada.</div>';out.innerHTML='<div class="card '+(aus.length?'rojo':(alerta.length?'amarillo':'verde'))+'"><h3>🧭 Vigilancia por familias</h3>'+aviso+'<div class="med-family-grid">'+html+'</div><div class="btn-group"><button class="btn sm rojo" onclick="medPrepararCorreo()">✉️ Preparar alerta por correo</button></div></div>';const firma=familias.map(f=>f.nombre+':'+f.estado).join('|');if((aus.length||alerta.length)&&firma!==state.medConfig.ultimaAlerta){state.medConfig.ultimaAlerta=firma;guardarMedConfig();if(state.medConfig.autoCorreo)medPrepararCorreo(true);}}
-function medPrepararCorreo(auto){const problem=medFamiliasAusentes().filter(f=>f.estado!=='ok');if(!problem.length){toast('No hay familias con alerta','ok');return;}const fecha=new Date().toLocaleString('es-ES');const detalle=problem.map(f=>'• '+f.nombre+': '+(f.estado==='ausente'?'AUSENTE':'cobertura insuficiente / registros en cero')).join('\n');const subject='HPJRM · Alerta de medicamentos por familias';const body='Hospital Pediátrico Docente José Ramón Martínez\nServicio de Pediatría\n\nALERTA DE DISPONIBILIDAD DE MEDICAMENTOS\nFecha: '+fecha+'\n\n'+detalle+'\n\nRevisar el registro de medicamentos y disponibilidad.\n\nPediaHub · Alerta generada a partir de datos registrados.';const url='mailto:'+encodeURIComponent(state.medConfig.correo||'docenciahpjrm@gmail.com')+'?subject='+encodeURIComponent(subject)+'&body='+encodeURIComponent(body);if(auto)setTimeout(()=>window.location.href=url,120);else window.location.href=url;toast('Correo preparado con '+problem.length+' familia(s) en alerta','warn');}
+function medPrepararCorreo(auto){const problem=medFamiliasAusentes().filter(f=>f.estado!=='ok');if(!problem.length){toast('No hay familias con alerta','ok');return;}const fecha=new Date().toLocaleString('es-ES');const detalle=problem.map(f=>'• '+f.nombre+': '+(f.estado==='ausente'?'AUSENTE':'cobertura insuficiente / registros en cero')).join('\n');const subject='HPJRM · Alerta de medicamentos por familias';const body='Hospital Pediátrico Docente José Ramón Martínez\nServicio de Pediatría\n\nALERTA DE DISPONIBILIDAD DE MEDICAMENTOS\nFecha: '+fecha+'\n\n'+detalle+'\n\nRevisar el registro de medicamentos y disponibilidad.\n\nPEDIATRÍA HPJRM · Alerta generada a partir de datos registrados.';const url='mailto:'+encodeURIComponent(state.medConfig.correo||'docenciahpjrm@gmail.com')+'?subject='+encodeURIComponent(subject)+'&body='+encodeURIComponent(body);if(auto)setTimeout(()=>window.location.href=url,120);else window.location.href=url;toast('Correo preparado con '+problem.length+' familia(s) en alerta','warn');}
 function medToggleAutoCorreo(el){state.medConfig.autoCorreo=!!el.checked;guardarMedConfig();toast(state.medConfig.autoCorreo?'Preparación automática de correo activada':'Preparación automática de correo desactivada','ok');}
 
 function tabMedicamento(t){
@@ -2681,7 +2709,7 @@ function renderMorbilidad(){
     <h3>📊 Comité de Morbilidad crítica y grave</h3>
     <div class="alert morado">
       <strong>🎯 Objetivo del módulo</strong>
-      Registrar y analizar los casos de morbilidad crítica o grave para identificar problemas clínicos, organizativos y de calidad, y convertirlos en acciones de mejora. Los datos se registran manualmente: PediaHub no inventa diagnósticos ni conclusiones.
+      Registrar y analizar los casos de morbilidad crítica o grave para identificar problemas clínicos, organizativos y de calidad, y convertirlos en acciones de mejora. Los datos se registran manualmente: PEDIATRÍA HPJRM no inventa diagnósticos ni conclusiones.
     </div>
     <div class="stat-grid" style="margin-bottom:10px">
       <div class="stat-box"><div class="n">${acts.length}</div><div class="l">Actas</div></div>
@@ -2699,7 +2727,7 @@ function renderMorbilidad(){
       <button class="btn sm cyan" style="margin-top:4px" onclick="abrirSelectorPersonal('mb_participantes')">👥 Seleccionar</button></div>
     <div class="alert amarillo">
       <strong>⚠️ Criterio de uso</strong>
-      Añada solo casos realmente seleccionados por el servicio para revisión de morbilidad crítica/grave. La selección no se realiza automáticamente por PediaHub.
+      Añada solo casos realmente seleccionados por el servicio para revisión de morbilidad crítica/grave. La selección no se realiza automáticamente por PEDIATRÍA HPJRM.
     </div>
     <div class="section-title" style="font-size:.95em">🩺 Casos analizados</div>
     <div id="mb_casosWrap"></div>
@@ -3490,5 +3518,6 @@ Object.assign(window, {
   $, esc, toast, fmtD, fmtDT, hoyISO, nowISO, uuid
 });
 </script>
+<script>function hpNav(view){if(view==='more'){toggleHpMore();return}if(typeof navigateTo==='function')navigateTo(view);document.querySelectorAll('.bottom-nav button[data-hp]').forEach(b=>b.classList.toggle('active',b.dataset.hp===view));const s=document.getElementById('hpMoreSheet');if(s)s.classList.remove('open')}function toggleHpMore(){const s=document.getElementById('hpMoreSheet');if(!s)return;s.classList.toggle('open');s.setAttribute('aria-hidden',s.classList.contains('open')?'false':'true')}document.addEventListener('click',function(e){const s=document.getElementById('hpMoreSheet');if(s&&s.classList.contains('open')&&!s.contains(e.target)&&!e.target.closest('[data-hp="more"]'))s.classList.remove('open')});</script>
 </body>
 </html>
