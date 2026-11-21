@@ -351,6 +351,7 @@ html[data-theme="dark"] .dock-item .lbl{color:#c4cbd6}
     <div style="font-size:.88em;color:var(--txt2)" id="inicioSaludo">Cargando...</div>
   </div>
   <div id="inicioBorrador"></div>
+  <div id="inicioGuardiaHoy"></div>
   <div class="section-title">📊 Estadísticas generales</div>
   <div class="stat-grid" id="inicioStats"></div>
   <div class="section-title">⚡ Acciones rápidas</div>
@@ -410,6 +411,7 @@ html[data-theme="dark"] .dock-item .lbl{color:#c4cbd6}
     <button class="btn morado block" onclick="renderCalendarioGuardias()">⚙️ Generar calendario</button>
   </div>
   <div id="g_equiposWrap"></div>
+  <div class="card amarillo" style="margin-top:10px"><h3>🔄 Cambios eventuales</h3><div style="font-size:.82em;color:var(--txt2);margin-bottom:8px">Modifica una guardia puntual sin alterar la composición permanente de los equipos. El cambio se refleja en calendario y Dashboard.</div><div class="btn-group"><button class="btn amarillo" onclick="abrirCambioGuardia()">➕ Registrar cambio eventual</button><button class="btn sm gris" onclick="renderCambiosGuardia()">📋 Ver cambios</button></div><div id="g_cambiosWrap"></div></div>
   <div id="g_calendarioWrap"></div>
 </section>
 
@@ -863,7 +865,7 @@ html[data-theme="dark"] .dock-item .lbl{color:#c4cbd6}
   </div>
 </div>
 
-<div class="modal-back" id="modalBusqueda" onclick="if(event.target===this)cerrarModal('modalBusqueda')">
+<div class="modal-back" id="modalCambioGuardia" onclick="if(event.target===this)cerrarModal('modalCambioGuardia')"><div class="modal wide"><div class="modal-head">🔄 <span id="cambioGuardiaTitulo">Cambio eventual de guardia</span> <button class="x" onclick="cerrarModal('modalCambioGuardia')">✕</button></div><div class="modal-body"><input type="hidden" id="cg_editId"><div class="field"><label>Fecha de la guardia *</label><input type="date" id="cg_fecha"></div><div class="grid2"><div class="field"><label>Equipo *</label><select id="cg_equipo"><option value="1">🔴 Equipo 1</option><option value="2">🟡 Equipo 2</option><option value="3">🔵 Equipo 3</option><option value="4">🟣 Equipo 4</option></select></div><div class="field"><label>Rol *</label><select id="cg_rol"><option value="jefe">👑 Jefe del equipo</option><option value="piso">🏥 Médico Guardia de Piso</option><option value="cg">🚨 Médico Guardia en CG</option><option value="res_ped">🎓 Residentes de Pediatría</option><option value="apoyo_cg">🩺 Médico Área Apoyo en CG</option><option value="estancia">🏠 Médico Estancia en CG</option><option value="res_mgi">📚 Residentes de MGI</option><option value="res_neo">👶 Residentes de Neonatología</option></select></div></div><div class="field"><label>Tipo de cambio *</label><select id="cg_tipo"><option value="sustitucion">Sustituir integrante</option><option value="agregar">Agregar integrante</option><option value="retirar">Retirar integrante</option></select></div><div class="grid2"><div class="field"><label>Integrante afectado</label><input id="cg_original" placeholder="Nombre que aparece en el equipo"></div><div class="field"><label>Nuevo integrante</label><input id="cg_nuevo" placeholder="Nombre del reemplazo"></div></div><div class="field"><label>Motivo / observación *</label><textarea id="cg_motivo" placeholder="Ej.: enfermedad, licencia, cambio autorizado por jefatura..."></textarea></div><div class="alert" style="font-size:.8em">⚠️ Solo modifica la guardia seleccionada. No cambia la composición permanente.</div></div><div class="modal-foot"><button class="btn gris" onclick="cerrarModal('modalCambioGuardia')">Cancelar</button><button class="btn amarillo" onclick="guardarCambioGuardia()">💾 Guardar cambio</button></div></div></div><div class="modal-back" id="modalBusqueda" onclick="if(event.target===this)cerrarModal('modalBusqueda')">
   <div class="modal wide">
     <div class="modal-head">🔍 Búsqueda global <button class="x" onclick="cerrarModal('modalBusqueda')">✕</button></div>
     <div class="modal-body">
@@ -1053,6 +1055,8 @@ function cargarDatos(){
       actasReunion: m.actasReunion||[],
       actasPAMI: m.actasPAMI||[]
     });
+    state.guardiasConfig = state.guardiasConfig || {};
+    state.guardiasConfig.cambios = state.guardiasConfig.cambios || [];
     state.personal = JSON.parse(localStorage.getItem(KEYS.personal)||'[]');
     state.pami = JSON.parse(localStorage.getItem(KEYS.pami)||'[]');
     state.notas = JSON.parse(localStorage.getItem(KEYS.notas)||'[]');
@@ -1184,6 +1188,7 @@ function confirmar(msg, onOk){
 /* ============================================================
    INICIO
    ============================================================ */
+function obtenerGuardiaHoy(){const cfg=state.guardiasConfig||{},ini=cfg.aperturaFecha;if(!ini)return null;const fecha=hoyISO(),equipo=calcularEquipoPorFecha(fecha,ini);if(!equipo)return null;return{fecha,equipo,roles:obtenerRolesGuardia(fecha,equipo),cambios:(cfg.cambios||[]).filter(x=>x.fecha===fecha&&String(x.equipo)===String(equipo))};}
 function renderInicio(){
   const h = new Date().getHours();
   const saludo = h<12?'Buenos días':h<18?'Buenas tardes':'Buenas noches';
@@ -1194,7 +1199,7 @@ function renderInicio(){
   const totalLac = state.pami.length;
   const totalFugas = state.fugas.length;
   const medCriticos = state.medicamentos.filter(m=>m.estado==='critica'||m.estado==='cero').length;
-  $('inicioStats').innerHTML = `
+  const guardiaHoy=obtenerGuardiaHoy(),gh=$('inicioGuardiaHoy');if(gh){if(guardiaHoy){gh.innerHTML=`<div class="card morado"><h3>🩺 Guardia de hoy</h3><div style="font-size:1.05em"><b>${EMOJI_EQUIPO[guardiaHoy.equipo]} Equipo ${guardiaHoy.equipo}</b> · 24 h</div><div style="margin-top:6px">${ROLES_EQUIPO.map(r=>{const v=guardiaHoy.roles[r.k]||[];return v.length?`<div style="font-size:.82em;margin-top:2px">${r.ico} <b>${r.lbl}:</b> ${esc(v.join(', '))}</div>`:'';}).join('')}</div>${guardiaHoy.cambios.length?`<div class="alert amarillo" style="margin-top:8px;padding:6px">🔄 ${guardiaHoy.cambios.length} cambio(s) eventual(es) aplicado(s)</div>`:''}<button class="btn sm morado" style="margin-top:8px" onclick="navigateTo('guardias')">Ver esquema de guardias →</button></div>`;}else gh.innerHTML='<div class="alert amarillo">🩺 No hay un esquema de guardia configurado para hoy.</div>';}  $('inicioStats').innerHTML = `
     <div class="stat-box"><div class="n">${totalAud}</div><div class="l">Auditorías</div></div>
     <div class="stat-box"><div class="n">${totalLac}</div><div class="l">Lactantes PAMI</div></div>
     <div class="stat-box"><div class="n">${totalFugas}</div><div class="l">Fugas</div></div>
@@ -1840,6 +1845,7 @@ function renderGuardias(){
   if(!$('g_inicio').value){ const d=new Date(); $('g_inicio').value=d.toISOString().slice(0,10); }
   if(!$('g_fin').value){ const d=new Date(); d.setDate(d.getDate()+7); $('g_fin').value=d.toISOString().slice(0,10); }
   renderEquiposForm();
+  renderCambiosGuardia();
   renderCalendarioGuardias();
 }
 function renderEquiposForm(){
@@ -1896,100 +1902,50 @@ function agregarFlotante(){ state.guardiasConfig=state.guardiasConfig||{}; state
 function eliminarFlotante(i){ state.guardiasConfig.flotantes.splice(i,1); guardarDatos(); renderEquiposForm(); }
 function flSet(i,k,v){ state.guardiasConfig.flotantes[i][k]=v; guardarDatos(); renderEquiposForm(); }
 
-function renderCalendarioGuardias(){
-  const wrap=$('g_calendarioWrap');
-  const ini=$('g_inicio').value, fin=$('g_fin').value;
-  if(!ini||!fin){ wrap.innerHTML=''; return; }
-  const cfg=state.guardiasConfig||{}; const equipos=cfg.equipos||{};
-  const apertura=parseInt($('g_apertura').value||'1');
-  const d1=new Date(ini+'T00:00:00'), d2=new Date(fin+'T00:00:00');
-  if(d2<d1){ wrap.innerHTML='<div class="alert rojo">Fecha fin anterior a inicio.</div>'; return; }
-  const dias=[];
-  let idx=0;
-  for(let d=new Date(d1); d<=d2; d.setDate(d.getDate()+1)){
-    const eq=((apertura-1+idx)%4)+1;
-    dias.push({fecha:new Date(d), eq});
-    idx++;
-  }
-  let html=`<div class="card cyan"><h3>📅 Calendario de guardias</h3>
-    <table><tr><th>Día</th><th>Fecha</th><th>Equipo</th><th>Roles</th></tr>
-    ${dias.map(d=>{
-      const roles=(equipos[d.eq]||{});
-      const rs=ROLES_EQUIPO.map(r=>(roles[r.k]||[]).length?`${r.ico} ${(roles[r.k]||[]).join(', ')}`:'').filter(Boolean).join('<br>');
-      return `<tr><td>${d.fecha.toLocaleDateString('es-ES',{weekday:'short'})}</td><td>${fmtD(d.fecha.toISOString().slice(0,10))}</td><td style="font-size:1.3em">${EMOJI_EQUIPO[d.eq]}</td><td style="font-size:.82em">${rs||'—'}</td></tr>`;
-    }).join('')}
-    </table>
-    <div class="btn-group" style="margin-top:10px">
-      <button class="btn verde" onclick="generarMensajeWhatsApp()">📱 Mensaje WhatsApp</button>
-      <button class="btn cyan" onclick="imprimirGuardias()">🖨️ PDF</button>
-    </div>
-    <div id="g_msgWrap"></div>
-  </div>`;
-  wrap.innerHTML = html;
+function obtenerRolesGuardia(fecha,equipo){
+  const cfg=state.guardiasConfig||{},base=cfg.equipos||{},roles={},norm=v=>(v||'').trim().toLowerCase();
+  ROLES_EQUIPO.forEach(r=>roles[r.k]=[...((base[equipo]||{})[r.k]||[])]);
+  (cfg.cambios||[]).filter(x=>x.fecha===fecha&&String(x.equipo)===String(equipo)).forEach(x=>{
+    roles[x.rol]=roles[x.rol]||[];
+    if(x.tipo==='sustitucion'){if(x.original)roles[x.rol]=roles[x.rol].filter(n=>norm(n)!==norm(x.original));if(x.nuevo&&!roles[x.rol].some(n=>norm(n)===norm(x.nuevo)))roles[x.rol].push(x.nuevo);}
+    if(x.tipo==='agregar'&&x.nuevo&&!roles[x.rol].some(n=>norm(n)===norm(x.nuevo)))roles[x.rol].push(x.nuevo);
+    if(x.tipo==='retirar'&&x.original)roles[x.rol]=roles[x.rol].filter(n=>norm(n)!==norm(x.original));
+  });return roles;
 }
+function calcularEquipoPorFecha(fecha,ini){
+  const cfg=state.guardiasConfig||{},apertura=parseInt(cfg.apertura||$('g_apertura')?.value||'1'),base=cfg.aperturaFecha||ini;if(!base)return null;
+  const diff=Math.round((new Date(fecha+'T00:00:00')-new Date(base+'T00:00:00'))/86400000);if(diff<0)return null;return((apertura-1+diff)%4)+1;
+}
+function renderCalendarioGuardias(){
+  const wrap=$('g_calendarioWrap'),ini=$('g_inicio').value,fin=$('g_fin').value;if(!ini||!fin){wrap.innerHTML='';return;}
+  const cfg=state.guardiasConfig||{};cfg.apertura=parseInt($('g_apertura').value||'1');cfg.aperturaFecha=cfg.aperturaFecha||ini;guardarDatos();
+  const d1=new Date(ini+'T00:00:00'),d2=new Date(fin+'T00:00:00');if(d2<d1){wrap.innerHTML='<div class="alert rojo">Fecha fin anterior a inicio.</div>';return;}
+  const dias=[];for(let d=new Date(d1);d<=d2;d.setDate(d.getDate()+1)){const fecha=d.toISOString().slice(0,10);dias.push({fecha:new Date(d),iso:fecha,eq:calcularEquipoPorFecha(fecha,ini)});}
+  wrap.innerHTML=`<div class="card cyan"><h3>📅 Calendario de guardias</h3><table><tr><th>Día</th><th>Fecha</th><th>Equipo</th><th>Roles / adecuaciones</th></tr>${dias.map(d=>{const roles=obtenerRolesGuardia(d.iso,d.eq),rs=ROLES_EQUIPO.map(r=>(roles[r.k]||[]).length?`${r.ico} ${roles[r.k].join(', ')}`:'').filter(Boolean).join('<br>'),ch=(cfg.cambios||[]).filter(x=>x.fecha===d.iso&&String(x.equipo)===String(d.eq));return`<tr><td>${d.fecha.toLocaleDateString('es-ES',{weekday:'short'})}</td><td>${fmtD(d.iso)}</td><td style="font-size:1.3em">${EMOJI_EQUIPO[d.eq]} Eq ${d.eq}</td><td style="font-size:.82em">${rs||'—'}${ch.length?`<div class="alert amarillo" style="margin-top:4px;padding:5px">🔄 ${ch.length} adecuación(es)</div>`:''}</td></tr>`;}).join('')}</table><div class="btn-group" style="margin-top:10px"><button class="btn amarillo" onclick="abrirCambioGuardia()">🔄 Cambio eventual</button><button class="btn verde" onclick="generarMensajeWhatsApp()">📱 Mensaje WhatsApp</button><button class="btn cyan" onclick="imprimirGuardias()">🖨️ PDF</button></div><div id="g_msgWrap"></div></div>`;
+}
+function abrirCambioGuardia(id){
+  const cfg=state.guardiasConfig||{},x=id?(cfg.cambios||[]).find(v=>v.id===id):null;$('cambioGuardiaTitulo').textContent=x?'Editar cambio eventual':'Cambio eventual de guardia';$('cg_editId').value=x?.id||'';$('cg_fecha').value=x?.fecha||$('g_inicio').value||hoyISO();$('cg_equipo').value=String(x?.equipo||$('g_apertura').value||1);$('cg_rol').value=x?.rol||'jefe';$('cg_tipo').value=x?.tipo||'sustitucion';$('cg_original').value=x?.original||'';$('cg_nuevo').value=x?.nuevo||'';$('cg_motivo').value=x?.motivo||'';abrirModal('modalCambioGuardia');
+}
+function guardarCambioGuardia(){
+  state.guardiasConfig=state.guardiasConfig||{};state.guardiasConfig.cambios=state.guardiasConfig.cambios||[];const id=$('cg_editId').value,fecha=$('cg_fecha').value,equipo=parseInt($('cg_equipo').value||'1'),rol=$('cg_rol').value,tipo=$('cg_tipo').value,original=$('cg_original').value.trim(),nuevo=$('cg_nuevo').value.trim(),motivo=$('cg_motivo').value.trim();
+  if(!fecha||!equipo||!rol||!motivo||(tipo==='sustitucion'&&(!original||!nuevo))||(tipo==='agregar'&&!nuevo)||(tipo==='retirar'&&!original)){toast('Complete los datos del cambio eventual','err');return;}
+  const data={fecha,equipo,rol,tipo,original,nuevo,motivo};if(id){const x=state.guardiasConfig.cambios.find(v=>v.id===id);if(x)Object.assign(x,data);}else state.guardiasConfig.cambios.push({id:uuid(),...data,creado:nowISO()});guardarDatos();cerrarModal('modalCambioGuardia');renderCambiosGuardia();renderCalendarioGuardias();renderInicio();toast('Cambio eventual guardado','ok');
+}
+function renderCambiosGuardia(){
+  const out=$('g_cambiosWrap');if(!out)return;const cambios=[...((state.guardiasConfig||{}).cambios||[])].sort((a,b)=>(b.fecha||'').localeCompare(a.fecha||''));out.innerHTML=cambios.length?cambios.slice(0,12).map(x=>{const rol=ROLES_EQUIPO.find(r=>r.k===x.rol),accion=x.tipo==='sustitucion'?`${esc(x.original)} → ${esc(x.nuevo)}`:x.tipo==='agregar'?`+ ${esc(x.nuevo)}`:`− ${esc(x.original)}`;return`<div class="mini-item"><div class="ico">🔄</div><div class="body"><div class="t">${fmtD(x.fecha)} · ${EMOJI_EQUIPO[x.equipo]} Eq ${x.equipo}</div><div class="s">${rol?rol.ico+' '+rol.lbl:''} · ${accion}</div><div class="s">Motivo: ${esc(x.motivo)}</div></div><button class="btn sm cyan" onclick="abrirCambioGuardia('${x.id}')">✏️</button><button class="btn sm rojo" onclick="eliminarCambioGuardia('${x.id}')">🗑️</button></div>`;}).join(''):'<div class="alert">No hay cambios eventuales registrados.</div>';
+}
+function eliminarCambioGuardia(id){confirmar('¿Eliminar este cambio eventual?',()=>{state.guardiasConfig.cambios=(state.guardiasConfig.cambios||[]).filter(x=>x.id!==id);guardarDatos();renderCambiosGuardia();renderCalendarioGuardias();renderInicio();toast('Cambio eliminado','ok');});}
 function generarMensajeWhatsApp(){
-  const ini=$('g_inicio').value, fin=$('g_fin').value;
-  const cfg=state.guardiasConfig||{}; const equipos=cfg.equipos||{};
-  const apertura=parseInt($('g_apertura').value||'1');
-  const d1=new Date(ini+'T00:00:00'), d2=new Date(fin+'T00:00:00');
-  const dias=[]; let idx=0;
-  for(let d=new Date(d1); d<=d2; d.setDate(d.getDate()+1)){
-    const eq=((apertura-1+idx)%4)+1;
-    dias.push({fecha:new Date(d), eq});
-    idx++;
-  }
-  let msg = `🏥 SERVICIO DE PEDIATRÍA 👶\n🇨🇺 HPJRM - Guanajay\n\n`;
-  msg += `📅 Periodo: ${fmtD(ini)} al ${fmtD(fin)}\n\n`;
-  msg += `═══ EQUIPOS ═══\n`;
-  [1,2,3,4].forEach(e=>{
-    msg += `\n${EMOJI_EQUIPO[e]} EQUIPO ${e}\n`;
-    ROLES_EQUIPO.forEach(r=>{
-      const v=(equipos[e]||{})[r.k]||[];
-      if(v.length) msg += `${r.ico} ${r.lbl}: ${v.join(', ')}\n`;
-    });
-  });
-  msg += `\n═══ CALENDARIO ═══\n`;
-  dias.forEach(d=>{
-    msg += `\n📆 ${d.fecha.toLocaleDateString('es-ES',{weekday:'long',day:'numeric',month:'long'})}\n`;
-    msg += `${EMOJI_EQUIPO[d.eq]} Equipo ${d.eq}\n`;
-  });
-  msg += `\n📌 Recordatorios:\n`;
-  msg += `• Puntualidad en la entrega de guardia\n`;
-  msg += `• Revisar historias clínicas al ingreso\n`;
-  msg += `• Reportar incidencias al jefe de guardia\n`;
-  msg += `\nGuardianes de la salud de los niños artemiseños 🧒💙`;
-  $('g_msgWrap').innerHTML = `<div class="alert"><strong>Mensaje generado</strong><textarea id="g_msgText" style="min-height:240px;margin-top:6px">${esc(msg)}</textarea>
-    <div class="btn-group"><button class="btn verde" onclick="copiarTexto('g_msgText')">📋 Copiar</button>
-    <button class="btn cyan" onclick="abrirCompartir('guardias', document.getElementById('g_msgText').value)">📤 Compartir</button></div></div>`;
+  const ini=$('g_inicio').value,fin=$('g_fin').value,cfg=state.guardiasConfig||{},d1=new Date(ini+'T00:00:00'),d2=new Date(fin+'T00:00:00'),dias=[];for(let d=new Date(d1);d<=d2;d.setDate(d.getDate()+1)){const fecha=d.toISOString().slice(0,10);dias.push({fecha,eq:calcularEquipoPorFecha(fecha,ini)});}
+  let msg=`🏥 SERVICIO DE PEDIATRÍA 👶\n🇨🇺 HPJRM - Guanajay\n\n📅 Periodo: ${fmtD(ini)} al ${fmtD(fin)}\n\n═══ GUARDIAS ═══\n`;
+  dias.forEach(d=>{msg+=`\n📆 ${new Date(d.fecha+'T00:00:00').toLocaleDateString('es-ES',{weekday:'long',day:'numeric',month:'long'})}\n${EMOJI_EQUIPO[d.eq]} Equipo ${d.eq}\n`;const roles=obtenerRolesGuardia(d.fecha,d.eq);ROLES_EQUIPO.forEach(r=>{const v=roles[r.k]||[];if(v.length)msg+=`${r.ico} ${r.lbl}: ${v.join(', ')}\n`;});const ch=(cfg.cambios||[]).filter(x=>x.fecha===d.fecha&&String(x.equipo)===String(d.eq));if(ch.length)msg+=`🔄 Adecuación: ${ch.map(x=>x.tipo==='sustitucion'?`${x.original} → ${x.nuevo}`:x.tipo==='agregar'?'+ '+x.nuevo:'− '+x.original).join(' · ')}\n`;});msg+=`\n⏰ Guardias 24 h.\n\nGuardianes de la salud de los niños artemiseños 🧒💙`;
+  $('g_msgWrap').innerHTML=`<div class="alert"><strong>Mensaje generado</strong><textarea id="g_msgText" style="min-height:240px;margin-top:6px">${esc(msg)}</textarea><div class="btn-group"><button class="btn verde" onclick="copiarTexto('g_msgText')">📋 Copiar</button><button class="btn cyan" onclick="abrirCompartir('guardias',document.getElementById('g_msgText').value)">📤 Compartir</button></div></div>`;
 }
 function copiarTexto(id){ const el=$(id); if(!el) return; navigator.clipboard?.writeText(el.value).then(()=>toast('Copiado','ok')).catch(()=>{el.select();document.execCommand('copy');toast('Copiado','ok')}); }
 function imprimirGuardias(){
-  const ini=$('g_inicio').value, fin=$('g_fin').value;
-  const cfg=state.guardiasConfig||{}; const equipos=cfg.equipos||{};
-  const apertura=parseInt($('g_apertura').value||'1');
-  const d1=new Date(ini+'T00:00:00'), d2=new Date(fin+'T00:00:00');
-  const dias=[]; let idx=0;
-  for(let d=new Date(d1); d<=d2; d.setDate(d.getDate()+1)){
-    const eq=((apertura-1+idx)%4)+1; dias.push({fecha:new Date(d), eq}); idx++;
-  }
-  const html=`<div class="print-doc">
-    <div class="print-header"><div class="h1">${esc(state.config.hospital||'Hospital Pediátrico Docente José Ramón Martínez')}</div>
-    <div class="h2">Servicio de Pediatría · Distribución de guardias</div>
-    <div class="code">Periodo: ${fmtD(ini)} al ${fmtD(fin)}</div></div>
-    <div class="print-section"><h4>EQUIPOS</h4>
-    <table class="print-table"><tr><th>Rol</th><th>🔴 Eq 1</th><th>🟡 Eq 2</th><th>🔵 Eq 3</th><th>🟣 Eq 4</th></tr>
-    ${ROLES_EQUIPO.map(r=>`<tr><td>${r.ico} ${r.lbl}</td>${[1,2,3,4].map(e=>`<td>${esc(((equipos[e]||{})[r.k]||[]).join(', ')||'—')}</td>`).join('')}</tr>`).join('')}
-    </table></div>
-    <div class="print-section"><h4>CALENDARIO</h4>
-    <table class="print-table"><tr><th>Día</th><th>Fecha</th><th>Equipo</th></tr>
-    ${dias.map(d=>`<tr><td>${d.fecha.toLocaleDateString('es-ES',{weekday:'long'})}</td><td>${fmtD(d.fecha.toISOString().slice(0,10))}</td><td>${EMOJI_EQUIPO[d.eq]} Equipo ${d.eq}</td></tr>`).join('')}
-    </table></div>
-    <div class="print-footer">Dado en ${esc(state.config.ciudad||'Guanajay')}, a ${fmtD(ini)}</div>
-    <div class="print-colophon">HPJRM 👶🏥 🇨🇺 · Guardianes de la salud de los niños artemiseños</div>
-  </div>`;
-  $('printArea').innerHTML=html; navigateTo('impresion'); setTimeout(()=>window.print(),350);
+  const ini=$('g_inicio').value,fin=$('g_fin').value,d1=new Date(ini+'T00:00:00'),d2=new Date(fin+'T00:00:00'),dias=[];for(let d=new Date(d1);d<=d2;d.setDate(d.getDate()+1)){const fecha=d.toISOString().slice(0,10);dias.push({fecha,eq:calcularEquipoPorFecha(fecha,ini)});}
+  const html=`<div class="print-doc"><div class="print-header"><div class="h1">${esc(state.config.hospital||'Hospital Pediátrico Docente José Ramón Martínez')}</div><div class="h2">Servicio de Pediatría · Distribución de guardias</div><div class="code">Periodo: ${fmtD(ini)} al ${fmtD(fin)}</div></div><div class="print-section"><h4>CALENDARIO EFECTIVO</h4><table class="print-table"><tr><th>Día</th><th>Fecha</th><th>Equipo</th><th>Guardia</th></tr>${dias.map(d=>{const roles=obtenerRolesGuardia(d.fecha,d.eq),rs=ROLES_EQUIPO.map(r=>(roles[r.k]||[]).length?`${r.ico} ${r.lbl}: ${roles[r.k].join(', ')}`:'').filter(Boolean).join('<br>');return`<tr><td>${new Date(d.fecha+'T00:00:00').toLocaleDateString('es-ES',{weekday:'long'})}</td><td>${fmtD(d.fecha)}</td><td>${EMOJI_EQUIPO[d.eq]} Eq ${d.eq}</td><td>${rs||'—'}</td></tr>`;}).join('')}</table></div><div class="print-footer">Dado en ${esc(state.config.ciudad||'Guanajay')}, a ${fmtD(ini)}</div><div class="print-colophon">HPJRM 👶🏥 🇨🇺 · Guardianes de la salud de los niños artemiseños</div></div>`;$('printArea').innerHTML=html;navigateTo('impresion');setTimeout(()=>window.print(),350);
 }
-
 function renderPersonal(){
   const q=($('persBuscar').value||'').toLowerCase();
   let list=[...state.personal];
