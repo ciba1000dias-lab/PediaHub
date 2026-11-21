@@ -1,4 +1,4 @@
-const CACHE_NAME = 'hpjrm-shell-v1';
+const CACHE_NAME = 'hpjrm-shell-v2';
 const APP_SHELL = [
   './',
   './index.html',
@@ -26,6 +26,24 @@ self.addEventListener('activate', event => {
 
 self.addEventListener('fetch', event => {
   if (event.request.method !== 'GET') return;
+
+  const url = new URL(event.request.url);
+
+  // HTML/app shell: always try the network first so GitHub Pages
+  // deployments are not trapped behind an old cached index.html.
+  if (event.request.mode === 'navigate' || url.pathname.endsWith('/index.html') || url.pathname.endsWith('/')) {
+    event.respondWith(
+      fetch(event.request, {cache:'no-store'})
+        .then(response => {
+          const copy = response.clone();
+          caches.open(CACHE_NAME).then(cache => cache.put('./index.html', copy));
+          return response;
+        })
+        .catch(() => caches.match(event.request).then(r => r || caches.match('./index.html')))
+    );
+    return;
+  }
+
   event.respondWith(
     caches.match(event.request).then(cached => {
       if (cached) return cached;
