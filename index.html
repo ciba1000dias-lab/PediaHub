@@ -356,6 +356,28 @@ body{padding-bottom:92px}
 .more-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}.more-grid button{min-height:58px;border:1px solid #e2e9f0;border-radius:13px;background:#f8fafc;color:#28435e;font-weight:700;font-size:.72em}
 @media(min-width:700px){body{padding-bottom:20px}.bottom-nav{display:none}.more-sheet{display:none!important}.wrap{padding:20px 18px 40px}.stat-grid{grid-template-columns:repeat(4,minmax(0,1fr))}.quick-grid{grid-template-columns:repeat(6,minmax(0,1fr))}.app-header{padding-left:max(18px,calc((100vw - 980px)/2))}}
 @media(max-width:380px){.quick-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.app-header .t1{font-size:.92em}}
+/* COMMAND CENTER */
+.hero-chief{position:relative;overflow:hidden;margin:0 0 14px;padding:20px 18px;border-radius:22px;color:#fff;background:linear-gradient(135deg,#0d315f 0%,#12517d 52%,#0b8d91 100%);box-shadow:0 14px 32px rgba(10,44,85,.20)}
+.hero-chief:after{content:"";position:absolute;width:150px;height:150px;border-radius:50%;right:-45px;top:-55px;background:rgba(255,255,255,.08);box-shadow:-55px 90px 0 rgba(255,255,255,.035)}
+.hero-kicker{font-size:.66em;font-weight:800;letter-spacing:1.4px;opacity:.78;margin-bottom:6px}
+.hero-title{font-size:1.45em;font-weight:850;letter-spacing:-.3px}
+.hero-sub{font-size:.82em;opacity:.9;margin-top:5px}
+.hero-meta{display:flex;flex-wrap:wrap;gap:5px;margin-top:14px;font-size:.68em;opacity:.76}
+.command-grid{display:grid;grid-template-columns:1fr;gap:10px}
+.command-card{background:rgba(255,255,255,.97);border:1px solid #e0e8f0;border-radius:18px;padding:14px;box-shadow:var(--shadow-soft)}
+.command-primary{border-color:#cce6e5;background:linear-gradient(145deg,#fff,#f2fbfa)}
+.command-label{font-size:.66em;font-weight:900;letter-spacing:1px;color:#587086;margin-bottom:8px}
+.command-primary .command-label{color:#0b7c83}
+.command-card .stat-grid{margin:0}
+.command-card .stat-box{min-height:70px}
+.attention-panel{background:linear-gradient(145deg,#fff,#f9fbfc);border:1px solid #e0e8f0;border-radius:18px;padding:12px;box-shadow:var(--shadow-soft)}
+.attention-caption{font-size:.58em;font-weight:800;letter-spacing:.6px;color:#8291a0;margin:0 0 8px}
+.dashboard-heading{margin-top:18px}
+.quick-strip{display:grid;grid-template-columns:repeat(2,1fr);gap:7px}
+.quick-strip button{min-height:44px;border:1px solid #e0e8f0;border-radius:12px;background:#fff;color:#28435e;font-weight:700;font-size:.76em}
+.dashboard-secondary{display:grid;gap:2px}
+@media(min-width:700px){.command-grid{grid-template-columns:1.25fr 1fr}.dashboard-secondary{grid-template-columns:1fr 1fr;gap:18px}.hero-chief{padding:24px}.hero-title{font-size:1.7em}}
+
 </style>
 </head>
 <body>
@@ -373,29 +395,57 @@ body{padding-bottom:92px}
 <main class="wrap" id="app">
 
 <section class="view active" id="view-inicio">
-  <div class="card amarillo">
-    <h3>👋 Bienvenido, Dr. Rodney</h3>
-    <div style="font-size:.88em;color:var(--txt2)" id="inicioSaludo">Cargando...</div>
+  <div class="hero-chief">
+    <div class="hero-kicker">CENTRO DE MANDO · HPJRM</div>
+    <div class="hero-title">Buenos días, Dr. Rodney</div>
+    <div class="hero-sub" id="inicioSaludo">Cargando...</div>
+    <div class="hero-meta"><span>🇨🇺 Hospital Pediátrico José Ramón Martínez</span><span>·</span><span>Servicio de Pediatría</span></div>
   </div>
+
   <div id="inicioBorrador"></div>
-  <div id="inicioGuardiaHoy"></div>
-  <div class="section-title">📊 Estadísticas generales</div>
-  <div class="stat-grid" id="inicioStats"></div>
-  <div class="section-title">⚡ Acciones rápidas</div>
+
+  <div class="command-grid">
+    <div class="command-card command-primary">
+      <div class="command-label">🩺 AHORA</div>
+      <div id="inicioGuardiaHoy"></div>
+    </div>
+    <div class="command-card">
+      <div class="command-label">📊 SITUACIÓN</div>
+      <div id="inicioStats"></div>
+    </div>
+  </div>
+
+  <div class="section-title dashboard-heading">⚠️ Lo que requiere atención</div>
+  <div class="attention-panel">
+    <div class="attention-caption">PEDIAHUB NO DECIDE POR EL JEFE · PRESENTA INFORMACIÓN PARA SU REVISIÓN</div>
+    <div id="inicioAlertas"></div>
+  </div>
+
+  <div class="section-title dashboard-heading">⚡ Acciones frecuentes</div>
   <div class="quick-grid">
-    <div class="q-btn" onclick="nuevaAuditoria()"><div class="ico">📋</div><div class="t">Nueva auditoría</div></div>
+    <div class="q-btn" onclick="nuevaAuditoria()"><div class="ico">📋</div><div class="t">Auditoría HC</div></div>
     <div class="q-btn" onclick="navigateTo('guardias')"><div class="ico">🩺</div><div class="t">Guardias</div></div>
     <div class="q-btn" onclick="abrirModalLactante()"><div class="ico">🍼</div><div class="t">Nuevo lactante</div></div>
-    <div class="q-btn" onclick="abrirModalMedicamento()"><div class="ico">💊</div><div class="t">Medicamento</div></div>
-    <div class="q-btn" onclick="abrirModalFuga()"><div class="ico">🚪</div><div class="t">Fuga</div></div>
-    <div class="q-btn" onclick="navigateTo('farmacologia')"><div class="ico">🩺</div><div class="t">Comité farm.</div></div>
-    <div class="q-btn" onclick="navigateTo('notas')"><div class="ico">📝</div><div class="t">Notas</div></div>
-    <div class="q-btn" onclick="navigateTo('calendario')"><div class="ico">📅</div><div class="t">Calendario</div></div>
+    <div class="q-btn" onclick="abrirModalMedicamento()"><div class="ico">💊</div><div class="t">Medicamentos</div></div>
+    <div class="q-btn" onclick="abrirModalFuga()"><div class="ico">🚪</div><div class="t">Registrar fuga</div></div>
+    <div class="q-btn" onclick="navigateTo('farmacologia')"><div class="ico">🧪</div><div class="t">Farmacología</div></div>
   </div>
-  <div class="section-title">📅 Próximos comités</div>
-  <div id="inicioComites" class="mini-list"></div>
-  <div class="section-title">⚠️ Alertas</div>
-  <div id="inicioAlertas"></div>
+
+  <div class="dashboard-secondary">
+    <div>
+      <div class="section-title">📅 Próximos comités</div>
+      <div id="inicioComites" class="mini-list"></div>
+    </div>
+    <div>
+      <div class="section-title">🧭 Acceso rápido</div>
+      <div class="quick-strip">
+        <button onclick="navigateTo('morbilidad')">📈 Morbilidad</button>
+        <button onclick="navigateTo('calidad')">✓ Calidad</button>
+        <button onclick="navigateTo('personal')">👥 Personal</button>
+        <button onclick="navigateTo('calendario')">📅 Calendario</button>
+      </div>
+    </div>
+  </div>
 </section>
 
 <section class="view" id="view-auditor">
