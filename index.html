@@ -226,7 +226,18 @@ html[data-theme="dark"] .dock-item .lbl{color:#c4cbd6}
 .print-firma .f{text-align:center;flex:1}
 .print-firma .line{border-top:1px solid #333;margin-bottom:3px;padding-top:2px}
 
-/* MEDICAMENTOS · control por familias y alertas */
+
+/* POLISH VISUAL FINAL · PEDIATRÍA HPJRM */
+.hero-chief{position:relative;overflow:hidden;border-radius:22px;padding:20px 18px;margin-bottom:14px;background:radial-gradient(circle at 100% 0,rgba(8,145,178,.35),transparent 38%),linear-gradient(135deg,#0b3d91 0%,#082a66 72%);color:#fff;box-shadow:0 10px 28px rgba(8,42,102,.22)}
+.hero-chief:after{content:"";position:absolute;width:150px;height:150px;border:1px solid rgba(255,255,255,.16);border-radius:28px;right:-52px;bottom:-62px;transform:rotate(28deg)}
+.hero-kicker{font-size:.68em;font-weight:800;letter-spacing:1.2px;opacity:.78;margin-bottom:7px}.hero-title{font-size:clamp(1.45em,6vw,2.1em);font-weight:800;letter-spacing:-.5px;line-height:1.08}.hero-sub{font-size:.82em;opacity:.9;margin-top:7px}.hero-meta{display:flex;gap:7px;flex-wrap:wrap;margin-top:13px;font-size:.7em;opacity:.82}
+.command-grid{display:grid;grid-template-columns:1.35fr 1fr;gap:10px;margin-bottom:14px}.command-card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:13px;box-shadow:var(--shadow);min-height:110px}.command-primary{border:1px solid rgba(11,61,145,.18);box-shadow:0 8px 24px rgba(11,61,145,.10)}.command-label{font-size:.68em;font-weight:800;letter-spacing:.8px;color:var(--g500);margin-bottom:8px}
+.attention-panel{border:1px solid rgba(245,158,11,.25);background:linear-gradient(135deg,var(--card),rgba(245,158,11,.055));border-radius:18px;padding:12px;box-shadow:var(--shadow);margin-bottom:14px}.attention-caption{font-size:.66em;font-weight:800;letter-spacing:.45px;color:var(--g500);margin-bottom:8px}
+.dashboard-heading{margin-top:12px}.quick-grid .q-btn{min-height:88px;justify-content:center}
+@media(max-width:600px){.wrap{padding:10px}.hero-chief{padding:18px 15px;border-radius:19px}.command-grid{grid-template-columns:1fr 1fr;gap:8px}.command-card{padding:11px;min-height:100px}.quick-grid{grid-template-columns:repeat(3,1fr);gap:7px}.quick-grid .q-btn{padding:10px 4px;min-height:78px}.q-btn .ico{font-size:21px}}
+@media(max-width:380px){.command-grid{grid-template-columns:1fr}.quick-grid{grid-template-columns:repeat(2,1fr)}}
+@media(min-width:901px){.wrap{max-width:1080px}.hero-chief{padding:26px 24px}.command-grid{grid-template-columns:1.45fr 1fr}.quick-grid{grid-template-columns:repeat(6,1fr)}}
+\n/* MEDICAMENTOS · control por familias y alertas */
 #view-medicamentos .med-alert-panel{margin-top:10px}
 #view-medicamentos .med-family-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:7px}
 #view-medicamentos .med-family-item{border:1px solid var(--border);border-radius:11px;padding:9px;background:var(--card);display:flex;align-items:center;gap:8px}
@@ -417,7 +428,7 @@ body{padding-bottom:92px}
 
   <div class="section-title dashboard-heading">⚠️ Lo que requiere atención</div>
   <div class="attention-panel">
-    <div class="attention-caption">PEDIAHUB NO DECIDE POR EL JEFE · PRESENTA INFORMACIÓN PARA SU REVISIÓN</div>
+    <div class="attention-caption">PEDIATRÍA HPJRM NO DECIDE POR EL JEFE · PRESENTA INFORMACIÓN PARA SU REVISIÓN</div>
     <div id="inicioAlertas"></div>
   </div>
 
