@@ -860,13 +860,14 @@ body.hp-menu-active .hp-menu-trigger .menu-bars i:nth-child(3){top:6px;transform
   *,*:before,*:after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition-duration:.01ms!important}
 }
 
+.hp-logo{width:42px;height:42px;display:flex;align-items:center;justify-content:center;border-radius:13px;background:rgba(255,255,255,.96);padding:4px;box-shadow:0 5px 16px rgba(0,0,0,.18);overflow:hidden;flex-shrink:0}.hp-logo img{width:100%;height:100%;object-fit:contain;border-radius:9px;display:block}.hp-logo-fallback{font-size:24px;line-height:1;color:var(--azul)}
 </style>
 </head>
 <body>
 
 <header class="app-header">
   <button class="hdr-btn hp-menu-trigger" onclick="toggleHpMore()" title="Menú principal" aria-label="Abrir menú"><span class="menu-bars"><i></i><i></i><i></i></span></button>
-  <div class="logo brand-mark" aria-label="Pediatría HPJRM"><span>✚</span></div>
+  <div class="logo brand-mark hp-logo" aria-label="Identidad institucional HPJRM"><img src="https://i.ibb.co/mF2GJjbd/IMG-20260930-WA0034.jpg" alt="Logo institucional HPJRM" loading="eager" decoding="async" onerror="this.style.display='none';this.nextElementSibling.style.display='inline'"><span class="hp-logo-fallback" style="display:none">✚</span></div>
   <div class="titles">
     <div class="t1">PEDIATRÍA HPJRM <span class="brand-flag">🇨🇺</span></div>
     <div class="t2" id="hdrSub">Centro de mando · Servicio de Pediatría</div>
@@ -1264,7 +1265,7 @@ body.hp-menu-active .hp-menu-trigger .menu-bars i:nth-child(3){top:6px;transform
 <section class="view" id="view-impresion"></section>
 
 </main>
-<div class="hp-menu-backdrop" id="hpMenuBackdrop" onclick="toggleHpMore(false)"></div><div class="more-sheet" id="hpMoreSheet" aria-hidden="true"><div class="more-grid"><button onclick="hpNav('personal')">👥<br>Personal</button><button onclick="hpNav('pami')">🍼<br>Lactantes</button><button onclick="hpNav('fugas')">🚪<br>Fugas</button><button onclick="hpNav('farmacologia')">💊<br>Farmacología</button><button onclick="hpNav('morbilidad')">📈<br>Morbilidad</button><button onclick="hpNav('config')">⚙️<br>Configuración</button></div></div><nav class="bottom-nav" id="hpBottomNav" aria-label="Navegación principal"><button data-hp="inicio" class="active" onclick="hpNav('inicio')"><span>⌂</span><span>Inicio</span></button><button data-hp="guardias" onclick="hpNav('guardias')"><span>🩺</span><span>Guardia</span></button><button data-hp="auditor" onclick="hpNav('auditor')"><span>📋</span><span>Auditoría</span></button><button data-hp="medicamentos" onclick="hpNav('medicamentos')"><span>💊</span><span>Recursos</span></button><button data-hp="more" onclick="toggleHpMore()"><span>☰</span><span>Más</span></button></nav>
+<div class="hp-menu-backdrop" id="hpMenuBackdrop" onclick="toggleHpMore(false)"></div><div class="more-sheet" id="hpMoreSheet" aria-hidden="true"><div style="display:flex;align-items:center;gap:10px;padding:4px 2px 12px;margin-bottom:8px;border-bottom:1px solid var(--border)"><img src="https://i.ibb.co/mF2GJjbd/IMG-20260930-WA0034.jpg" alt="Logo institucional HPJRM" style="width:42px;height:42px;object-fit:contain;border-radius:10px;background:#fff;padding:3px"><div><b>PEDIATRÍA HPJRM</b><div style="font-size:.72em;color:var(--g500)">Identidad institucional</div></div></div><div class="more-grid"><button onclick="hpNav('personal')">👥<br>Personal</button><button onclick="hpNav('pami')">🍼<br>Lactantes</button><button onclick="hpNav('fugas')">🚪<br>Fugas</button><button onclick="hpNav('farmacologia')">💊<br>Farmacología</button><button onclick="hpNav('morbilidad')">📈<br>Morbilidad</button><button onclick="hpNav('config')">⚙️<br>Configuración</button></div></div><nav class="bottom-nav" id="hpBottomNav" aria-label="Navegación principal"><button data-hp="inicio" class="active" onclick="hpNav('inicio')"><span>⌂</span><span>Inicio</span></button><button data-hp="guardias" onclick="hpNav('guardias')"><span>🩺</span><span>Guardia</span></button><button data-hp="auditor" onclick="hpNav('auditor')"><span>📋</span><span>Auditoría</span></button><button data-hp="medicamentos" onclick="hpNav('medicamentos')"><span>💊</span><span>Recursos</span></button><button data-hp="more" onclick="toggleHpMore()"><span>☰</span><span>Más</span></button></nav>
 
 <div id="printArea"></div>
 <div id="toastWrap"></div>
