@@ -204,7 +204,7 @@ html[data-theme="dark"] .dock-item .lbl{color:#c4cbd6}
   @page{size:letter;margin:12mm 10mm}
   body{padding:0}
 }
-.print-doc{font-family:Georgia,serif;color:#000;line-height:1.35;font-size:9.5pt}
+.print-doc{font-family:Arial,Helvetica,sans-serif;color:#111827;line-height:1.35;font-size:9.5pt}
 .print-header{text-align:center;border-bottom:2px solid #0b3d91;padding-bottom:6px;margin-bottom:8px}
 .print-header .h1{font-size:11pt;font-weight:700;color:#0b3d91}
 .print-header .h2{font-size:9pt}
@@ -223,6 +223,63 @@ html[data-theme="dark"] .dock-item .lbl{color:#c4cbd6}
 .print-firma{margin-top:20px;display:flex;justify-content:space-around;gap:12px;font-size:8.5pt}
 .print-firma .f{text-align:center;flex:1}
 .print-firma .line{border-top:1px solid #333;margin-bottom:3px;padding-top:2px}
+
+/* Auditor de HC · interfaz */
+#view-auditor .progress-sticky{background:rgba(255,255,255,.94);backdrop-filter:blur(12px);border-radius:0 0 16px 16px;padding:10px 12px;box-shadow:0 4px 18px rgba(0,0,0,.08)}
+#view-auditor .pasos{gap:5px}
+#view-auditor .paso-dot{border-radius:10px;font-weight:700;border:1px solid var(--border);padding:7px 3px;box-shadow:0 1px 2px rgba(0,0,0,.04)}
+#view-auditor .paso-dot.active{box-shadow:0 4px 12px rgba(11,61,145,.22)}
+#view-auditor .paso-dot.done{background:var(--verde);border-color:var(--verde)}
+#view-auditor #auditorContenido>.card{border-top-width:4px;box-shadow:0 6px 20px rgba(15,23,42,.08)}
+#view-auditor #auditorContenido h3{font-size:1.08em;letter-spacing:-.01em}
+#view-auditor #auditorContenido .field label{font-size:.78em;text-transform:none}
+#view-auditor #auditorContenido .btn-group{position:sticky;bottom:0;background:linear-gradient(180deg,transparent,var(--card) 28%);padding-top:14px;margin-left:-2px;margin-right:-2px}
+#view-auditor .alert{box-shadow:0 2px 8px rgba(0,0,0,.04)}
+
+/* Informe de auditoría: documento compacto tipo media hoja de carta */
+.print-auditoria #printArea{display:block!important}
+.print-auditoria .audit-print-canvas{
+  width:7.55in;
+  height:5.05in;
+  margin:0;
+  padding:.24in .30in;
+  background:#fff;
+  color:#111827;
+  border:1px solid #d8dee8;
+  box-shadow:0 2px 8px rgba(0,0,0,.08);
+  font-family:Arial,Helvetica,sans-serif;
+  font-size:7.4pt;
+  line-height:1.18;
+  overflow:hidden;
+}
+.print-auditoria .audit-head{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;border-bottom:2px solid #0b3d91;padding-bottom:5px;margin-bottom:6px}
+.print-auditoria .audit-brand{font-size:8pt;font-weight:800;color:#0b3d91;letter-spacing:.2px}
+.print-auditoria .audit-title{font-size:10.5pt;font-weight:800;color:#111827;margin-top:1px}
+.print-auditoria .audit-sub{font-size:7pt;color:#5b6472;margin-top:2px}
+.print-auditoria .audit-code{font-size:6.8pt;font-family:monospace;color:#475569;text-align:right}
+.print-auditoria .audit-grid{display:grid;grid-template-columns:1.55fr 1fr 1fr;gap:4px;margin-bottom:5px}
+.print-auditoria .audit-cell{border:1px solid #d9dee7;border-radius:4px;padding:4px 5px;background:#f8fafc;min-height:28px}
+.print-auditoria .audit-cell b{display:block;font-size:6.3pt;color:#64748b;text-transform:uppercase;letter-spacing:.25px;margin-bottom:1px}
+.print-auditoria .audit-cell span{font-size:7.5pt;font-weight:700;color:#172033}
+.print-auditoria .audit-cols{display:grid;grid-template-columns:1.2fr 1fr;gap:6px}
+.print-auditoria .audit-box{border:1px solid #d9dee7;border-radius:5px;padding:5px;background:#fff;margin-bottom:5px}
+.print-auditoria .audit-box h4{margin:0 0 3px;padding:0;background:none;color:#0b3d91;font-size:7.2pt;text-transform:uppercase;letter-spacing:.3px}
+.print-auditoria .audit-line{padding:1.5px 0;border-bottom:1px dotted #e2e8f0}
+.print-auditoria .audit-line:last-child{border-bottom:0}
+.print-auditoria .audit-label{font-weight:700;color:#475569}
+.print-auditoria .audit-result{font-size:8.8pt;font-weight:800;padding:4px 7px;border-radius:5px;text-align:center;background:#eef2f7}
+.print-auditoria .audit-result.bien{background:#eaf7ef;color:#166a38}
+.print-auditoria .audit-result.regular{background:#fff6df;color:#a16207}
+.print-auditoria .audit-result.mal{background:#fdecef;color:#a00d24}
+.print-auditoria .audit-sign{display:flex;justify-content:space-between;gap:12px;border-top:1px solid #cbd5e1;margin-top:4px;padding-top:4px;font-size:6.8pt;color:#475569}
+.print-auditoria .audit-note{font-size:6.5pt;color:#64748b;text-align:right;margin-top:2px}
+@media print{
+  .print-auditoria #printArea{display:block!important;position:static;width:auto}
+  .print-auditoria .audit-print-canvas{box-shadow:none;border:0}
+  .print-auditoria #printArea{break-after:page}
+  @page{size:letter portrait;margin:.35in}
+}
+
 </style>
 </head>
 <body>
@@ -1534,7 +1591,7 @@ function renderPaso5(r){
 function calSet(k,v){ state.revisionActual.calificacion=state.revisionActual.calificacion||{}; state.revisionActual.calificacion[k]=v; touchRevision(); }
 function analizarRuta(){
   const r=state.revisionActual; const rc=r.rutaCritica||{};
-  const hitos=[['primera_evo',10,'Primera evolución médica'],['admision',10,'Paso por admisión'],['entrada_sala',20,'Entrada en sala'],['recepcion_enf',60,'Recepción de enfermería']];
+  const hitos=[['primera_evo',10,'Primera evolución médica'],['admision',10,'Paso por admisión'],['entrada_sala',20,'Entrada en sala'],['recepcion_sala',60,'Recepción en sala']];
   const alertas=[];
   for(let i=1;i<hitos.length;i++){
     const [k,esp,lbl]=hitos[i]; const [k0]=hitos[i-1];
@@ -1606,74 +1663,76 @@ function irASeccion(n){
 function generarInformePDF(r){
   const g=r.general||{};
   const c=r.calificacion||{};
-  const html = `<div class="print-doc">
-    <div class="print-header">
-      <div class="h1">${esc(state.config.hospital||'Hospital Pediátrico Docente José Ramón Martínez')}</div>
-      <div class="h2">${esc(state.config.ciudad||'Guanajay')} · Servicio de Pediatría · 👶🏥 🇨🇺</div>
-      <div class="h2" style="margin-top:4px;font-weight:700">INFORME DE AUDITORÍA DE HISTORIA CLÍNICA</div>
-      <div class="code">Código: ${esc(r.codigo||'—')} · Emitido: ${fmtDT(nowISO())}</div>
+  const incid=(r.incidencias||[]);
+  const riesgos=Object.entries(r.riesgos||{}).filter(([,v])=>v&&v.presente==='Sí');
+  const ruta=Object.entries(r.rutaCritica||{}).filter(([,v])=>v);
+  const resultado=(c.final||'').trim().toLowerCase();
+  const claseResultado=resultado==='bien'?'bien':resultado==='regular'?'regular':resultado==='mal'?'mal':'';
+  const incidenciasHtml=incid.length
+    ? incid.slice(0,3).map(x=>`<div class="audit-line"><span class="audit-label">${esc(x.tipo||'Incidencia')}:</span> ${esc(x.desc||'—')}</div>`).join('')
+    : '<div class="audit-line">Sin incidencias registradas.</div>';
+  const hallazgos=[
+    g.condicion ? `Condición al egreso: <b>${esc(g.condicion)}</b>` : '',
+    riesgos.length ? `Riesgos presentes: <b>${riesgos.length}</b>` : '',
+    ruta.length ? `Hitos registrados: <b>${ruta.length}</b>` : '',
+    r.evolucion?.calidad ? `Calidad asistencial: <b>${esc(r.evolucion.calidad)}</b>` : ''
+  ].filter(Boolean);
+  const html=`<div class="audit-print-canvas">
+    <div class="audit-head">
+      <div>
+        <div class="audit-brand">${esc(state.config.hospital||'Hospital Pediátrico Docente José Ramón Martínez')} · SERVICIO DE PEDIATRÍA</div>
+        <div class="audit-title">Informe de Auditoría de Historia Clínica</div>
+        <div class="audit-sub">Documento ejecutivo de revisión · emisión ${fmtDT(nowISO())}</div>
+      </div>
+      <div class="audit-code">Código<br><b>${esc(r.codigo||'—')}</b></div>
     </div>
-    <div class="print-section">
-      <h4>1. DATOS GENERALES</h4>
-      <div class="print-encabezado">
-        <div class="r"><span class="k">Paciente:</span><span>${esc(g.nombre||'—')} (${esc(g.siglas||'—')})</span></div>
-        <div class="r"><span class="k">N° HC:</span><span>${esc(g.hc||'—')}</span></div>
-        <div class="r"><span class="k">Nacimiento:</span><span>${fmtD(g.fnac)} · Sexo: ${esc(g.sexo||'—')}</span></div>
-        <div class="r"><span class="k">Dirección:</span><span>${esc(g.direccion||'—')}, ${esc(g.municipio||'')}, ${esc(g.provincia||'')}</span></div>
-        <div class="r"><span class="k">Ingreso / Egreso:</span><span>${fmtD(g.fingreso)} → ${fmtD(g.fegreso)}</span></div>
-        <div class="r"><span class="k">Condición egreso:</span><span>${esc(g.condicion||'—')}</span></div>
-        <div class="r"><span class="k">Fecha revisión:</span><span>${fmtD(g.frevision)}</span></div>
+
+    <div class="audit-grid">
+      <div class="audit-cell"><b>Paciente</b><span>${esc(g.nombre||'—')} · HC ${esc(g.hc||'—')}</span></div>
+      <div class="audit-cell"><b>Ingreso</b><span>${fmtD(g.fingreso)}</span></div>
+      <div class="audit-cell"><b>Revisión</b><span>${fmtD(g.frevision)}</span></div>
+    </div>
+
+    <div class="audit-cols">
+      <div>
+        <div class="audit-box">
+          <h4>Resultado de la auditoría</h4>
+          <div class="audit-result ${claseResultado}">${esc(c.final||'Sin calificación')}</div>
+          <div class="audit-line"><span class="audit-label">Fundamentación:</span> ${esc(c.fundamentacion||'—')}</div>
+          <div class="audit-line"><span class="audit-label">Recomendaciones:</span> ${esc(c.recomendaciones||'—')}</div>
+        </div>
+        <div class="audit-box">
+          <h4>Hallazgos principales</h4>
+          ${hallazgos.length?hallazgos.map(x=>`<div class="audit-line">${x}</div>`).join(''):'<div class="audit-line">Sin hallazgos resumidos.</div>'}
+        </div>
+      </div>
+      <div>
+        <div class="audit-box">
+          <h4>Incidencias</h4>
+          ${incidenciasHtml}
+        </div>
+        <div class="audit-box">
+          <h4>Datos de referencia</h4>
+          <div class="audit-line"><span class="audit-label">Sexo:</span> ${esc(g.sexo||'—')}</div>
+          <div class="audit-line"><span class="audit-label">Egreso:</span> ${fmtD(g.fegreso)}</div>
+          <div class="audit-line"><span class="audit-label">Municipio:</span> ${esc(g.municipio||'—')}</div>
+        </div>
       </div>
     </div>
-    <div class="print-section">
-      <h4>2. RECORRIDO INTRAHOSPITALARIO</h4>
-      <table class="print-table"><tr><th>Sala</th><th>Cama</th><th>Entrada</th><th>Salida</th><th>Médico</th><th>Motivo</th></tr>
-      ${(r.ubicaciones||[]).map(u=>`<tr><td>${esc(u.sala||'—')}</td><td>${esc(u.cama||'—')}</td><td>${fmtDT(u.entrada)}</td><td>${fmtDT(u.salida)}</td><td>${esc(u.medico||'—')}</td><td>${esc(u.motivo||'—')}</td></tr>`).join('')||'<tr><td colspan="6">Sin ubicaciones registradas</td></tr>'}
-      </table>
+
+    <div class="audit-sign">
+      <span><b>Auditor:</b> ${esc(c.revisor||'Dr. Rodney Jáuregui Alonso')}</span>
+      <span><b>Servicio:</b> Pediatría HPJRM</span>
     </div>
-    <div class="print-section">
-      <h4>3. ANÁLISIS DE CALIDAD DE CONFECCIÓN</h4>
-      <div class="print-mini"><b>Ruta crítica:</b></div>
-      <table class="print-table"><tr><th>Hito</th><th>Fecha/Hora</th></tr>
-      ${Object.entries(r.rutaCritica||{}).map(([k,v])=>`<tr><td>${esc(k)}</td><td>${fmtDT(v)}</td></tr>`).join('')||'<tr><td colspan="2">Sin registro</td></tr>'}
-      </table>
-      <div class="print-mini"><b>Riesgos:</b> ${Object.entries(r.riesgos||{}).map(([k,v])=>`${esc(k)}: se exploró ${esc(v.exploro||'—')} / presente ${esc(v.presente||'—')}`).join(' · ')||'—'}</div>
-      <div class="print-mini"><b>Orden de ingreso:</b> ${esc(r.orden?.impresion||'—')}</div>
-      <div class="print-mini"><b>Historia enfermedad actual:</b> ${esc(r.hea?.comentario||'—')}</div>
-      <div class="print-mini"><b>Examen físico:</b> ${esc(r.ef?.realizado||'—')} — ${esc(r.ef?.observaciones||'')}</div>
-      <div class="print-mini"><b>Discusión diagnóstica:</b> ${esc(r.discusion?.existe||'—')} — ${esc(r.discusion?.obs||'')}</div>
-      <div class="print-mini"><b>Discusión colectiva:</b> ${esc(r.discusion?.colectiva||'—')} — ${esc(r.discusion?.acordado||'')}</div>
-      <div class="print-mini"><b>Complementarios:</b> realizada ${esc(r.complementarios?.realizada||'—')}, actualizada ${esc(r.complementarios?.actualizada||'—')}, higiene ${esc(r.complementarios?.higiene||'—')}</div>
-    </div>
-    <div class="print-section">
-      <h4>4. ANÁLISIS DE CALIDAD DE EVOLUCIÓN</h4>
-      <div class="print-mini"><b>Primera evolución:</b> ${esc(r.evolucion?.primera||'—')} — ${esc(r.evolucion?.comentario||'')}</div>
-      <div class="print-mini"><b>Constantes:</b> FC ${esc(r.evolucion?.fc||'—')}, FR ${esc(r.evolucion?.fr||'—')}, TA ${esc(r.evolucion?.ta||'—')}, T ${esc(r.evolucion?.temp||'—')}, SpO2 ${esc(r.evolucion?.spo2||'—')}</div>
-      <div class="print-mini"><b>Plan terapéutico:</b> ${esc(r.evolucion?.plan||'—')}</div>
-      <div class="print-mini"><b>Protocolo:</b> ${esc(r.evolucion?.protocolo||'—')} · Cambios: ${esc(r.evolucion?.cambios||'—')} (${esc(r.evolucion?.justificados||'—')})</div>
-      <div class="print-mini"><b>Valoración global:</b> ${esc(r.evolucion?.valoracion||'—')} · Cumplimiento evoluciones: ${esc(r.evolucion?.cumplEvol||'—')} · Calidad asistencial: ${esc(r.evolucion?.calidad||'—')}</div>
-    </div>
-    <div class="print-section">
-      <h4>5. INCIDENCIAS</h4>
-      ${(r.incidencias||[]).length? (r.incidencias||[]).map(x=>`<div class="print-mini" style="color:#c8102e"><b>${esc(x.tipo||'—')}:</b> ${esc(x.desc||'')} ${x.impacto?' · Impacto: '+esc(x.impacto):''}</div>`).join('') : '<div class="print-mini">Sin incidencias registradas.</div>'}
-    </div>
-    <div class="print-section">
-      <h4>CALIFICACIÓN FINAL</h4>
-      <div class="print-mini"><b>Calificación:</b> ${esc(c.final||'—')}</div>
-      <div class="print-mini"><b>Fundamentación:</b> ${esc(c.fundamentacion||'—')}</div>
-      <div class="print-mini"><b>Recomendaciones:</b> ${esc(c.recomendaciones||'—')}</div>
-    </div>
-    <div class="print-footer">
-      <div class="print-firma">
-        <div class="f"><div class="line"></div>${esc(c.revisor||'Dr. Rodney Jáuregui Alonso')}<br><span style="font-size:7.5pt">${esc(c.cargo||'Especialista de 1er Grado en Pediatría. Jefe del Servicio de Pediatría')}</span></div>
-      </div>
-      <div style="margin-top:10px">Dado en ${esc(state.config.ciudad||'Guanajay')}, a ${fmtD(g.frevision)}</div>
-    </div>
-    <div class="print-colophon">HPJRM 👶🏥 🇨🇺 · Guardianes de la salud de los niños artemiseños</div>
+    <div class="audit-note">Formato compacto para impresión en el fragmento superior de una hoja carta.</div>
   </div>`;
-  $('printArea').innerHTML = html;
+  $('printArea').innerHTML=html;
+  document.body.classList.add('print-auditoria');
   navigateTo('impresion');
-  setTimeout(()=>window.print(),350);
+  setTimeout(()=>{
+    window.print();
+    setTimeout(()=>document.body.classList.remove('print-auditoria'),800);
+  },350);
 }
 
 function renderHistorial(){
