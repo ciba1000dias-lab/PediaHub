@@ -880,25 +880,32 @@ body.hp-menu-active .hp-menu-trigger .menu-bars i:nth-child(3){top:6px;transform
 @media(max-width:520px){.hp-bed-summary{grid-template-columns:repeat(2,1fr)}.hp-bed-edit{grid-template-columns:1fr}}
 </style>
 <style id="hp-bed-status-fan-css">
-.hp-status-fan{position:fixed;z-index:1500;display:grid;grid-template-columns:repeat(2,minmax(118px,1fr));gap:7px;padding:9px;background:var(--card);border:1px solid var(--border);border-radius:18px;box-shadow:0 14px 38px rgba(0,0,0,.28);width:min(265px,calc(100vw - 20px));transform-origin:center;animation:hpFanIn .16s ease-out}
-@keyframes hpFanIn{from{opacity:0;transform:scale(.82)}to{opacity:1;transform:scale(1)}}
-.hp-status-fan .hp-fan-title{grid-column:1/-1;font-size:.72em;font-weight:800;color:var(--txt2);padding:2px 4px 1px;display:flex;justify-content:space-between;align-items:center}
-.hp-status-fan .hp-fan-title small{font-weight:500;color:var(--g500)}
-.hp-status-fan button{border:0;border-radius:12px;padding:10px 7px;min-height:48px;color:#fff;font-weight:800;font-size:.72em;line-height:1.1;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,.16);transition:transform .12s,filter .12s}
-.hp-status-fan button:active{transform:scale(.95)}
+.hp-status-fan{position:fixed;z-index:1500;width:270px;height:190px;pointer-events:none;transform-origin:center;animation:hpFanIn .16s ease-out}
+@keyframes hpFanIn{from{opacity:0;transform:scale(.72)}to{opacity:1;transform:scale(1)}}
+.hp-status-fan .hp-fan-title{position:absolute;left:50%;top:84px;transform:translate(-50%,-50%);width:92px;height:52px;border-radius:50%;background:var(--card);border:1px solid var(--border);box-shadow:0 6px 18px rgba(0,0,0,.18);display:flex;flex-direction:column;justify-content:center;align-items:center;color:var(--txt2);font-size:.62em;font-weight:800;text-align:center;z-index:2;line-height:1.05;padding:4px}
+.hp-status-fan .hp-fan-title small{display:block;font-size:.8em;font-weight:500;color:var(--g500);margin-top:3px}
+.hp-status-fan button{position:absolute;left:50%;top:84px;width:82px;height:54px;margin:-27px 0 0 -41px;border:2px solid rgba(255,255,255,.75);border-radius:27px;padding:5px;color:#fff;font-weight:800;font-size:.65em;line-height:1.05;cursor:pointer;pointer-events:auto;box-shadow:0 5px 12px rgba(0,0,0,.22);transition:transform .14s,filter .14s}
+.hp-status-fan button:active{filter:brightness(.92)}
 .hp-status-fan button:hover{filter:brightness(1.08)}
-.hp-status-fan .f-disponible{background:linear-gradient(135deg,#16a34a,#15803d)}
-.hp-status-fan .f-ocupada{background:linear-gradient(135deg,#2563eb,#1d4ed8)}
-.hp-status-fan .f-cerrada{background:linear-gradient(135deg,#dc2626,#b91c1c)}
-.hp-status-fan .f-mantenimiento{background:linear-gradient(135deg,#f59e0b,#d97706)}
-.hp-status-fan .f-aislamiento{background:linear-gradient(135deg,#7c3aed,#5b21b6)}
-.hp-status-fan .f-reservada{background:linear-gradient(135deg,#0891b2,#0e7490)}
-.hp-status-fan .f-current{outline:3px solid rgba(255,255,255,.85);outline-offset:-5px}
-.hp-status-fan .f-arrow{position:absolute;width:14px;height:14px;background:var(--card);border-left:1px solid var(--border);border-top:1px solid var(--border);transform:rotate(45deg);top:-8px;left:var(--hp-arrow-left,50%)}
-.hp-status-fan.below .f-arrow{top:auto;bottom:-8px;transform:rotate(225deg)}
+.hp-status-fan .f-disponible{background:linear-gradient(135deg,#16a34a,#15803d);transform:translate(-92px,-58px) rotate(-24deg)}
+.hp-status-fan .f-ocupada{background:linear-gradient(135deg,#2563eb,#1d4ed8);transform:translate(-48px,-96px) rotate(-12deg)}
+.hp-status-fan .f-cerrada{background:linear-gradient(135deg,#dc2626,#b91c1c);transform:translate(48px,-96px) rotate(12deg)}
+.hp-status-fan .f-mantenimiento{background:linear-gradient(135deg,#f59e0b,#d97706);transform:translate(92px,-58px) rotate(24deg)}
+.hp-status-fan .f-aislamiento{background:linear-gradient(135deg,#7c3aed,#5b21b6);transform:translate(-48px,20px) rotate(12deg)}
+.hp-status-fan .f-reservada{background:linear-gradient(135deg,#0891b2,#0e7490);transform:translate(48px,20px) rotate(-12deg)}
+.hp-status-fan .f-current{outline:3px solid #fff;outline-offset:2px}
+.hp-status-fan .f-arrow{position:absolute;width:14px;height:14px;background:var(--card);border-left:1px solid var(--border);border-top:1px solid var(--border);transform:rotate(45deg);top:-7px;left:calc(var(--hp-arrow-left,50%) - 7px)}
+.hp-status-fan.below .f-arrow{top:auto;bottom:-7px;transform:rotate(225deg)}
 @media(max-width:430px){
- .hp-status-fan{grid-template-columns:repeat(2,minmax(0,1fr));width:min(250px,calc(100vw - 16px));gap:6px;padding:8px;border-radius:16px}
- .hp-status-fan button{min-height:46px;font-size:.68em;padding:8px 5px}
+ .hp-status-fan{width:250px;height:180px}
+ .hp-status-fan .hp-fan-title{top:80px}
+ .hp-status-fan button{top:80px;width:74px;height:50px;margin:-25px 0 0 -37px;font-size:.58em}
+ .hp-status-fan .f-disponible{transform:translate(-82px,-54px) rotate(-24deg)}
+ .hp-status-fan .f-ocupada{transform:translate(-42px,-88px) rotate(-12deg)}
+ .hp-status-fan .f-cerrada{transform:translate(42px,-88px) rotate(12deg)}
+ .hp-status-fan .f-mantenimiento{transform:translate(82px,-54px) rotate(24deg)}
+ .hp-status-fan .f-aislamiento{transform:translate(-42px,20px) rotate(12deg)}
+ .hp-status-fan .f-reservada{transform:translate(42px,20px) rotate(-12deg)}
 }
 </style></head>
 <body>
@@ -4302,7 +4309,7 @@ window.hpBedSave=function(rid,cid,id){let r=map.rooms.find(x=>x.id===rid),c=r&&r
 window.hpOpenRooms={};window.hpOpenCubs={};
 window.hpToggleRoom=id=>{const opening=!window.hpOpenRooms[id];window.hpOpenRooms={};window.hpOpenCubs={};if(opening){window.hpOpenRooms[id]=true;const rr=map.rooms.find(x=>x.id===id);if(rr&&rr.cubs.length===1)window.hpOpenCubs[id+'|'+rr.cubs[0].id]=true}renderBedMap()};
 window.hpToggleCub=(r,c)=>{const k=r+'|'+c;const opening=!window.hpOpenCubs[k];Object.keys(window.hpOpenCubs).forEach(x=>{if(x.indexOf(r+'|')===0)delete window.hpOpenCubs[x]});if(opening)window.hpOpenCubs[k]=true;renderBedMap()};
-window.renderBedMap=function(){let h=document.getElementById('hp-bedmap-host');if(!h)return;let x=sync();h.innerHTML='<div class="hp-bed-summary"><div class="hp-bed-kpi"><b>'+x.physical+'</b><span>FÍSICOS</span></div><div class="hp-bed-kpi"><b>'+x.operational+'</b><span>OPERACIONALES</span></div><div class="hp-bed-kpi"><b>'+x.available+'</b><span>DISPONIBLES</span></div><div class="hp-bed-kpi"><b>'+x.closed+'</b><span>NO OPERATIVOS</span></div></div><div class="hp-legend"><span>🟢 Disponible</span><span>🔵 Ocupada</span><span>🔴 Cerrada</span><span>🟡 Mantenimiento</span><span>🟣 Aislamiento</span><span>🔷 Reservada</span></div>'+map.rooms.map(r=>{let a=all().filter(s=>r.cubs.some(c=>c.spaces.includes(s))),off=a.filter(s=>['cerrada','mantenimiento'].includes(s.status)).length,av=a.filter(s=>s.status==='disponible').length;return '<div class="hp-room '+(window.hpOpenRooms[r.id]?'open':'')+'"><div class="hp-room-head" data-hp-room="'+E(r.id)+'"><div style="font-size:22px">'+r.icon+'</div><div><div class="hp-room-title">'+E(r.name)+'</div><div class="hp-room-sub">'+a.length+' espacios · '+av+' disponibles · '+off+' no operativos</div></div><div class="arrow">'+(window.hpOpenRooms[r.id]?'⌃':'⌄')+'</div></div><div class="hp-room-body">'+r.cubs.map(c=>'<div class="hp-cub '+(window.hpOpenCubs[r.id+'|'+c.id]?'open':'')+'"><div class="hp-cub-head" data-hp-cub-room="'+E(r.id)+'" data-hp-cub-id="'+E(c.id)+'"><span>▸ '+E(c.name)+' · '+c.spaces.length+' espacios</span><span>⌄</span></div><div class="hp-cub-body">'+c.spaces.map(s=>bed(r,c,s)).join('')+'</div></div>').join('')+'</div></div>'}).join('')+'<div class="hp-bed-note">Toca una sala para desplegarla; luego toca un cubículo para ver sus camas o cunas. Toca una cama/cuna para cambiar su estado.</div>'}
+window.renderBedMap=function(){let h=document.getElementById('hp-bedmap-host');if(!h)return;try{map=load()}catch(e){}let x=sync();h.innerHTML='<div class="hp-bed-summary"><div class="hp-bed-kpi"><b>'+x.physical+'</b><span>FÍSICOS</span></div><div class="hp-bed-kpi"><b>'+x.operational+'</b><span>OPERACIONALES</span></div><div class="hp-bed-kpi"><b>'+x.available+'</b><span>DISPONIBLES</span></div><div class="hp-bed-kpi"><b>'+x.closed+'</b><span>NO OPERATIVOS</span></div></div><div class="hp-legend"><span>🟢 Disponible</span><span>🔵 Ocupada</span><span>🔴 Cerrada</span><span>🟡 Mantenimiento</span><span>🟣 Aislamiento</span><span>🔷 Reservada</span></div>'+map.rooms.map(r=>{let a=all().filter(s=>r.cubs.some(c=>c.spaces.includes(s))),off=a.filter(s=>['cerrada','mantenimiento'].includes(s.status)).length,av=a.filter(s=>s.status==='disponible').length;return '<div class="hp-room '+(window.hpOpenRooms[r.id]?'open':'')+'"><div class="hp-room-head" data-hp-room="'+E(r.id)+'"><div style="font-size:22px">'+r.icon+'</div><div><div class="hp-room-title">'+E(r.name)+'</div><div class="hp-room-sub">'+a.length+' espacios · '+av+' disponibles · '+off+' no operativos</div></div><div class="arrow">'+(window.hpOpenRooms[r.id]?'⌃':'⌄')+'</div></div><div class="hp-room-body">'+r.cubs.map(c=>'<div class="hp-cub '+(window.hpOpenCubs[r.id+'|'+c.id]?'open':'')+'"><div class="hp-cub-head" data-hp-cub-room="'+E(r.id)+'" data-hp-cub-id="'+E(c.id)+'"><span>▸ '+E(c.name)+' · '+c.spaces.length+' espacios</span><span>⌄</span></div><div class="hp-cub-body">'+c.spaces.map(s=>bed(r,c,s)).join('')+'</div></div>').join('')+'</div></div>'}).join('')+'<div class="hp-bed-note">Toca una sala para desplegarla; luego toca un cubículo para ver sus camas o cunas. Toca una cama/cuna para cambiar su estado.</div>'}
 
 if(!window.__hpBedMapDelegated){window.__hpBedMapDelegated=true;document.addEventListener('click',function(e){const room=e.target.closest('[data-hp-room]');if(room){window.hpCloseStatusFan();window.hpToggleRoom(room.dataset.hpRoom);return}const cub=e.target.closest('[data-hp-cub-room]');if(cub){window.hpCloseStatusFan();window.hpToggleCub(cub.dataset.hpCubRoom,cub.dataset.hpCubId);return}const bed=e.target.closest('[data-bed-room]');if(bed){e.preventDefault();e.stopPropagation();window.hpOpenStatusFan(bed);return}if(!e.target.closest('.hp-status-fan'))window.hpCloseStatusFan()})}
 window.hpBedMapGet=function(rid,cid,id){let r=map.rooms.find(x=>x.id===rid),c=r&&r.cubs.find(x=>x.id===cid),s=c&&c.spaces.find(x=>x.id===id);return s||null};
