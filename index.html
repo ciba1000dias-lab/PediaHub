@@ -880,32 +880,21 @@ body.hp-menu-active .hp-menu-trigger .menu-bars i:nth-child(3){top:6px;transform
 @media(max-width:520px){.hp-bed-summary{grid-template-columns:repeat(2,1fr)}.hp-bed-edit{grid-template-columns:1fr}}
 </style>
 <style id="hp-bed-status-fan-css">
-.hp-status-fan{position:fixed;z-index:1500;width:270px;height:190px;pointer-events:none;transform-origin:center;animation:hpFanIn .16s ease-out}
-@keyframes hpFanIn{from{opacity:0;transform:scale(.72)}to{opacity:1;transform:scale(1)}}
-.hp-status-fan .hp-fan-title{position:absolute;left:50%;top:84px;transform:translate(-50%,-50%);width:92px;height:52px;border-radius:50%;background:var(--card);border:1px solid var(--border);box-shadow:0 6px 18px rgba(0,0,0,.18);display:flex;flex-direction:column;justify-content:center;align-items:center;color:var(--txt2);font-size:.62em;font-weight:800;text-align:center;z-index:2;line-height:1.05;padding:4px}
-.hp-status-fan .hp-fan-title small{display:block;font-size:.8em;font-weight:500;color:var(--g500);margin-top:3px}
-.hp-status-fan button{position:absolute;left:50%;top:84px;width:82px;height:54px;margin:-27px 0 0 -41px;border:2px solid rgba(255,255,255,.75);border-radius:27px;padding:5px;color:#fff;font-weight:800;font-size:.65em;line-height:1.05;cursor:pointer;pointer-events:auto;box-shadow:0 5px 12px rgba(0,0,0,.22);transition:transform .14s,filter .14s}
-.hp-status-fan button:active{filter:brightness(.92)}
-.hp-status-fan button:hover{filter:brightness(1.08)}
-.hp-status-fan .f-disponible{background:linear-gradient(135deg,#16a34a,#15803d);transform:translate(-92px,-58px) rotate(-24deg)}
-.hp-status-fan .f-ocupada{background:linear-gradient(135deg,#2563eb,#1d4ed8);transform:translate(-48px,-96px) rotate(-12deg)}
-.hp-status-fan .f-cerrada{background:linear-gradient(135deg,#dc2626,#b91c1c);transform:translate(48px,-96px) rotate(12deg)}
-.hp-status-fan .f-mantenimiento{background:linear-gradient(135deg,#f59e0b,#d97706);transform:translate(92px,-58px) rotate(24deg)}
-.hp-status-fan .f-aislamiento{background:linear-gradient(135deg,#7c3aed,#5b21b6);transform:translate(-48px,20px) rotate(12deg)}
-.hp-status-fan .f-reservada{background:linear-gradient(135deg,#0891b2,#0e7490);transform:translate(48px,20px) rotate(-12deg)}
-.hp-status-fan .f-current{outline:3px solid #fff;outline-offset:2px}
-.hp-status-fan .f-arrow{position:absolute;width:14px;height:14px;background:var(--card);border-left:1px solid var(--border);border-top:1px solid var(--border);transform:rotate(45deg);top:-7px;left:calc(var(--hp-arrow-left,50%) - 7px)}
-.hp-status-fan.below .f-arrow{top:auto;bottom:-7px;transform:rotate(225deg)}
+.hp-status-fan{position:fixed;z-index:1500;width:300px;height:178px;pointer-events:auto;animation:hpFanIn .18s cubic-bezier(.2,.8,.2,1);filter:drop-shadow(0 8px 18px rgba(0,0,0,.2))}
+@keyframes hpFanIn{from{opacity:0;transform:scale(.88);transform-origin:50% 100%}to{opacity:1;transform:scale(1);transform-origin:50% 100%}}
+.hp-fan-svg{width:100%;height:100%;display:block;overflow:visible}
+.hp-fan-sector{stroke:rgba(255,255,255,.9);stroke-width:2.5;cursor:pointer;transition:filter .12s,stroke-width .12s}
+.hp-fan-sector:hover{filter:brightness(1.1);stroke-width:4}
+.hp-fan-sector.f-current{stroke:#fff;stroke-width:5}
+.hp-fan-label{fill:#fff;font-size:11px;font-weight:800;text-anchor:middle;dominant-baseline:middle;pointer-events:none;paint-order:stroke;stroke:rgba(0,0,0,.22);stroke-width:2px}
+.hp-fan-center{fill:var(--card);stroke:var(--border);stroke-width:1.5}
+.hp-fan-center-text{fill:var(--txt);font-size:10px;font-weight:800;text-anchor:middle}
+.hp-fan-center-sub{fill:var(--g500);font-size:7px;text-anchor:middle}
+.hp-status-fan.below{transform:rotate(180deg)}
+.hp-status-fan.below .hp-fan-svg{transform:rotate(180deg)}
 @media(max-width:430px){
- .hp-status-fan{width:250px;height:180px}
- .hp-status-fan .hp-fan-title{top:80px}
- .hp-status-fan button{top:80px;width:74px;height:50px;margin:-25px 0 0 -37px;font-size:.58em}
- .hp-status-fan .f-disponible{transform:translate(-82px,-54px) rotate(-24deg)}
- .hp-status-fan .f-ocupada{transform:translate(-42px,-88px) rotate(-12deg)}
- .hp-status-fan .f-cerrada{transform:translate(42px,-88px) rotate(12deg)}
- .hp-status-fan .f-mantenimiento{transform:translate(82px,-54px) rotate(24deg)}
- .hp-status-fan .f-aislamiento{transform:translate(-42px,20px) rotate(12deg)}
- .hp-status-fan .f-reservada{transform:translate(42px,20px) rotate(-12deg)}
+ .hp-status-fan{width:286px;height:170px}
+ .hp-fan-label{font-size:10px}
 }
 </style></head>
 <body>
@@ -4370,19 +4359,15 @@ document.addEventListener('DOMContentLoaded',function(){setTimeout(render,200)})
 (function(){
  const K='hpjrm_bedmap_v3';
  const HPST=[
-  ['disponible','Disponible para usar','f-disponible'],
-  ['ocupada','Ocupada','f-ocupada'],
-  ['cerrada','Cerrada','f-cerrada'],
-  ['mantenimiento','Mantenimiento / reparación','f-mantenimiento'],
-  ['aislamiento','Aislamiento','f-aislamiento'],
-  ['reservada','Reservada','f-reservada']
+  ['disponible','Disponible para usar','#16a34a'],
+  ['ocupada','Ocupada','#2563eb'],
+  ['cerrada','Cerrada','#dc2626'],
+  ['mantenimiento','Mantenimiento / reparación','#f59e0b'],
+  ['aislamiento','Aislamiento','#7c3aed'],
+  ['reservada','Reservada','#0891b2']
  ];
  let current=null;
- function closeFan(){
-  const x=document.querySelector('.hp-status-fan');
-  if(x)x.remove();
-  current=null;
- }
+ function closeFan(){const x=document.querySelector('.hp-status-fan');if(x)x.remove();current=null}
  window.hpCloseStatusFan=closeFan;
  function findSpace(rid,cid,sid){
   try{
@@ -4394,70 +4379,66 @@ document.addEventListener('DOMContentLoaded',function(){setTimeout(render,200)})
    return s?{map:map,space:s}:null;
   }catch(e){return null}
  }
+ function polar(cx,cy,r,deg){
+  const rad=(deg-90)*Math.PI/180;
+  return [cx+r*Math.cos(rad),cy+r*Math.sin(rad)]
+ }
+ function sectorPath(cx,cy,r,a0,a1){
+  const p0=polar(cx,cy,r,a0),p1=polar(cx,cy,r,a1);
+  return 'M '+cx+' '+cy+' L '+p0[0]+' '+p0[1]+' A '+r+' '+r+' 0 0 1 '+p1[0]+' '+p1[1]+' Z';
+ }
  function openFan(bed){
   closeFan();
   const rid=bed.getAttribute('data-bed-room'),cid=bed.getAttribute('data-bed-cub'),sid=bed.getAttribute('data-bed-id');
-  const found=findSpace(rid,cid,sid);
-  if(!found)return;
+  const found=findSpace(rid,cid,sid);if(!found)return;
   current={rid:rid,cid:cid,sid:sid};
   const s=found.space;
-  const fan=document.createElement('div');
-  fan.className='hp-status-fan';
-  fan.addEventListener('click',e=>e.stopPropagation());
-  const title=document.createElement('div');
-  title.className='hp-fan-title';
-  title.innerHTML='<span>🛏️ '+String(s.type||'Espacio')+' '+String(s.id||'')+'</span><small>Selecciona estado</small>';
-  fan.appendChild(title);
-  HPST.forEach(item=>{
-   const btn=document.createElement('button');
-   btn.type='button';
-   btn.className=item[2]+(s.status===item[0]?' f-current':'');
-   btn.textContent=item[1];
-   btn.addEventListener('click',e=>{
+  const fan=document.createElement('div');fan.className='hp-status-fan';
+  const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');
+  svg.setAttribute('viewBox','0 0 300 178');svg.classList.add('hp-fan-svg');
+  const cx=150,cy=164,r=136;
+  HPST.forEach((item,i)=>{
+   const a0=270+i*30,a1=a0+30,mid=(a0+a1)/2;
+   const path=document.createElementNS('http://www.w3.org/2000/svg','path');
+   path.setAttribute('d',sectorPath(cx,cy,r,a0,a1));path.setAttribute('fill',item[2]);
+   path.classList.add('hp-fan-sector');if(s.status===item[0])path.classList.add('f-current');
+   path.addEventListener('click',function(e){
     e.preventDefault();e.stopPropagation();
-    const data=findSpace(current.rid,current.cid,current.sid);
-    if(!data)return;
-    data.space.status=item[0];
-    localStorage.setItem(K,JSON.stringify(data.map));
-    // Keep the in-memory map synchronized with localStorage before redrawing.
-    window.__hpBedMapLastStatus={rid:current.rid,cid:current.cid,sid:current.sid,status:item[0]};
+    const data=findSpace(current.rid,current.cid,current.sid);if(!data)return;
+    data.space.status=item[0];localStorage.setItem(K,JSON.stringify(data.map));
+    window.__hpBedMapLastStatus=null;
     closeFan();
     if(typeof window.renderBedMap==='function')window.renderBedMap();
     if(typeof window.sync==='function')window.sync();
     if(typeof window.toast==='function')window.toast('Estado actualizado: '+item[1],'ok');
    });
-   fan.appendChild(btn);
+   svg.appendChild(path);
+   const lp=polar(cx,cy,94,mid);
+   const t=document.createElementNS('http://www.w3.org/2000/svg','text');
+   t.setAttribute('x',lp[0]);t.setAttribute('y',lp[1]);t.classList.add('hp-fan-label');
+   let label=item[1];if(label==='Mantenimiento / reparación')label='Mantenimiento';
+   if(label==='Disponible para usar')label='Disponible';
+   t.textContent=label;svg.appendChild(t);
   });
-  const arrow=document.createElement('span');
-  arrow.className='f-arrow';
-  fan.appendChild(arrow);
-  document.body.appendChild(fan);
-  const rect=bed.getBoundingClientRect();
-  const vw=window.innerWidth,vh=window.innerHeight;
-  const fw=fan.offsetWidth,fh=fan.offsetHeight,gap=10;
-  let left=rect.left+rect.width/2-fw/2;
-  left=Math.max(8,Math.min(left,vw-fw-8));
-  let top=rect.bottom+gap;
-  let above=false;
-  if(top+fh>vh-8 && rect.top-fh-gap>=8){top=rect.top-fh-gap;above=true}
-  fan.style.left=left+'px';
-  fan.style.top=top+'px';
-  if(above)fan.classList.add('below');
-  const arrowX=Math.max(18,Math.min(fw-18,rect.left+rect.width/2-left));
-  fan.style.setProperty('--hp-arrow-left',(arrowX-7)+'px');
+  const circle=document.createElementNS('http://www.w3.org/2000/svg','circle');
+  circle.setAttribute('cx',cx);circle.setAttribute('cy',cy);circle.setAttribute('r',30);circle.classList.add('hp-fan-center');svg.appendChild(circle);
+  const tt=document.createElementNS('http://www.w3.org/2000/svg','text');tt.setAttribute('x',cx);tt.setAttribute('y',cy-3);tt.classList.add('hp-fan-center-text');tt.textContent=(s.type||'Espacio')+' '+s.id;svg.appendChild(tt);
+  const st=document.createElementNS('http://www.w3.org/2000/svg','text');st.setAttribute('x',cx);st.setAttribute('y',cy+9);st.classList.add('hp-fan-center-sub');st.textContent='ESTADO';svg.appendChild(st);
+  fan.appendChild(svg);document.body.appendChild(fan);
+  const rect=bed.getBoundingClientRect(),vw=window.innerWidth,vh=window.innerHeight;
+  const fw=fan.offsetWidth,fh=fan.offsetHeight,gap=6;
+  let left=rect.left+rect.width/2-fw/2;left=Math.max(6,Math.min(left,vw-fw-6));
+  let top=rect.top-fh-gap;let above=true;
+  if(top<6){top=rect.bottom+gap;above=false}
+  fan.style.left=left+'px';fan.style.top=top+'px';
+  if(!above)fan.classList.add('below');
  }
- document.addEventListener('click',function(e){
-  const bed=e.target.closest&&e.target.closest('[data-bed-room]');
-  if(bed){
-   e.preventDefault();
-   e.stopImmediatePropagation();
-   openFan(bed);
-   return;
-  }
-  if(!e.target.closest('.hp-status-fan'))closeFan();
- },true);
+ window.hpOpenStatusFan=openFan;
  window.addEventListener('resize',closeFan);
  window.addEventListener('scroll',closeFan,{passive:true});
+ document.addEventListener('click',function(e){
+  if(!e.target.closest('.hp-status-fan')&&!e.target.closest('[data-bed-room]'))closeFan();
+ });
 })();
 </script></body>
 </html>
