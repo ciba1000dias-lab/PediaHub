@@ -4306,6 +4306,8 @@ window.hpToggleCub=(r,c)=>{const k=r+'|'+c;const opening=!window.hpOpenCubs[k];O
 window.renderBedMap=function(){let h=document.getElementById('hp-bedmap-host');if(!h)return;let x=sync();h.innerHTML='<div class="hp-bed-summary"><div class="hp-bed-kpi"><b>'+x.physical+'</b><span>FÍSICOS</span></div><div class="hp-bed-kpi"><b>'+x.operational+'</b><span>OPERACIONALES</span></div><div class="hp-bed-kpi"><b>'+x.available+'</b><span>DISPONIBLES</span></div><div class="hp-bed-kpi"><b>'+x.closed+'</b><span>NO OPERATIVOS</span></div></div><div class="hp-legend"><span>🟢 Disponible</span><span>🔵 Ocupada</span><span>🔴 Cerrada</span><span>🟡 Mantenimiento</span><span>🟣 Aislamiento</span><span>🔷 Reservada</span></div>'+map.rooms.map(r=>{let a=all().filter(s=>r.cubs.some(c=>c.spaces.includes(s))),off=a.filter(s=>['cerrada','mantenimiento'].includes(s.status)).length,av=a.filter(s=>s.status==='disponible').length;return '<div class="hp-room '+(window.hpOpenRooms[r.id]?'open':'')+'"><div class="hp-room-head" data-hp-room="'+E(r.id)+'"><div style="font-size:22px">'+r.icon+'</div><div><div class="hp-room-title">'+E(r.name)+'</div><div class="hp-room-sub">'+a.length+' espacios · '+av+' disponibles · '+off+' no operativos</div></div><div class="arrow">'+(window.hpOpenRooms[r.id]?'⌃':'⌄')+'</div></div><div class="hp-room-body">'+r.cubs.map(c=>'<div class="hp-cub '+(window.hpOpenCubs[r.id+'|'+c.id]?'open':'')+'"><div class="hp-cub-head" data-hp-cub-room="'+E(r.id)+'" data-hp-cub-id="'+E(c.id)+'"><span>▸ '+E(c.name)+' · '+c.spaces.length+' espacios</span><span>⌄</span></div><div class="hp-cub-body">'+c.spaces.map(s=>bed(r,c,s)).join('')+'</div></div>').join('')+'</div></div>'}).join('')+'<div class="hp-bed-note">Toca una sala para desplegarla; luego toca un cubículo para ver sus camas o cunas. Toca una cama/cuna para cambiar su estado.</div>'}
 
 if(!window.__hpBedMapDelegated){window.__hpBedMapDelegated=true;document.addEventListener('click',function(e){const room=e.target.closest('[data-hp-room]');if(room){window.hpCloseStatusFan();window.hpToggleRoom(room.dataset.hpRoom);return}const cub=e.target.closest('[data-hp-cub-room]');if(cub){window.hpCloseStatusFan();window.hpToggleCub(cub.dataset.hpCubRoom,cub.dataset.hpCubId);return}const bed=e.target.closest('[data-bed-room]');if(bed){e.preventDefault();e.stopPropagation();window.hpOpenStatusFan(bed);return}if(!e.target.closest('.hp-status-fan'))window.hpCloseStatusFan()})}
+window.hpBedMapGet=function(rid,cid,id){let r=map.rooms.find(x=>x.id===rid),c=r&&r.cubs.find(x=>x.id===cid),s=c&&c.spaces.find(x=>x.id===id);return s||null};
+window.hpBedMapApply=function(rid,cid,id,status){let s=window.hpBedMapGet(rid,cid,id);if(!s)return false;s.status=status;localStorage.setItem(K,JSON.stringify(map));sync();renderBedMap();return true};
 window.renderServicioBeds=function(){let v=document.getElementById('view-servicio');if(!v)return;let h=document.getElementById('hp-bedmap-host');if(!h){h=document.createElement('div');h.id='hp-bedmap-host';h.className='hp-service-card hp-bedmap';v.innerHTML='';v.appendChild(h)}renderBedMap()}
 document.addEventListener('DOMContentLoaded',()=>setTimeout(renderServicioBeds,100));
 const oldNav=window.navigateTo;window.navigateTo=function(v){if(v==='servicio'){let el=document.getElementById('view-servicio');document.querySelectorAll('.view').forEach(x=>x.classList.remove('active'));if(el)el.classList.add('active');window.scrollTo({top:0,behavior:'smooth'});setTimeout(renderServicioBeds,30);return}return oldNav?oldNav(v):null};
@@ -4361,29 +4363,23 @@ document.addEventListener('DOMContentLoaded',function(){setTimeout(render,200)})
  window.hpOpenStatusFan=function(bed){
    closeFan();
    const rid=bed.dataset.bedRoom,cid=bed.dataset.bedCub,id=bed.dataset.bedId;
-   const r=map.rooms.find(x=>x.id===rid),c=r&&r.cubs.find(x=>x.id===cid),s=c&&c.spaces.find(x=>x.id===id);if(!s)return;
+   const s=window.hpBedMapGet(rid,cid,id);if(!s)return;
    window.__hpFanBed={rid:rid,cid:cid,id:id};
    const fan=document.createElement('div');fan.className='hp-status-fan';fan.setAttribute('role','dialog');
-   fan.innerHTML='<div class="hp-fan-title">🛏️ '+E(s.type+' '+s.id)+'<small>Selecciona estado</small></div>'+
-     HPST.map(x=>'<button type="button" class="'+x[2]+' '+(s.status===x[0]?'f-current':'')+'" data-hp-status="'+x[0]+'">'+x[1]+'</button>').join('')+
-     '<span class="f-arrow"></span>';
-   document.body.appendChild(fan);
-   fan.querySelectorAll('[data-hp-status]').forEach(b=>b.addEventListener('click',function(ev){ev.stopPropagation();window.hpSetStatusFromFan(this.dataset.hpStatus)}));
-   const rect=bed.getBoundingClientRect(),vw=window.innerWidth,vh=window.innerHeight;
-   const fw=fan.offsetWidth,fh=fan.offsetHeight,gap=10;
-   let left=rect.left+rect.width/2-fw/2;
-   left=Math.max(8,Math.min(left,vw-fw-8));
-   let top=rect.bottom+gap,below=true;
-   if(top+fh>vh-8 && rect.top-fh-gap>=8){top=rect.top-fh-gap;below=false}
+   const title=document.createElement('div');title.className='hp-fan-title';
+   title.textContent='🛏️ '+s.type+' '+s.id;
+   const small=document.createElement('small');small.textContent='Selecciona estado';title.appendChild(small);fan.appendChild(title);
+   HPST.forEach(x=>{const b=document.createElement('button');b.type='button';b.className=x[2]+(s.status===x[0]?' f-current':'');b.textContent=x[1];b.dataset.hpStatus=x[0];b.addEventListener('click',ev=>{ev.stopPropagation();window.hpSetStatusFromFan(x[0])});fan.appendChild(b)});
+   const arrow=document.createElement('span');arrow.className='f-arrow';fan.appendChild(arrow);document.body.appendChild(fan);
+   const rect=bed.getBoundingClientRect(),vw=window.innerWidth,vh=window.innerHeight,fw=fan.offsetWidth,fh=fan.offsetHeight,gap=10;
+   let left=Math.max(8,Math.min(rect.left+rect.width/2-fw/2,vw-fw-8)),top=rect.bottom+gap,below=true;
+   if(top+fh>vh-8&&rect.top-fh-gap>=8){top=rect.top-fh-gap;below=false}
    fan.style.left=left+'px';fan.style.top=top+'px';if(!below)fan.classList.add('below');
-   const arrow=Math.max(18,Math.min(fw-18,rect.left+rect.width/2-left));fan.style.setProperty('--hp-arrow-left',(arrow-7)+'px');
+   const arrowX=Math.max(18,Math.min(fw-18,rect.left+rect.width/2-left));fan.style.setProperty('--hp-arrow-left',(arrowX-7)+'px');
  };
  window.hpSetStatusFromFan=function(status){
    const q=window.__hpFanBed;if(!q)return;
-   const r=map.rooms.find(x=>x.id===q.rid),c=r&&r.cubs.find(x=>x.id===q.cid),s=c&&c.spaces.find(x=>x.id===q.id);if(!s)return;
-   s.status=status;
-   localStorage.setItem(K,JSON.stringify(map));sync();closeFan();renderBedMap();
-   if(typeof toast==='function')toast('Estado: '+(ST.find(x=>x[0]===status)||['',status])[1],'ok');
+   if(window.hpBedMapApply(q.rid,q.cid,q.id,status)){closeFan();const label=HPST.find(x=>x[0]===status);if(typeof toast==='function')toast('Estado: '+(label?label[1]:status),'ok')}
  };
  window.addEventListener('resize',closeFan);
  window.addEventListener('scroll',closeFan,{passive:true});
